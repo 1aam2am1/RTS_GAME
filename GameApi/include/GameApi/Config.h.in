@@ -1,0 +1,15 @@
+//
+// Created by Michal_Marszalek on 11.08.2020.
+//
+
+#ifndef RTS_GAME_CONFIG_H_IN
+#define RTS_GAME_CONFIG_H_IN
+
+namespace GameApi {
+
+#define PROJECT_SOURCE_DIR  "@PROJECT_SOURCE_DIR@"
+#define UNUSED(expr) (void)(expr)
+
+}
+
+#endif //RTS_GAME_CONFIG_H_IN

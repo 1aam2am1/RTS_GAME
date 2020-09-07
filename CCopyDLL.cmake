@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.12)
+
+
+file(GLOB_RECURSE GENERATED_DLL ${PROJECT_BINARY_DIR}/_deps/*.dll)
+
+file(COPY ${GENERATED_DLL} DESTINATION ${CMAKE_BINARY_DIR})
