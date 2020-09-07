@@ -7,7 +7,7 @@
 
 
 namespace GameApi {
-    int getCurrentThreadID();
+    int getCurrentThreadId();
 }
 
 

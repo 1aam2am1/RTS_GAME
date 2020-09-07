@@ -9,8 +9,8 @@ namespace GameApi {
 
     static std::atomic<int> count;
 
-    int getCurrentThreadID() {
-        static thread_local int id = count++;
+    int getCurrentThreadId() {
+        thread_local int id = count++;
 
         return id;
     }

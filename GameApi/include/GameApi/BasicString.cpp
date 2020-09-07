@@ -1,10 +1,24 @@
-#include "GameAPI/BasicString.h"
+#include "GameApi/BasicString.h"
+#include "ThreadId.h"
 #include <cstdarg>
+#include <mutex>
+#include <map>
 
 namespace GameApi {
 
     size_t vsformat(const char *fmt, va_list ap, std::string &output) {
-        static thread_local std::vector<char> buf(64);
+        //static thread_local std::vector<char> buf(64);
+        static std::mutex m;
+        static std::map<int, std::vector<char>> map;
+        std::vector<char> *b2;
+        {
+            std::unique_lock l(m);
+            b2 = &map[getCurrentThreadId()];
+            if (b2->empty()) {
+                b2->resize(64);
+            }
+        }
+        std::vector<char> &buf = *b2;
 
         va_list aq;
         va_copy(aq, ap);
@@ -12,15 +26,15 @@ namespace GameApi {
         va_end(aq);
 
         if (length >= buf.size()) {
-            size_t target_size = buf.size();
-            if (target_size < 64) {
-                target_size = 64;
+            size_t targetSize = buf.size();
+            if (targetSize < 64) {
+                targetSize = 64;
             }
-            while (length >= target_size) {
-                target_size *= 2;
+            while (length >= targetSize) {
+                targetSize *= 2;
             }
 
-            buf.resize(target_size);
+            buf.resize(targetSize);
 
             vsnprintf(buf.data(), buf.size(), fmt, ap);
         }

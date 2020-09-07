@@ -11,7 +11,7 @@
 
 namespace GameApi {
 
-    Message::Message() : line{}, threadID(getCurrentThreadID()), timeStamp(
+    Message::Message() : line{}, threadID(getCurrentThreadId()), timeStamp(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch())) {
 
     }

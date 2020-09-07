@@ -10,7 +10,7 @@ namespace GameApi {
     }
 
     std::shared_ptr<CacheableOSStream> CacheableOSStream::acquire(std::string &output) {
-        static thread_local CacheableOSStream cache[128];
+        thread_local CacheableOSStream cache[128];
 
         for (auto &elem : cache) {
             if (!elem.flag.test_and_set()) {
