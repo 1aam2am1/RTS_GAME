@@ -47,6 +47,7 @@ add_subdirectory(GameServer)
 add_subdirectory(GameViewer)
 add_subdirectory(GameClient)
 add_subdirectory(GameAI)
+add_subdirectory(tests)
 
 
 add_dependencies(RTS_GAME GameServer GameViewer GameClient GameAI)
