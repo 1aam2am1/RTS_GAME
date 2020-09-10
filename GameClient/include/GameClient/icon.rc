@@ -1,0 +1,3 @@
+#include "GameClient/icon.h"
+
+IDI_ICON ICON "icon.ico"

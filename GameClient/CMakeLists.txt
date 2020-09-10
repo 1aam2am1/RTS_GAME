@@ -2,8 +2,18 @@ set(SRC
         include/GameClient/main.cpp
         include/GameClient/Argv_options.h
         include/GameClient/Argv_options.cpp
-        include/GameClient/icona.h
-        include/GameClient/icona.rc
+        include/GameClient/icon.h
+        include/GameClient/icon.rc
+        include/GameClient/TPtr.h
+        include/GameClient/Unity/SceneManagement/SceneManager.cpp
+        include/GameClient/Unity/SceneManagement/SceneManager.h
+        include/GameClient/Unity/SceneManagement/Scene.cpp
+        include/GameClient/Unity/SceneManagement/Scene.h
+        include/GameClient/Unity/Core/MonoBehaviour.cpp
+        include/GameClient/Unity/Core/MonoBehaviour.h
+        include/GameClient/Unity/Yield/AsyncOperation.cpp
+        include/GameClient/Unity/Yield/AsyncOperation.h
+        include/GameClient/Unity/Yield/YieldInstruction.h
         )
 
 add_executable(GameClient ${SRC})
@@ -23,6 +33,7 @@ add_versioning(GameClient)
 add_flags(GameClient)
 
 target_include_directories(GameClient PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(GameClient PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/GameClient/Unity")
 
 
 set_target_properties(GameClient PROPERTIES OUTPUT_NAME "PWR_RTS")

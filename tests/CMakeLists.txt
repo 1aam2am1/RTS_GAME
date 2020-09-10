@@ -4,6 +4,7 @@ set(SRC
         $<FILTER:$<TARGET_OBJECTS:GameClient>,EXCLUDE,main.cpp.+$>
         ArgvOptions.cpp
         Signal.cpp
+        TPtr.cpp
         )
 
 add_executable(GameTests ${SRC})
