@@ -14,6 +14,8 @@ set(SRC
         include/GameClient/Unity/Yield/AsyncOperation.cpp
         include/GameClient/Unity/Yield/AsyncOperation.h
         include/GameClient/Unity/Yield/YieldInstruction.h
+        include/GameClient/Unity/Core/GameObject.cpp
+        include/GameClient/Unity/Core/GameObject.h
         )
 
 add_executable(GameClient ${SRC})
