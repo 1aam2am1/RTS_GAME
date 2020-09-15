@@ -8,6 +8,7 @@
 
 #include "Component.h"
 
+/// Behaviours are Components that can be enabled or disabled.
 class Behaviour : public Component {
 
 };

@@ -12,6 +12,7 @@
 #include "GameClient/TPtr.h"
 
 
+/// Scene management at run-time.
 class SceneManager {
     using Scene = std::shared_ptr<Scene>;
 

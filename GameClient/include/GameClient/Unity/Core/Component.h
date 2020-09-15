@@ -8,6 +8,7 @@
 
 #include "Object.h"
 
+/// Base class for everything attached to GameObjects.
 class Component : public Object {
 
 };

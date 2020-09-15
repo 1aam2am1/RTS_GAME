@@ -13,6 +13,7 @@
 
 class Scene;
 
+/// Base class for all entities in Unity Scenes.
 class GameObject : public Object {
 public:
     /// Creates a new game object, named \b name.

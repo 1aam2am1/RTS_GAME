@@ -7,6 +7,7 @@
 
 #include <GameApi/Signal.h>
 
+/// Base class for all objects Unity can reference.
 class Object {
 public:
 

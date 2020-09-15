@@ -17,8 +17,10 @@ enum waitFor {
 
 class YieldInstruction;
 
+/// Return type for all coroutines
 typedef std::variant<std::monostate, std::nullptr_t, std::unique_ptr<YieldInstruction>, waitFor> YieldReturn;
 
+/// Base class for all yield instructions.
 class YieldInstruction {
 public:
     /// Destructor

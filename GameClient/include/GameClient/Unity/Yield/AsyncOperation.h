@@ -8,6 +8,8 @@
 #include <Yield/YieldInstruction.h>
 #include <GameApi/Signal.h>
 
+/// Asynchronous operation coroutine.
+/// \note You can yield until asynchronous operation continues, or manually check whether it's done (isDone) or progress (progress).
 class AsyncOperation : public YieldInstruction {
 public:
 

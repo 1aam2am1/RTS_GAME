@@ -6,7 +6,10 @@
 #define RTS_GAME_TRANSFORM_H
 
 
-class Transform {
+#include "Component.h"
+
+/// Position, rotation and scale of an object
+class Transform : public Component {
 
 };
 
