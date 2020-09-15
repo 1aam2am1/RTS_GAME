@@ -5,6 +5,7 @@
 
 #include "catch.hpp"
 #include <GameClient/TPtr.h>
+#include <GameClient/Unity/Core/MonoBehaviour.h>
 
 TEST_CASE("TPtr") {
     class A : public MonoBehaviour {
@@ -76,7 +77,7 @@ TEST_CASE("TPtr") {
     }SECTION("Check define and destructor") {
         struct B : MonoBehaviour {
             TPTR_P(a);
-            TPTR_PT(b, A);
+            TPTR_PT(A, b);
         };
 
         B b;

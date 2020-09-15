@@ -6,10 +6,10 @@
 #define RTS_GAME_TPTR_H
 
 #include <memory>
-#include <Core/MonoBehaviour.h>
+#include <Core/Object.h>
 
 
-template<typename T, typename = std::enable_if_t<std::is_base_of<MonoBehaviour, T>::value>>
+template<typename T, typename = std::enable_if_t<std::is_base_of_v<Object, T>>>
 class TPtr {
 public:
 
@@ -24,10 +24,10 @@ public:
 
     /// Create new object
     /// \tparam Y type of object
-    /// \param parent parent of this object that is MonoBehaviour as we need to reset shared when our object is destroyed
+    /// \param parent parent of this object that is Object as we need to reset shared when our object is destroyed
     /// \param ptr object
     template<typename Y = T>
-    constexpr explicit TPtr(MonoBehaviour *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept : ptr(ptr) {
+    constexpr explicit TPtr(Object *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept : ptr(ptr) {
         if (parent) { parentConnection = parent->onDestroySignal.connect_scoped(&TPtr::destroy, this); }
     }
 
@@ -114,8 +114,8 @@ private:
 
 };
 
-#define TPTR_P(NAME) TPtr<MonoBehaviour> NAME{this}
-#define TPTR_PT(NAME, TYPE) TPtr<TYPE> NAME{this}
+#define TPTR_P(NAME) TPtr<Object> NAME{this}
+#define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
 
 #endif //RTS_GAME_TPTR_H

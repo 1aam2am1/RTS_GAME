@@ -16,6 +16,14 @@ set(SRC
         include/GameClient/Unity/Yield/YieldInstruction.h
         include/GameClient/Unity/Core/GameObject.cpp
         include/GameClient/Unity/Core/GameObject.h
+        include/GameClient/Unity/Core/Object.cpp
+        include/GameClient/Unity/Core/Object.h
+        include/GameClient/Unity/Core/Component.cpp
+        include/GameClient/Unity/Core/Component.h
+        include/GameClient/Unity/Core/Behaviour.cpp
+        include/GameClient/Unity/Core/Behaviour.h
+        include/GameClient/Unity/Core/Transform.cpp
+        include/GameClient/Unity/Core/Transform.h
         )
 
 add_executable(GameClient ${SRC})

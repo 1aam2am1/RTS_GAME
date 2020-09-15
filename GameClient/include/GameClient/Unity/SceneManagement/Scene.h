@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <GameClient/Unity/Core/GameObject.h>
+#include <GameClient/TPtr.h>
 
 class Scene {
 public:
@@ -39,7 +40,7 @@ public:
     const std::string_view path;
 
     /// Returns all the root game objects in the Scene.
-    const std::vector<std::shared_ptr<GameObject>> &getRootGameObjects();
+    const std::vector<TPtr<GameObject>> &getRootGameObjects() const noexcept;
 
     constexpr bool operator==(const Scene &r) const noexcept {
         return this == &r;

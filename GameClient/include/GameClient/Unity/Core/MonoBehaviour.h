@@ -5,24 +5,10 @@
 #ifndef RTS_GAME_MONOBEHAVIOUR_H
 #define RTS_GAME_MONOBEHAVIOUR_H
 
-#include <GameApi/Signal.h>
+#include "Behaviour.h"
 
-template<typename, typename>
-class TPtr;
+class MonoBehaviour : public Behaviour {
 
-class MonoBehaviour {
-public:
-
-    virtual ~MonoBehaviour() = default;
-
-#ifndef TEST
-    private:
-#endif
-    sigslot::signal<> onDestroySignal;
-
-    template<typename, typename>
-    friend
-    class TPtr;
 };
 
 

@@ -113,7 +113,7 @@ class SceneManager {
     /// you would like to move to a new Scene, otherwise Unity deletes it when it loads a new Scene.
     /// \param go GameObject to move.
     /// \param scene Scene to move into.
-    //static void MoveGameObjectToScene(GameObject go, Scene scene);
+    static void MoveGameObjectToScene(GameObject go, Scene scene);
 
     /// Set the Scene to be active.
     /// \note There must always be one Scene marked as the active Scene.
