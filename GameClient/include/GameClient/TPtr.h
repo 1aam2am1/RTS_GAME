@@ -56,6 +56,25 @@ public:
         return *this;
     }
 
+    /// Copy shared_ptr of object
+    /// \param r To copy
+    /// \return *this
+    template<class Y = T>
+    TPtr &operator=(const std::shared_ptr<Y> &r) noexcept {
+        static_assert(std::is_base_of_v<T, Y>, "only subclasses, please");
+        if (ptr) {
+            ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
+        }
+
+        ptr = r.ptr;
+
+        if (ptr) {
+            ptr->onDestroySignal.connect(&TPtr::destroy, this);
+        }
+
+        return *this;
+    }
+
     TPtr &operator=(std::nullptr_t) noexcept {
         if (ptr) {
             ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
