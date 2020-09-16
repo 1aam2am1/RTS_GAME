@@ -19,7 +19,7 @@ private:
 
     sigslot::signal<> onDestroySignal;
 
-    template<typename, typename>
+    template<typename>
     friend
     class TPtr;
 };

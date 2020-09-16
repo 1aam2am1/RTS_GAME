@@ -115,14 +115,12 @@ public:
     /// Returns an array of active GameObjects tagged tag. Returns empty array if no GameObject was found.
     /// \param tag The name of the tag to search GameObjects for.
     /// \return Array of GameObjects
-    template<typename T = GameObject>
-    static std::vector<TPtr<T>> FindGameObjectsWithTag(std::string_view tag);
+    static std::vector<TPtr<GameObject>> FindGameObjectsWithTag(std::string_view tag);
 
     /// Returns one active GameObject tagged tag. Returns null if no GameObject was found.
     /// \param tag The tag to search for.
     /// \return GameObject
-    template<typename T = GameObject>
-    static TPtr<T> FindWithTag(std::string_view tag);
+    static TPtr<GameObject> FindWithTag(std::string_view tag);
 
 };
 

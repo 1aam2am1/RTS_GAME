@@ -9,7 +9,7 @@
 #include <Core/Object.h>
 
 
-template<typename T, typename = std::enable_if_t<std::is_base_of_v<Object, T>>>
+template<typename T>
 class TPtr {
 public:
 
@@ -32,6 +32,8 @@ public:
     }
 
     ~TPtr() {
+        static_assert(std::is_base_of_v<Object, T>, "only subclasses, please");
+
         if (ptr) { ptr->onDestroySignal.disconnect(&TPtr::destroy, this); }
         parentConnection.disconnect();
     }
@@ -108,7 +110,7 @@ private:
         ptr.reset();
     }
 
-    template<typename, typename>
+    template<typename>
     friend
     class TPtr;
 
