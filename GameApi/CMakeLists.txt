@@ -31,6 +31,7 @@ set(SRC
         include/GameApi/Synchronized/Lock.h
         include/GameApi/Signal.h
         include/GameApi/overload.h
+        include/GameApi/SetterGetter.h
         )
 
 configure_file(include/GameApi/Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/Config.h @ONLY)

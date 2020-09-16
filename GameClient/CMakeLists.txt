@@ -24,6 +24,8 @@ set(SRC
         include/GameClient/Unity/Core/Behaviour.h
         include/GameClient/Unity/Core/Transform.cpp
         include/GameClient/Unity/Core/Transform.h
+        include/GameClient/Unity/Core/Quaternion.cpp
+        include/GameClient/Unity/Core/Quaternion.h
         )
 
 add_executable(GameClient ${SRC})
