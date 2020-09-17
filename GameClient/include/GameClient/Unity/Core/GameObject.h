@@ -105,7 +105,7 @@ public:
     /// \param value Activate or deactivate the object, where true activates the GameObject and false deactivates the GameObject.
     void SetActive(bool value) noexcept;
 
-    /// Finds a GameObject by name and returns it.
+    /// Finds a GameObject by name and returns it in all scenes.
     /// \details This function only returns active GameObjects. If no GameObject with name can be found,
     /// null is returned. If name contains a '/' character, it traverses the hierarchy like a path name.
     /// \param name Name of the object
