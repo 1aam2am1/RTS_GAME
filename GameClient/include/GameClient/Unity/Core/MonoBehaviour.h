@@ -7,6 +7,9 @@
 
 #include <functional>
 #include <GameClient/Unity/Yield/Coroutine.h>
+#include <GameClient/Unity/Physics2D/Collider2D.h>
+#include <GameClient/Unity/Physics2D/Joint2D.h>
+#include <GameClient/Unity/Physics2D/Collision2D.h>
 #include "Behaviour.h"
 
 /// MonoBehaviour is the base class from which every Unity script derives.

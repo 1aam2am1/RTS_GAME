@@ -28,6 +28,12 @@ set(SRC
         include/GameClient/Unity/Core/Quaternion.h
         include/GameClient/Unity/Yield/Coroutine.cpp
         include/GameClient/Unity/Yield/Coroutine.h
+        include/GameClient/Unity/Physics2D/Collision2D.cpp
+        include/GameClient/Unity/Physics2D/Collision2D.h
+        include/GameClient/Unity/Physics2D/Joint2D.cpp
+        include/GameClient/Unity/Physics2D/Joint2D.h
+        include/GameClient/Unity/Physics2D/Collider2D.cpp
+        include/GameClient/Unity/Physics2D/Collider2D.h
         )
 
 add_executable(GameClient ${SRC})
