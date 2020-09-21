@@ -17,7 +17,7 @@ if (NOT sfml_POPULATED)
     add_subdirectory(${sfml_SOURCE_DIR} ${sfml_BINARY_DIR})
 endif ()
 
-
+#[[
 ### TGUI Dependency ###
 set(TGUI_SHARED_LIBS TRUE CACHE BOOL "TRUE to build TGUI as a shared library, FALSE to build it as a static library" FORCE)
 set(TGUI_CXX_STANDARD ${CMAKE_CXX_STANDARD} CACHE STRING "C++ standard version to build TGUI with. Possible values: 14, 17 or 20. Projects using TGUI must use a version equal or higher to this")
@@ -31,7 +31,7 @@ if (NOT tgui_POPULATED)
     FetchContent_Populate(tgui)
     add_subdirectory(${tgui_SOURCE_DIR} ${tgui_BINARY_DIR})
 endif ()
-
+#]]
 
 ### Box2d Dependency ###
 FetchContent_Declare(box2d
@@ -47,3 +47,4 @@ endif ()
 
 ### Protobuf Dependency ###
 find_package(Protobuf REQUIRED)
+find_package(OpenGL REQUIRED)

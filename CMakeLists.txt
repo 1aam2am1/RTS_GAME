@@ -43,6 +43,7 @@ include(CLibsDownload.cmake)
 add_subdirectory(Version)
 
 add_subdirectory(GameApi)
+add_subdirectory(ImGui)
 add_subdirectory(GameServer)
 add_subdirectory(GameViewer)
 add_subdirectory(GameClient)

@@ -7,7 +7,7 @@ set_target_properties(GameViewer PROPERTIES
         CXX_EXTENSIONS OFF)
 
 target_link_libraries(GameViewer sfml-network sfml-graphics)
-target_link_libraries(GameViewer tgui)
+target_link_libraries(GameViewer ImGui)
 target_link_libraries(GameViewer box2d)
 target_link_libraries(GameViewer GameAPI)
 add_versioning(GameViewer)

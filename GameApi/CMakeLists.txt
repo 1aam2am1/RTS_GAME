@@ -76,7 +76,8 @@ set_source_files_properties(${PROTO_HDRS} ${PROTO_SRCS} PROPERTIES COMPILE_FLAGS
 get_filename_component(P "${Protobuf_PROTOC_EXECUTABLE}" DIRECTORY)
 
 if (WIN32)
-    set(GameAPI_DLL "${P}/libprotobuf$<$<CONFIG:Debug>:d>.dll"
+    set(GameAPI_DLL ${GameAPI_DLL}
+            "${P}/libprotobuf$<$<CONFIG:Debug>:d>.dll"
             "${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_FILE_NAME:GameAPI>"
             PARENT_SCOPE)
 endif ()

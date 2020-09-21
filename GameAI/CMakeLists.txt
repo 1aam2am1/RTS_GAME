@@ -7,7 +7,7 @@ set_target_properties(GameAI PROPERTIES
         CXX_EXTENSIONS OFF)
 
 target_link_libraries(GameAI sfml-network sfml-graphics)
-target_link_libraries(GameAI tgui)
+target_link_libraries(GameAI ImGui)
 target_link_libraries(GameAI box2d)
 target_link_libraries(GameAI GameAPI)
 add_versioning(GameAI)

@@ -46,7 +46,7 @@ set_target_properties(GameClient PROPERTIES
 
 
 target_link_libraries(GameClient sfml-network sfml-graphics)
-target_link_libraries(GameClient tgui)
+target_link_libraries(GameClient ImGui)
 target_link_libraries(GameClient box2d)
 target_link_libraries(GameClient GameAPI)
 add_versioning(GameClient)
