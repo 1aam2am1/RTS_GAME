@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
         window.create(sf::VideoMode{options.getOptions().size.x, options.getOptions().size.y}, "RTS_GAME",
                       sf::Style::Default, sf::ContextSettings{0, 0, 0, 2, 1});
         ImGui::SFML::Init(window);
+        window.setFramerateLimit(options.getOptions().fps);
 
         sf::Clock deltaClock;
         while (window.isOpen()) {

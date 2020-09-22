@@ -12,6 +12,7 @@ bool Argv_options::process(int argc, char **argv) {
                     {"geometry", required_argument, nullptr, 'g'},
                     {"help",     no_argument,       nullptr, 'h'},
                     {"version",  no_argument,       nullptr, 'v'},
+                    {"fps",      required_argument, nullptr, 'f'},
                     {nullptr,    0,                 nullptr, 0}
             };
     int options_long_string_length = 0;
@@ -63,15 +64,23 @@ bool Argv_options::process(int argc, char **argv) {
             case 'v':
                 options.version = true;
                 break;
-            case 'h':
-                GameApi::log(INFO << "Options:\n");
+            case 'f': {
+                std::string str = optarg;
+                options.fps = GameApi::to_int(str);
+            }
+                break;
+            case 'h': {
+                auto message = INFO;
+                message << "Options:\n";
                 for (uint32_t i = 0; long_options[i].name != nullptr || long_options[i].has_arg != 0 ||
                                      long_options[i].flag != nullptr || long_options[i].val != 0; ++i) {
-                    GameApi::log(INFO.fmt(" - %-*s %s\n", options_long_string_length + 2,
-                                          long_options[i].name,
-                                          long_options[i].has_arg ? "Arg" : ""));
+                    message.fmt(" - %-*s %s\n", options_long_string_length + 2,
+                                long_options[i].name,
+                                long_options[i].has_arg ? "Arg" : "");
                 }
+                GameApi::log(message);
                 exit(EXIT_FAILURE);
+            }
             case '?':
                 GameApi::log(ERR << "ERROR Bad Option\n");
                 exit(EXIT_FAILURE);
@@ -83,10 +92,11 @@ bool Argv_options::process(int argc, char **argv) {
 
     /* Print any remaining command line arguments (not options). */
     if (optind < argc) {
-        GameApi::log(ERR << "non-option ARGV-elements: ");
+        auto message = ERR;
+        message << "non-option ARGV-elements: ";
         while (optind < argc)
-            GameApi::log(ERR.fmt("%s ", argv[optind++]));
-        GameApi::log(ERR << "\n");
+            message.fmt("%s ", argv[optind++]);
+        GameApi::log(message);
     }
 
     return true;

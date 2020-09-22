@@ -2,6 +2,7 @@
 #define ARGV_OPTIONS_H
 
 #include <SFML/System/Vector2.hpp>
+#include <cstdint>
 
 
 class Argv_options {
@@ -15,6 +16,7 @@ public:
     struct Options {
         sf::Vector2u size = {1200, 800};
         bool version = false;
+        uint32_t fps = 120;
     };
 
     [[nodiscard]] const Options &getOptions() const;
