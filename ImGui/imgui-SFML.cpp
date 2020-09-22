@@ -161,7 +161,7 @@ namespace {
 // Implementation of ImageButton overload
     bool imageButtonImpl(const sf::Texture &texture,
                          const sf::FloatRect &textureRect, const sf::Vector2f &size,
-                         const int framePadding, const sf::Color &bgColor,
+                         int framePadding, const sf::Color &bgColor,
                          const sf::Color &tintColor);
 
 // Default mapping is XInput gamepad mapping
@@ -179,12 +179,12 @@ namespace {
 // clipboard functions
     void setClipboardText(void *userData, const char *text);
 
-    const char *getClipboadText(void *userData);
+    const char *getClipboardText(void *userData);
 
     std::string s_clipboardText;
 
 // mouse cursors
-    void loadMouseCursor(ImGuiMouseCursor imguiCursorType,
+    void loadMouseCursor(ImGuiMouseCursor imGuiCursorType,
                          sf::Cursor::Type sfmlCursorType);
 
     void updateMouseCursor(sf::Window &window);
@@ -221,6 +221,7 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
             io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
             io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
             io.BackendPlatformName = "imgui_impl_sfml";
+            io.BackendRendererName = "SFML";
 
             // init keyboard mapping
             io.KeyMap[ImGuiKey_Tab] = sf::Keyboard::Tab;
@@ -262,7 +263,7 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
 
             // clipboard
             io.SetClipboardTextFn = setClipboardText;
-            io.GetClipboardTextFn = getClipboadText;
+            io.GetClipboardTextFn = getClipboardText;
 
             // load mouse cursors
             for (int i = 0; i < ImGuiMouseCursor_COUNT; ++i) {
@@ -468,7 +469,7 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
         }
 
         void Render(sf::RenderTarget &target) {
-            target.resetGLStates();
+            target.setActive(true);
             ImGui::Render();
             RenderDrawLists(ImGui::GetDrawData());
         }
@@ -714,8 +715,7 @@ namespace {
 
 // Rendering callback
     void RenderDrawLists(ImDrawData *draw_data) {
-        ImGui::GetDrawData();
-        if (draw_data->CmdListsCount == 0) {
+        if (draw_data && draw_data->CmdListsCount == 0) {
             return;
         }
 
@@ -724,10 +724,8 @@ namespace {
                (ImTextureID) NULL);  // You forgot to create and set font texture
 
         // scale stuff (needed for proper handling of window resize)
-        int fb_width =
-                static_cast<int>(io.DisplaySize.x * io.DisplayFramebufferScale.x);
-        int fb_height =
-                static_cast<int>(io.DisplaySize.y * io.DisplayFramebufferScale.y);
+        int fb_width = static_cast<int>(draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
+        int fb_height = static_cast<int>(draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
         if (fb_width == 0 || fb_height == 0) {
             return;
         }
@@ -773,9 +771,8 @@ namespace {
 
         for (int n = 0; n < draw_data->CmdListsCount; ++n) {
             const ImDrawList *cmd_list = draw_data->CmdLists[n];
-            const unsigned char *vtx_buffer =
-                    (const unsigned char *) &cmd_list->VtxBuffer.front();
-            const ImDrawIdx *idx_buffer = &cmd_list->IdxBuffer.front();
+            const uint8_t *vtx_buffer = (uint8_t *) cmd_list->VtxBuffer.Data;
+            const ImDrawIdx *idx_buffer = cmd_list->IdxBuffer.Data;
 
             glVertexPointer(2, GL_FLOAT, sizeof(ImDrawVert),
                             (void *) (vtx_buffer + offsetof(ImDrawVert, pos)));
@@ -784,7 +781,8 @@ namespace {
             glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(ImDrawVert),
                            (void *) (vtx_buffer + offsetof(ImDrawVert, col)));
 
-            for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); ++cmd_i) {
+            for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; ++cmd_i) {
+
                 const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[cmd_i];
                 if (pcmd->UserCallback) {
                     pcmd->UserCallback(cmd_list, pcmd);
@@ -918,17 +916,17 @@ namespace {
         sf::Clipboard::setString(sf::String::fromUtf8(text, text + std::strlen(text)));
     }
 
-    const char *getClipboadText(void * /*userData*/) {
+    const char *getClipboardText(void * /*userData*/) {
         std::basic_string<sf::Uint8> tmp = sf::Clipboard::getString().toUtf8();
         s_clipboardText = std::string(tmp.begin(), tmp.end());
         return s_clipboardText.c_str();
     }
 
-    void loadMouseCursor(ImGuiMouseCursor imguiCursorType,
+    void loadMouseCursor(ImGuiMouseCursor imGuiCursorType,
                          sf::Cursor::Type sfmlCursorType) {
-        s_mouseCursors[imguiCursorType] = new sf::Cursor();
-        s_mouseCursorLoaded[imguiCursorType] =
-                s_mouseCursors[imguiCursorType]->loadFromSystem(sfmlCursorType);
+        s_mouseCursors[imGuiCursorType] = new sf::Cursor();
+        s_mouseCursorLoaded[imGuiCursorType] =
+                s_mouseCursors[imGuiCursorType]->loadFromSystem(sfmlCursorType);
     }
 
     void updateMouseCursor(sf::Window &window) {

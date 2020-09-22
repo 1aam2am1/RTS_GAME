@@ -11,10 +11,8 @@ set(SRC
         imstb_truetype.h
         imgui_stdlib.cpp
         imgui_stdlib.h
-        imconfig-SFML.h
         imgui-SFML.cpp
         imgui-SFML.h
-        imgui-SFML_export.h
         )
 
 add_library(ImGui SHARED ${SRC})
