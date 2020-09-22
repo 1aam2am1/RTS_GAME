@@ -34,6 +34,8 @@ set(SRC
         include/GameClient/Unity/Physics2D/Joint2D.h
         include/GameClient/Unity/Physics2D/Collider2D.cpp
         include/GameClient/Unity/Physics2D/Collider2D.h
+        include/GameClient/Editor/BasicLayout.cpp
+        include/GameClient/Editor/BasicLayout.h
         )
 
 add_executable(GameClient ${SRC})
