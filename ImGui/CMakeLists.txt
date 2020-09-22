@@ -29,6 +29,7 @@ target_include_directories(ImGui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(ImGui sfml-graphics
         sfml-system
         sfml-window
+        GameAPI
         ${OPENGL_LIBRARIES})
 
 add_flags(ImGui)

@@ -86,7 +86,7 @@ namespace GameApi {
     bool is_int(const std::string &str);
 
     inline std::string to_width_string(std::string s, int w) {
-        s.insert(s.begin(), w - s.size(), ' ');
+        s.insert(s.end(), w - s.size(), ' ');
         return s;
     }
 
