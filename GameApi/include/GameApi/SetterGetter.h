@@ -10,12 +10,12 @@
 template<typename T>
 class SetterGetter {
 public:
-    SetterGetter(const std::function<void(const T &)> &set, const std::function<const T &()> &get) : set(set),
-                                                                                                     get(get) {}
+    SetterGetter(const std::function<void(const T &)> &set, const std::function<T()> &get) : set(set),
+                                                                                             get(get) {}
 
     SetterGetter(const SetterGetter &) = delete;
 
-    operator const T &() const {
+    operator T() const {
         return get();
     }
 
@@ -26,7 +26,7 @@ public:
 
 private:
     std::function<void(const T &)> set;
-    std::function<const T &()> get;
+    std::function<T()> get;
 };
 
 

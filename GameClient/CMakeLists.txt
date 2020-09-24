@@ -34,8 +34,13 @@ set(SRC
         include/GameClient/Unity/Physics2D/Joint2D.h
         include/GameClient/Unity/Physics2D/Collider2D.cpp
         include/GameClient/Unity/Physics2D/Collider2D.h
-        include/GameClient/Editor/BasicLayout.cpp
-        include/GameClient/Editor/BasicLayout.h
+        include/GameClient/MainWindow.cpp
+        include/GameClient/MainWindow.h
+        include/GameClient/Unity/Editor/EditorWindow.cpp
+        include/GameClient/Unity/Editor/EditorWindow.h
+        include/GameClient/Unity/Core/ScriptableObject.cpp
+        include/GameClient/Unity/Core/ScriptableObject.h
+        include/GameClient/Unity/Macro.h
         )
 
 add_executable(GameClient ${SRC})
@@ -46,6 +51,7 @@ set_target_properties(GameClient PROPERTIES
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 
+target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:UNITY_EDITOR>)
 
 target_link_libraries(GameClient sfml-network sfml-graphics)
 target_link_libraries(GameClient ImGui)

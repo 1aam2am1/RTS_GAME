@@ -135,8 +135,6 @@ private:
 
 };
 
-#define TPTR_P(NAME) TPtr<Object> NAME{this}
-#define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
-
+#include <GameClient/Unity/Macro.h>
 
 #endif //RTS_GAME_TPTR_H

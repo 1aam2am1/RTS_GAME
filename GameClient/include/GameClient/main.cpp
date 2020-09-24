@@ -2,13 +2,11 @@
 #include <GameClient/Argv_options.h>
 #include <GameApi/GlobalLogSource.h>
 #include <Version/version.h>
-#include <imgui-SFML.h>
-#include <imgui.h>
+#include "MainWindow.h"
 
 int main(int argc, char **argv) {
     try {
         Argv_options options;
-        sf::RenderWindow window;
 
         options.process(argc, argv);
 
@@ -19,36 +17,15 @@ int main(int argc, char **argv) {
                                   sizeof(void *) * 8));
         }
 
-        window.create(sf::VideoMode{options.getOptions().size.x, options.getOptions().size.y}, "RTS_GAME",
-                      sf::Style::Default, sf::ContextSettings{0, 0, 0, 2, 1});
-        ImGui::SFML::Init(window);
-        window.setFramerateLimit(options.getOptions().fps);
+        MainWindow window(options);
 
-        sf::Clock deltaClock;
-        while (window.isOpen()) {
-            sf::Event event{};
-            while (window.pollEvent(event)) {
-                ImGui::SFML::ProcessEvent(event);
+#if UNITY_EDITOR
 
-                if (event.type == sf::Event::Closed) {
-                    window.close();
-                }
-            }
+#else
 
-            ImGui::SFML::Update(window, deltaClock.restart());
+#endif
 
-            ImGui::ShowDemoWindow();
-
-
-            ImGui::Begin("Hello, world!");
-            ImGui::Button("Look at this pretty button");
-            ImGui::End();
-
-            window.clear();
-            ImGui::SFML::Render(window);
-            window.display();
-        }
-
+        window.run();
     }
     catch (const std::exception &e) {
         GameApi::log(ERR.fmt("%s", e.what()));

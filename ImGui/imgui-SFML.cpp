@@ -389,11 +389,6 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
                 Update(sf::Mouse::getPosition(window),
                        static_cast<sf::Vector2f>(target.getSize()), dt);
             }
-
-            if (ImGui::GetIO().MouseDrawCursor) {
-                // Hide OS mouse cursor if imgui is drawing it
-                window.setMouseCursorVisible(false);
-            }
         }
 
         void Update(const sf::Vector2i &mousePos, const sf::Vector2f &displaySize,
