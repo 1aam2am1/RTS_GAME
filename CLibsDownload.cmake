@@ -3,12 +3,20 @@ include(FetchContent)
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET OFF)
+set(LOCAL_REPO ON CACHE BOOL "Use local repository to copy")
 
+if (DEFINED LOCAL_REPO)
+    set(SFML_REPO C:/Users/Michal_Marszalek/CLionProjects/SFML)
+    set(box2d_REPO C:/Users/Michal_Marszalek/CLionProjects/box2d)
+else ()
+    set(SFML_REPO https://github.com/SFML/SFML)
+    set(box2d_REPO https://github.com/erincatto/box2d)
+endif ()
 
 ### SFML Dependency ###
 set(BUILD_SHARED_LIBS TRUE CACHE BOOL "TRUE to build SFML as shared libraries, FALSE to build it as static libraries" FORCE)
 FetchContent_Declare(sfml
-        GIT_REPOSITORY https://github.com/SFML/SFML
+        GIT_REPOSITORY ${SFML_REPO}
         GIT_SHALLOW TRUE)
 
 FetchContent_GetProperties(sfml)
@@ -35,7 +43,7 @@ endif ()
 
 ### Box2d Dependency ###
 FetchContent_Declare(box2d
-        GIT_REPOSITORY https://github.com/erincatto/box2d
+        GIT_REPOSITORY ${box2d_REPO}
         GIT_SHALLOW TRUE)
 
 FetchContent_GetProperties(box2d)
