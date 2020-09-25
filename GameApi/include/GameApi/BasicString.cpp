@@ -76,6 +76,12 @@ namespace GameApi {
         return str;
     }
 
+    std::string to_string(void *pointer) {
+        char str[12] = {0};
+        std::sprintf(str, "%p", pointer);
+        return str;
+    }
+
     std::string to_string(float number) {
         char str[50] = {0};
         std::sprintf(str, "%f", number);

@@ -2,7 +2,11 @@
 #include <GameClient/Argv_options.h>
 #include <GameApi/GlobalLogSource.h>
 #include <Version/version.h>
+#include <GameClient/Unity/Editor/Menu.h>
 #include "MainWindow.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 int main(int argc, char **argv) {
     try {
@@ -20,9 +24,10 @@ int main(int argc, char **argv) {
         MainWindow window(options);
 
 #if UNITY_EDITOR
-
+        fs::create_directory("Assets");
+        Menu::Init();
 #else
-
+        if(!std::filesystem::exists("Assets")){throw std::runtime_error("Assets folder don't exists")};
 #endif
 
         window.run();

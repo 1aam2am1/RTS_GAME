@@ -4,7 +4,6 @@
 #ifdef _WIN32
 
 #include <io.h>
-#include <dir.h>
 #include <direct.h>
 
 #endif // _WIN32
@@ -72,6 +71,8 @@ namespace GameApi {
     std::string to_string(uint32_t number);
 
     std::string to_string(int32_t number);
+
+    std::string to_string(void *pointer);
 
     std::string to_string(float number);
 

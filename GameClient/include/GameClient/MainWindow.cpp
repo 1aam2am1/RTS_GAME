@@ -9,7 +9,11 @@
 #include <SFML/Graphics.hpp>
 #include <GameClient/Unity/Editor/EditorWindow.h>
 
-std::list<std::shared_ptr<EditorWindow>> MainWindow::list;
+
+std::list<std::shared_ptr<EditorWindow>> &get_global_list() {
+    static std::list<std::shared_ptr<EditorWindow>> list;
+    return list;
+}
 
 int globalDockId{};
 
@@ -86,15 +90,12 @@ MainWindow::MainWindow(const Argv_options &options) {
 
     lastEvents.reserve(16);
 
-    globalDockId = ImGui::GetID("###GLOBAL_DOCK");
+    constexpr std::string_view dock_name = "###GLOBAL_DOCK";
+    globalDockId = ImHashStr(dock_name.data(), dock_name.length(), 0);
 }
 
 MainWindow::~MainWindow() {
     ImGui::SFML::Shutdown();
-}
-
-void MainWindow::addPanel(const std::shared_ptr<EditorWindow> &p) {
-    list.push_back(p);
 }
 
 //ImGui::ShowDemoWindow();
@@ -126,7 +127,7 @@ void MainWindow::run() {
 
         BasicLayout(); /// Set basic layout and global dock window
 
-        for (const auto &p : list) {
+        for (const auto &p : EditorWindow::get_open_windows()) {
             p->drawGui();  /// drawing ImGui and events to Game Scene
         }
 

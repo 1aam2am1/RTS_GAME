@@ -5,6 +5,10 @@
 #ifndef RTS_GAME_MACRO_H
 #define RTS_GAME_MACRO_H
 
+#define CAT(a, b) CAT2(a,b) // force expand
+#define CAT2(a, b) a##b // actually concatenate
+#define UNIQUE_ID(PRE) CAT(PRE,__COUNTER__)
+
 #define TPTR_P(NAME) TPtr<Object> NAME{this}
 #define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
@@ -22,7 +26,21 @@ namespace {                                         \
 #define CreateAssetMenuAttribute(TYPE)
 
 /// The MenuItem attribute allows you to add menu items to the main menu and inspector context menus.
-#define MenuItem(FUNC, PATH)
+#define MENU_ITEM(FUNC, PATH, ...) \
+namespace {                        \
+    static int UNIQUE_ID(INTERNAL_NO_USE_F_) = [](){ \
+        Menu::addItem(PATH, &FUNC, {__VA_ARGS__}); \
+        return 0;                 \
+    }();                          \
+}
+
+#define MENU_TAB(PATH, ...) \
+namespace {                 \
+    static const int UNIQUE_ID(INTERNAL_NO_USE_T_) = [](){ \
+        Menu::addPlaceHolder(PATH, {__VA_ARGS__});   \
+        return 0;                 \
+    }();                          \
+}
 
 /// Tells an Editor class which run-time type it's an editor for.
 /// \param isFallback	If true, match this editor only if all non-fallback editors do not match. Defaults to false.

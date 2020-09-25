@@ -11,6 +11,7 @@
 #include <GameApi/SetterGetter.h>
 #include <list>
 #include <typeindex>
+#include <GameApi/Compiler.h>
 
 class MainWindow;
 
@@ -19,6 +20,7 @@ class MainWindow;
 /// just like the native windows in the Unity interface.
 class EditorWindow : public ScriptableObject {
 public:
+    EditorWindow();
 
     /// The EditorWindow which currently has keyboard focus. (Read Only)
     static EditorWindow *focusedWindow();
@@ -71,7 +73,7 @@ public:
     /// \param title The title of the created window. If this value is null, use the class name as title.
     /// \param desiredDockNextTo An array of EditorWindow types that the window will attempt to dock onto.
     template<typename T>
-    static std::shared_ptr<T> CreateWindow(std::string title, std::list<std::type_index> desiredDockNextTo = {});
+    static std::shared_ptr<T> CreateWindow(std::string_view title, std::list<std::type_index> desiredDockNextTo = {});
 
     /// Focuses the first found EditorWindow of specified type if it is open.
     /// \param t The type of the window. Must derive from EditorWindow.
@@ -84,7 +86,7 @@ public:
     /// \param focus Whether to give the window focus, if it already exists.
     /// (If GetWindow creates a new window, it will always get focus).
     template<typename T>
-    static EditorWindow GetWindow(std::string title = {}, bool focus = true);
+    static std::shared_ptr<T> GetWindow(std::string_view title = {}, bool focus = true);
 
     /// Returns the first EditorWindow of type t which is currently on the screen.
     /// \tparam T The type of the window. Must derive from EditorWindow.
@@ -92,7 +94,7 @@ public:
     /// \param title If GetWindow creates a new window, it will get this title.
     /// If this value is null, use the class name as title.
     template<typename T>
-    static EditorWindow GetWindowWithRect(sf::FloatRect rect, std::string title = {});
+    static std::shared_ptr<T> GetWindowWithRect(sf::FloatRect rect, std::string title = {});
 
     /// Checks if an editor window is open.
     /// \param t The type of the window. Must derive from EditorWindow.
@@ -111,11 +113,47 @@ public:
     /// Called multiple times per second on all visible windows.
     virtual void Update() {}
 
-private:
+protected:
     friend class MainWindow;
 
-    void drawGui();
+    static std::vector<std::shared_ptr<EditorWindow>> &get_open_windows();
+
+    virtual void drawGui();
+
+protected:
+    enum Type {
+        NotShown = 0,
+        Normal,
+        Popup,
+        Utility,
+        DropDown
+    };
+
+    Type work = {};
 };
+
+
+template<typename T>
+std::shared_ptr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
+    static_assert(std::is_base_of_v<EditorWindow, T>, "Only base of EditorWindow ara capable of getting window");
+    for (auto &it : get_open_windows()) {
+        if (typeid(T) == typeid(it.get())) {
+            if (focus) { it->Focus(); }
+            return std::dynamic_pointer_cast<T>(it);
+        }
+    }
+    auto s = std::make_shared<T>();
+    if (title.empty()) {
+        s->titleContent = GameApi::demangle(typeid(T).name());
+    } else {
+        s->titleContent = title;
+    };
+
+    if (get_open_windows().capacity() <= 16) { get_open_windows().reserve(16); }
+    get_open_windows().push_back(s);
+
+    return s;
+}
 
 
 #endif //RTS_GAME_EDITORWINDOW_H

@@ -11,7 +11,6 @@
 #include <list>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-class EditorWindow;
 
 class GameWindow;
 
@@ -21,14 +20,10 @@ public:
 
     ~MainWindow();
 
-    static void addPanel(const std::shared_ptr<EditorWindow> &);
-
     void run();
 
 private:
     sf::RenderWindow window;
-
-    static std::list<std::shared_ptr<EditorWindow>> list;
 
 private:
     std::vector<sf::Event> lastEvents;

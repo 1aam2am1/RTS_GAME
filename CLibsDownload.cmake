@@ -5,7 +5,7 @@ set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET OFF)
 set(LOCAL_REPO ON CACHE BOOL "Use local repository to copy")
 
-if (DEFINED LOCAL_REPO)
+if (${LOCAL_REPO})
     set(SFML_REPO C:/Users/Michal_Marszalek/CLionProjects/SFML)
     set(box2d_REPO C:/Users/Michal_Marszalek/CLionProjects/box2d)
 else ()
