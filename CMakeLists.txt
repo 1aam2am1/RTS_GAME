@@ -14,7 +14,8 @@ macro(copy_dll T L)
         add_custom_command(TARGET ${T} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${I}"
-                "${CMAKE_CURRENT_BINARY_DIR}/${O}")
+                "${CMAKE_CURRENT_BINARY_DIR}/${O}"
+                COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "Copying ${I} -> ${O}")
     endforeach ()
 endmacro()
 

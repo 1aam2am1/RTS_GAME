@@ -79,5 +79,6 @@ if (WIN32)
     set(GameAPI_DLL ${GameAPI_DLL}
             "${P}/libprotobuf$<$<CONFIG:Debug>:d>.dll"
             "${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_FILE_NAME:GameAPI>"
+            "${CMAKE_CURRENT_SOURCE_DIR}/mesa3d/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},4>,32bit,64bit>/opengl32.dll"
             PARENT_SCOPE)
 endif ()
