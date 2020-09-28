@@ -4,13 +4,25 @@
 
 #include "EditorWindow.h"
 #include <imgui.h>
+#include <imgui_internal.h>
 
 std::vector<std::shared_ptr<EditorWindow>> &EditorWindow::get_open_windows() {
     static std::vector<std::shared_ptr<EditorWindow>> list;
     return list;
 }
 
-EditorWindow::EditorWindow() : position([this](auto) {}, [this]() -> auto { return sf::FloatRect(); }) {
+EditorWindow::EditorWindow()
+        : position([this](sf::FloatRect p) {
+    ImGui::SetWindowPos(("###" + GameApi::to_string(this)).c_str(), p.getPosition());
+    ImGui::SetWindowSize(("###" + GameApi::to_string(this)).c_str(), p.getSize());
+}, [this]() -> auto {
+    ImVec2 p{}, s{};
+    if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(this)).c_str())) {
+        s = window->Size;
+        p = window->Pos;
+    }
+    return sf::FloatRect{p, s};
+}) {
 
 }
 
