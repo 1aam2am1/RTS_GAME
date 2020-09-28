@@ -19,6 +19,10 @@ public:
         return get();
     }
 
+    T operator()() const {
+        return get();
+    }
+
     SetterGetter<T> &operator=(const T &t) {
         set(t);
         return *this;

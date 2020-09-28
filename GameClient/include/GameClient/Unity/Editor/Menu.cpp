@@ -172,13 +172,25 @@ public:
     }
 
     void OnGUI() override {
+        ImGui::Text("Focused Window: %s", focusedWindow() ? focusedWindow()->titleContent.c_str() : "");
+        ImGui::Text("Hovered Window: %s", mouseOverWindow() ? mouseOverWindow()->titleContent.c_str() : "");
+        ImGui::Separator();
+        {
+            auto p = position();
+            ImGui::Text("Position x: %.2f y: %.2f", p.getPosition().x, p.getPosition().y);
+            ImGui::Text("Size     x: %.2f y: %.2f", p.getSize().x, p.getSize().y);
+        }
+        ImGui::Separator();
+        if (ImGui::Button("Set size")) {
+            auto p = position();
+            p.left = 100.f;
+            position = p;
+        }
+        ImGui::Separator();
         display(global_item_vector());
     }
 
     void display(std::vector<MenuItem> items) {
-        ImGui::Text("Focused Window: %s", focusedWindow() ? focusedWindow()->titleContent.c_str() : "");
-        ImGui::Text("Hovered Window: %s", mouseOverWindow() ? mouseOverWindow()->titleContent.c_str() : "");
-        ImGui::Separator();
         for (auto &i : items) {
             if (ImGui::TreeNode(i.name.c_str(), "%s: %i", i.name.c_str(), i.priority)) {
                 if (i.sub_items_function.index() == 0) {

@@ -48,6 +48,12 @@ set(SRC
         include/GameClient/Unity/Editor/Menu.h
         include/GameClient/Windows/About.cpp
         include/GameClient/Windows/About.h
+        include/GameClient/Unity/Editor/AssetDatabase.cpp
+        include/GameClient/Unity/Editor/AssetDatabase.h
+        include/GameClient/Windows/AssetWindow.cpp
+        include/GameClient/Windows/AssetWindow.h
+        include/GameClient/WindowLayout.cpp
+        include/GameClient/WindowLayout.h
         )
 
 add_executable(GameClient ${SRC})

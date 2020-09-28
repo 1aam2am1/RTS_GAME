@@ -6,4 +6,4 @@
 #include <Macro.h>
 #include <Editor/Menu.h>
 
-MENU_ITEM(About::Init, "Help/About Game")
+MENU_ITEM(About::Init, "Help/About Game", -9)

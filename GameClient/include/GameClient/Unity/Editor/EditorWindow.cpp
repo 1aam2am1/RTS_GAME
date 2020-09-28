@@ -13,13 +13,28 @@ std::vector<std::shared_ptr<EditorWindow>> &EditorWindow::get_open_windows() {
 
 EditorWindow::EditorWindow()
         : position([this](sf::FloatRect p) {
-    ImGui::SetWindowPos(("###" + GameApi::to_string(this)).c_str(), p.getPosition());
-    ImGui::SetWindowSize(("###" + GameApi::to_string(this)).c_str(), p.getSize());
+    if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(this)).c_str())) {
+        ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), window);
+        ImGui::SetWindowPos(window, p.getPosition());
+        ImGui::SetWindowSize(window, p.getSize());
+    } else {
+        auto s = ImGui::FindOrCreateWindowSettings(("###" + GameApi::to_string(this)).c_str());
+        s->Pos.x = p.getPosition().x;
+        s->Pos.y = p.getPosition().y;
+        s->Size.x = p.getSize().x;
+        s->Size.y = p.getSize().y;
+    }
 }, [this]() -> auto {
     ImVec2 p{}, s{};
     if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(this)).c_str())) {
         s = window->Size;
         p = window->Pos;
+    } else {
+        auto set = ImGui::FindOrCreateWindowSettings(("###" + GameApi::to_string(this)).c_str());
+        p.x = set->Pos.x;
+        p.y = set->Pos.y;
+        s.x = set->Size.x;
+        s.y = set->Size.y;
     }
     return sf::FloatRect{p, s};
 }) {
