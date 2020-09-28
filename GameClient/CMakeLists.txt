@@ -46,6 +46,8 @@ set(SRC
         include/GameClient/Unity/Editor/MenuCommand.h
         include/GameClient/Unity/Editor/Menu.cpp
         include/GameClient/Unity/Editor/Menu.h
+        include/GameClient/Windows/About.cpp
+        include/GameClient/Windows/About.h
         )
 
 add_executable(GameClient ${SRC})

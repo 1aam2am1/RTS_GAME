@@ -35,6 +35,10 @@ void EditorWindow::Show() {
     if (work == NotShown) { work = Normal; }
 }
 
+void EditorWindow::ShowUtility() {
+    if (work == NotShown) { work = Utility; }
+}
+
 void EditorWindow::drawGui() {
     if (work != NotShown) {
         ImGui::SetNextWindowSizeConstraints(minSize, maxSize);

@@ -12,6 +12,7 @@
 #include <list>
 #include <typeindex>
 #include <GameApi/Compiler.h>
+#include <GameApi/GlobalLogSource.h>
 
 class MainWindow;
 
@@ -137,7 +138,7 @@ template<typename T>
 std::shared_ptr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
     static_assert(std::is_base_of_v<EditorWindow, T>, "Only base of EditorWindow ara capable of getting window");
     for (auto &it : get_open_windows()) {
-        if (typeid(T) == typeid(it.get())) {
+        if (typeid(T) == typeid(*it)) {
             if (focus) { it->Focus(); }
             return std::dynamic_pointer_cast<T>(it);
         }
@@ -148,6 +149,16 @@ std::shared_ptr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
     } else {
         s->titleContent = title;
     };
+    ///TODO: Awake Update and so on should be secured by try{catch}
+    try {
+        s->Awake();
+    } catch (const std::exception &e) {
+        GameApi::log(ERR.fmt("GetWindow Type: %s -> throws on Awake() Message: %s",
+                             GameApi::demangle(typeid(T).name()).c_str(), e.what()));
+    } catch (...) {
+        GameApi::log(ERR.fmt("GetWindow Type: %s -> throws on Awake()",
+                             GameApi::demangle(typeid(T).name()).c_str()));
+    }
 
     if (get_open_windows().capacity() <= 16) { get_open_windows().reserve(16); }
     get_open_windows().push_back(s);

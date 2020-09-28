@@ -4,22 +4,112 @@
 
 #include "Menu.h"
 #include <imgui.h>
+#include <utility>
 #include <variant>
 
-MENU_TAB("File", 1)
-MENU_TAB("Edit", 2)
-MENU_TAB("Assets", 3)
-MENU_TAB("GameObject", 4)
-MENU_TAB("Component", 5)
-MENU_TAB("Window", 6)
-MENU_TAB("Help", 7)
+MENU_TAB("File", -25)
+MENU_TAB("Edit", -21)
+MENU_TAB("Assets", -17)
+MENU_TAB("GameObject", -13)
+MENU_TAB("Component", -9)
+MENU_TAB("Window", -5)
+MENU_TAB("Help", -1)
 
 struct MenuItem {
     std::string name;
     int priority;
 
-    std::variant<Menu::Func, std::vector<MenuItem>> sub_items_function;
+    struct Func {
+        Func() = default;
+
+        Func(const std::function<bool(MenuCommand)> &f, bool v) { add(f, v); }
+
+        void add(std::function<bool(MenuCommand)> f, bool v) {
+            if (v)validation.emplace_back(std::move(f));
+            else execution.emplace_back(std::move(f));
+        }
+
+        void operator()(const MenuCommand &a) const {
+            for (auto &v : validation) {
+                if (!v(a)) { return; }
+            }
+            for (auto &e:execution) {
+                e(a);
+            }
+        }
+
+        std::vector<std::function<bool(MenuCommand)>> validation;
+        std::vector<std::function<bool(MenuCommand)>> execution;
+    };
+
+    std::variant<Func, std::vector<MenuItem>> sub_items_function;
 };
+
+MenuItem &get_node(std::vector<MenuItem> &vector, std::string path, const int priority, const bool function) {
+    auto last = path.empty() ? 0 : path.back() == '/';
+    auto name = GameApi::substr(path, '/');
+
+    auto create_node = [](std::vector<MenuItem> &vector, std::string name, const int priority,
+                          const bool function) -> MenuItem & {
+        auto it = std::find_if(vector.begin(), vector.end(), [&, same_name = false](const auto &l) mutable {
+            if (l.priority > priority) { return true; }
+            if (function && l.priority == priority && l.name == name && l.sub_items_function.index() == 1) {
+                return true;
+            }
+            if (l.priority == priority && l.name == name) {
+                same_name = true;
+                return false;
+            }
+            if (same_name && l.name != name) { return true; }
+            return false;
+        });
+
+        if (function) {
+            return *vector.emplace(it, MenuItem{name, priority, MenuItem::Func{}});
+        } else {
+            return *vector.emplace(it, MenuItem{name, priority, std::vector<MenuItem>()});
+        }
+    };
+
+    if (!path.empty() || last) {
+        auto it = std::find_if(vector.begin(), vector.end(),
+                               [&](const auto &l) { return l.name == name && l.sub_items_function.index() == 1; });
+        if (it != vector.end()) {
+            return get_node(std::get<1>(it->sub_items_function), path, priority, function);
+        }
+
+        auto &node = create_node(vector, name, priority, false);
+
+        return get_node(std::get<1>(node.sub_items_function),
+                        path, priority, function);
+    }
+
+    decltype(vector.begin()) it;
+    if (function) {
+        it = std::find_if(vector.begin(), vector.end(),
+                          [&](const auto &l) {
+                              return l.name == name && l.sub_items_function.index() == 0;
+                          });
+    } else {
+        it = std::find_if(vector.begin(), vector.end(),
+                          [&](const auto &l) {
+                              return l.name == name && l.sub_items_function.index() == 1;
+                          });
+    }
+
+    if (it != vector.end()) {
+        if (it->priority != priority && (priority != 0 || !function)) {
+            auto p = *it;
+            vector.erase(it);
+            auto &node = create_node(vector, name, priority, function);
+            node.sub_items_function = p.sub_items_function;
+            return node;
+        }
+        return *it;
+    }
+
+    return create_node(vector, name, priority, function);
+}
 
 std::vector<MenuItem> &global_item_vector() {
     static std::vector<MenuItem> items;
@@ -46,8 +136,8 @@ void Menu::OnGUI() {
             priority = i.priority;
             if (i.sub_items_function.index() == 0) {
                 if (ImGui::MenuItem(i.name.c_str())) {
-                    auto f = std::get<0>(i.sub_items_function);
-                    if (f)f({});
+                    const auto &f = std::get<0>(i.sub_items_function);
+                    f({});
                 }
             } else if (i.sub_items_function.index() == 1) {
                 if (std::get<1>(i.sub_items_function).empty()) {
@@ -62,119 +152,45 @@ void Menu::OnGUI() {
     display(items);
 }
 
-//TODO: Replace addItem and addPlaceHolder with one helper function
-void Menu::addItem(std::string path, Menu::Func f, int priority) {
 
-    std::function<MenuItem &(std::vector<MenuItem> &, std::string)> s =
-            [&](std::vector<MenuItem> &vector, std::string path) -> MenuItem & {
-                auto last = path.rfind('/');
-                auto name = GameApi::substr(path, '/');
-                auto i = vector.begin();
-
-                if (!path.empty() || last != std::string::npos) { //path exists
-                    bool same_name = false;
-                    for (auto it = vector.begin(); it != vector.end(); ++it) {
-                        if (it->name == name) {
-                            if (it->sub_items_function.index() == 1) { //this is vector
-                                return s(std::get<1>(it->sub_items_function), path);
-                            } else if (priority >= it->priority) {
-                                i = it + 1;
-                                same_name = true;
-                            }
-                        } else if (priority == it->priority && !same_name) {
-                            i = it + 1;
-                        } else if (priority > it->priority) {
-                            i = it + 1;
-                        }
-                    }
-
-                    return s(std::get<1>(
-                            vector.emplace(i, MenuItem{name, priority, std::vector<MenuItem>()})->sub_items_function),
-                             path);
-                }
-
-                for (auto it = vector.begin(); it != vector.end(); ++it) {
-                    if (priority == it->priority && it->name == name
-                        && it->sub_items_function.index() == 1) {
-                        i = it;
-                    } else if (priority >= it->priority) {
-                        i = it + 1;
-                    }
-                }
-
-                return *vector.emplace(i, MenuItem{name, priority, f});
-            };
-
-    s(global_item_vector(), std::move(path));
+void Menu::addItem(std::string path, std::function<bool(MenuCommand)> f, bool validation, int priority) {
+    std::get<0>(get_node(global_item_vector(), std::move(path), priority, true).sub_items_function).add(
+            std::move(f), validation);
 }
 
 void Menu::addPlaceHolder(std::string path, int priority) {
-    std::function<void(std::vector<MenuItem> &, std::string)> s =
-            [&](std::vector<MenuItem> &vector, std::string path) {
-                auto last = path.rfind('/');
-                auto name = GameApi::substr(path, '/');
-                auto i = vector.begin();
-
-                if (!path.empty() || last != std::string::npos) { //path exists
-                    bool same_name = false;
-                    for (auto it = vector.begin(); it != vector.end(); ++it) {
-                        if (it->name == name) {
-                            if (it->sub_items_function.index() == 1) { //this is vector
-                                return s(std::get<1>(it->sub_items_function), path);
-                            } else if (priority >= it->priority) {
-                                i = it + 1;
-                                same_name = true;
-                            }
-                        } else if (priority == it->priority && !same_name) {
-                            i = it + 1;
-                        } else if (priority > it->priority) {
-                            i = it + 1;
-                        }
-                    }
-
-                    return s(std::get<1>(
-                            vector.emplace(i, MenuItem{name, priority, std::vector<MenuItem>()})->sub_items_function),
-                             path);
-                }
-
-                bool same_name = false;
-                for (auto it = vector.begin(); it != vector.end(); ++it) {
-                    if (it->name == name) {
-                        if (it->sub_items_function.index() == 1) { //this is vector
-                            return;
-                        } else if (priority >= it->priority) {
-                            i = it + 1;
-                            same_name = true;
-                        }
-                    } else if (priority == it->priority && !same_name) {
-                        i = it + 1;
-                    } else if (priority > it->priority) {
-                        i = it + 1;
-                    }
-                }
-
-                vector.emplace(i, MenuItem{name, priority, std::vector<MenuItem>()});
-            };
-
-    s(global_item_vector(), std::move(path));
+    get_node(global_item_vector(), std::move(path), priority, false);
 }
 
-/** Debug display of items
+/// Debug display of items
+class HELP : public EditorWindow {
+public:
+    static void Init() {
+        // Get existing open window or if none, make a new one:
+        auto window = EditorWindow::GetWindow<HELP>();
+        window->ShowUtility();
+    }
 
-void display(std::vector<MenuItem> items, std::string str = ""){
-    for(auto& i : items){
-        std::cout << str << i.name << ": ";
-        if(i.sub_items_function.index() == 0){
-            std::cout << "error\n";
-        }else if(i.sub_items_function.index() == 1){
-            void* p = (void*)std::get<1>(i.sub_items_function);
-            std::cout << "func: " << p << "\n";
-        }else if(i.sub_items_function.index() == 2){
-            std::cout << "\n";
-            display(std::get<2>(i.sub_items_function), str + "   ");
-        }else{
-            std::terminate();
+    void OnGUI() override {
+        display(global_item_vector());
+    }
+
+    void display(std::vector<MenuItem> items) {
+        for (auto &i : items) {
+            if (ImGui::TreeNode(i.name.c_str(), "%s: %i", i.name.c_str(), i.priority)) {
+                if (i.sub_items_function.index() == 0) {
+                    const auto &p = std::get<0>(i.sub_items_function);
+                    ImGui::Text("val: %i; exec: %i", p.validation.size(), p.execution.size());
+                } else if (i.sub_items_function.index() == 1) {
+                    display(std::get<1>(i.sub_items_function));
+                } else {
+                    std::terminate();
+                }
+
+                ImGui::TreePop();
+            }
         }
     }
-}
- */
+};
+
+MENU_ITEM(HELP::Init, "Help/HELP")
