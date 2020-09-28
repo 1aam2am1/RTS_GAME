@@ -10,11 +10,6 @@
 #include <GameClient/Unity/Editor/EditorWindow.h>
 
 
-std::list<std::shared_ptr<EditorWindow>> &get_global_list() {
-    static std::list<std::shared_ptr<EditorWindow>> list;
-    return list;
-}
-
 int globalDockId{};
 
 auto BasicLayout = []() {

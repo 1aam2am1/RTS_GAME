@@ -26,6 +26,32 @@ EditorWindow::EditorWindow()
 
 }
 
+std::shared_ptr<EditorWindow> EditorWindow::focusedWindow() {
+    auto w = ImGui::GetCurrentContext()->NavWindow;
+    if (w) {
+        std::string s(w->Name);
+        auto p = GameApi::to_pointer(GameApi::rsubstr(s, '#'));
+        auto &v = get_open_windows();
+        auto f = std::find_if(v.begin(), v.end(), [p](const auto &it) { return p == it.get(); });
+        if (f != v.end()) { return *f; }
+    }
+
+    return {};
+}
+
+std::shared_ptr<EditorWindow> EditorWindow::mouseOverWindow() {
+    auto w = ImGui::GetCurrentContext()->HoveredWindow;
+    if (w) {
+        std::string s(w->Name);
+        auto p = GameApi::to_pointer(GameApi::rsubstr(s, '#'));
+        auto &v = get_open_windows();
+        auto f = std::find_if(v.begin(), v.end(), [p](const auto &it) { return p == it.get(); });
+        if (f != v.end()) { return *f; }
+    }
+
+    return {};
+}
+
 void EditorWindow::Close() {
     //TODO: Remove from shared_windows and delete outside gui loop
 }

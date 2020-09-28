@@ -176,6 +176,9 @@ public:
     }
 
     void display(std::vector<MenuItem> items) {
+        ImGui::Text("Focused Window: %s", focusedWindow() ? focusedWindow()->titleContent.c_str() : "");
+        ImGui::Text("Hovered Window: %s", mouseOverWindow() ? mouseOverWindow()->titleContent.c_str() : "");
+        ImGui::Separator();
         for (auto &i : items) {
             if (ImGui::TreeNode(i.name.c_str(), "%s: %i", i.name.c_str(), i.priority)) {
                 if (i.sub_items_function.index() == 0) {

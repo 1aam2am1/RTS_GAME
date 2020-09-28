@@ -82,6 +82,8 @@ namespace GameApi {
 
     int32_t to_int(const std::string &str);
 
+    void *to_pointer(const std::string &str);
+
     double to_float(const std::string &str);
 
     bool is_int(const std::string &str);

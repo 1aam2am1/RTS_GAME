@@ -24,10 +24,10 @@ public:
     EditorWindow();
 
     /// The EditorWindow which currently has keyboard focus. (Read Only)
-    static EditorWindow *focusedWindow();
+    static std::shared_ptr<EditorWindow> focusedWindow();
 
     /// The EditorWindow currently under the mouse cursor. (Read Only)
-    static EditorWindow *mouseOverWindow();
+    static std::shared_ptr<EditorWindow> mouseOverWindow();
 
     /// The maximum size of this window.
     sf::Vector2f maxSize = {4000, 4000};

@@ -30,7 +30,6 @@ macro(add_flags T)
     set(FLAGS
             -Wall
             -Wextra
-            -Wpedantic
             -Wreturn-local-addr
             -Wattributes
             -Wdeprecated

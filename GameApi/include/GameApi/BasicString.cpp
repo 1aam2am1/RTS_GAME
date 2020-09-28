@@ -77,7 +77,7 @@ namespace GameApi {
     }
 
     std::string to_string(void *pointer) {
-        char str[12] = {0};
+        char str[24] = {0};
         std::sprintf(str, "%p", pointer);
         return str;
     }
@@ -109,6 +109,12 @@ namespace GameApi {
 
     int32_t to_int(const std::string &str) {
         return atoi(str.c_str());
+    }
+
+    void *to_pointer(const std::string &str) {
+        void *p;
+        sscanf(str.c_str(), "%p", &p);
+        return p;
     }
 
     double to_float(const std::string &str) {
