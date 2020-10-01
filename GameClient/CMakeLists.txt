@@ -54,6 +54,9 @@ set(SRC
         include/GameClient/Windows/AssetWindow.h
         include/GameClient/WindowLayout.cpp
         include/GameClient/WindowLayout.h
+        include/GameClient/IconsFontAwesome5_c.h
+        include/GameClient/FontLoader.cpp
+        include/GameClient/FontLoader.h
         )
 
 add_executable(GameClient ${SRC})

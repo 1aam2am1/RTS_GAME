@@ -4,7 +4,7 @@ add_custom_target(RTS_GAME)
 
 set(CMAKE_CXX_STANDARD 17)
 add_compile_options("-Wfatal-errors")
-add_compile_options("$<$<CONFIG:DEBUG>:-Og;-g3;-ggdb>")
+add_compile_options("$<$<CONFIG:DEBUG>:-O0;-g3;-ggdb>")
 add_compile_options("$<$<CONFIG:RELEASE>:-O3;-g0;-s>")
 
 

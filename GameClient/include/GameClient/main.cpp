@@ -4,6 +4,7 @@
 #include <Version/version.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include "MainWindow.h"
+#include "FontLoader.h"
 #include <filesystem>
 #include <GameClient/Windows/AssetWindow.h>
 
@@ -23,6 +24,7 @@ int main(int argc, char **argv) {
         }
 
         MainWindow window(options);
+        FontLoader font(options);
 
 #if UNITY_EDITOR
         fs::create_directory("Assets");
