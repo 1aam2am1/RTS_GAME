@@ -5,6 +5,7 @@
 #include "EditorWindow.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <GameClient/GarbageCollector.h>
 
 std::vector<std::shared_ptr<EditorWindow>> &EditorWindow::get_open_windows() {
     static std::vector<std::shared_ptr<EditorWindow>> list;
@@ -68,7 +69,15 @@ std::shared_ptr<EditorWindow> EditorWindow::mouseOverWindow() {
 }
 
 void EditorWindow::Close() {
-    //TODO: Remove from shared_windows and delete outside gui loop
+    work = NotShown;
+    ///? Destroy ?
+    auto s = shared_from_this();
+    GarbageCollector::add(s, [](auto s) {
+        auto &vec = get_open_windows();
+        auto it = std::find_if(vec.begin(), vec.end(), [&](auto &e) { return e == s; });
+        if (it != vec.end()) { vec.erase(it); }
+    });
+
 }
 
 void EditorWindow::Focus() {
@@ -100,48 +109,59 @@ void EditorWindow::drawGui() {
     switch (work) {
         case Normal: {
             bool b = true;
-            if (ImGui::Begin((titleContent + "###" + GameApi::to_string(this)).c_str(), &b)) {
+            OnStyleChange();
+            if (ImGui::Begin((titleContent + "###" + GameApi::to_string(this)).c_str(), &b, flags)) {
                 this->OnGUI();
             }
 
             ImGui::End();
+            OnStylePop();
 
             if (!b) { Close(); }
         }
             break;
         case Utility: {
             bool b = true;
+
+            OnStyleChange();
             if (ImGui::Begin((titleContent + "###" + GameApi::to_string(this)).c_str(),
-                             &b, ImGuiWindowFlags_NoDocking)) {
+                             &b, flags | ImGuiWindowFlags_NoDocking)) {
                 this->OnGUI();
             }
 
             ImGui::End();
+            OnStylePop();
 
             if (!b) { Close(); }
         }
             break;
         case DropDown: {
             ///ImGui::OpenPopup
-            if (ImGui::BeginPopup((titleContent + "###" + GameApi::to_string(this)).c_str())) {
+
+            OnStyleChange();
+            if (ImGui::BeginPopup((titleContent + "###" + GameApi::to_string(this)).c_str(), flags)) {
                 this->OnGUI();
 
                 ImGui::EndPopup();
             } else {
                 Close();
             }
+            OnStylePop();
         }
             break;
         case Popup: {
             ///ImGui::OpenPopup
+
+            OnStyleChange();
             if (ImGui::BeginPopupModal((titleContent + "###" + GameApi::to_string(this)).c_str(), nullptr,
-                                       ImGuiWindowFlags_AlwaysAutoResize)) {
+                                       flags | ImGuiWindowFlags_AlwaysAutoResize)) {
                 this->OnGUI();
 
                 ImGui::EndPopup();
             } else {
                 Close();
             }
+            OnStylePop();
         }
             break;
         case NotShown: {

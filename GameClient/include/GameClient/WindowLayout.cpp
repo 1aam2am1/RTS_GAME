@@ -14,10 +14,21 @@ ImGuiID dock[5] = {globalDockId, globalDockId, globalDockId, globalDockId, globa
 
 void WindowLayout::dockWindow(WindowLayout::Align align, std::shared_ptr<EditorWindow> ptr) {
     if (align > 5) { align = Align::Center; }
-    auto node = ImGui::DockBuilderGetNode(dock[align]);
-    if (node)
-        ImGui::DockBuilderDockWindow(("###" + GameApi::to_string(ptr.get())).c_str(), dock[align]);
-
+    return;
+    //TODO: Docking not working repair this.
+    if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(ptr.get())).c_str())) {
+        auto node = ImGui::DockBuilderGetNode(dock[align]);
+        //TODO: if window->DockNode then dock node to main_node
+        //TODO: if node == nullptr create node and then dock node
+        if (window->DockId != dock[align] && node != nullptr && !node->IsFloatingNode())
+            ImGui::DockContextQueueDock(ImGui::GetCurrentContext(), nullptr, node,
+                                        window,
+                                        ImGuiDir_None, 0.f, false);
+    } else {
+        auto node = ImGui::DockBuilderGetNode(dock[align]);
+        if (node)
+            ImGui::DockBuilderDockWindow(("###" + GameApi::to_string(ptr.get())).c_str(), dock[align]);
+    }
     //TODO: DockBuilderDockWindow don't work on existing windows therefore it is not possible to dock
     // existing window to node that could be in unusable state.
 }

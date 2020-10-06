@@ -47,7 +47,6 @@ set(SRC
         include/GameClient/Unity/Editor/Menu.cpp
         include/GameClient/Unity/Editor/Menu.h
         include/GameClient/Windows/About.cpp
-        include/GameClient/Windows/About.h
         include/GameClient/Unity/Editor/AssetDatabase.cpp
         include/GameClient/Unity/Editor/AssetDatabase.h
         include/GameClient/Windows/AssetWindow.cpp
@@ -57,6 +56,10 @@ set(SRC
         include/GameClient/IconsFontAwesome5_c.h
         include/GameClient/FontLoader.cpp
         include/GameClient/FontLoader.h
+        include/GameClient/Windows/Metrics.cpp
+        include/GameClient/Windows/Style.cpp
+        include/GameClient/GarbageCollector.cpp
+        include/GameClient/GarbageCollector.h
         )
 
 add_executable(GameClient ${SRC})

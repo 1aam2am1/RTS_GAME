@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 #if UNITY_EDITOR
         fs::create_directory("Assets");
         Menu::Init();
-        ///AssetWindow::Init(); //=>To Coroutine
+        AssetWindow::Init(); //=>To Coroutine
 #else
         if(!std::filesystem::exists("Assets")){throw std::runtime_error("Assets folder don't exists")};
 #endif

@@ -114,6 +114,13 @@ public:
     /// Called multiple times per second on all visible windows.
     virtual void Update() {}
 
+    /// Style flags of window;
+    uint32_t flags{};
+
+    virtual void OnStyleChange() {};
+
+    virtual void OnStylePop() {};
+
 protected:
     friend class MainWindow;
 

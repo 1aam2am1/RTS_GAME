@@ -11,16 +11,26 @@
 
 class AssetWindow : public EditorWindow {
 public:
-    static void Init() {
-        // Get existing open window or if none, make a new one:
-        auto window = EditorWindow::GetWindow<AssetWindow>();
-        WindowLayout::dockWindow(WindowLayout::Down, window);
-        window->Show();
-    }
+    static void Init();
 
-    void OnGUI() override {
+    void Awake() override;
 
-    }
+    void OnStyleChange() override;
+
+    void OnStylePop() override;
+
+    void OnGUI() override;
+
+    void display_tree(std::string path);
+
+    void display_files();
+
+    void display_search();
+
+private:
+    std::string search_string;
+
+    bool start = false;
 };
 
 

@@ -13,6 +13,7 @@ MENU_TAB("Assets", -17)
 MENU_TAB("GameObject", -13)
 MENU_TAB("Component", -9)
 MENU_TAB("Window", -5)
+MENU_TAB("Window/General", 30)
 MENU_TAB("Help", -1)
 
 struct MenuItem {

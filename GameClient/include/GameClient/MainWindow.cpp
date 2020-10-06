@@ -3,6 +3,7 @@
 //
 
 #include "MainWindow.h"
+#include "GarbageCollector.h"
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -21,6 +22,8 @@ MainWindow::MainWindow(const Argv_options &options) {
     ImGui::GetIO().IniFilename = nullptr;
 
     ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
+    ImGui::GetStyle().WindowRounding = 0;
+    ImGui::GetStyle().TabRounding = 0;
 
     window.setFramerateLimit(options.getOptions().fps);
 
@@ -60,8 +63,10 @@ void MainWindow::run() {
 
         WindowLayout::drawLayout(); /// Set basic layout and global dock window
 
-        for (const auto &p : EditorWindow::get_open_windows()) {
-            p->drawGui();  /// drawing ImGui and events to Game Scene
+        ///No for each as windows can change
+        ///TODO: Change this as adding to different list and adding it on end after drawing all.
+        for (size_t i = 0; i < EditorWindow::get_open_windows().size(); ++i) {
+            EditorWindow::get_open_windows()[i]->drawGui();  /// drawing ImGui and events to Game Scene
         }
 
         /**
@@ -79,5 +84,7 @@ void MainWindow::run() {
         window.clear();
         ImGui::SFML::Render(window);
         window.display();
+
+        GarbageCollector::clear();
     }
 }
