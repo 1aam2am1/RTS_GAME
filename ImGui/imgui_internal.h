@@ -261,7 +261,10 @@ IMGUI_API ImU32 ImHashData(const void *data, size_t data_size, ImU32 seed = 0);
 IMGUI_API ImU32 ImHashStr(const char *data, size_t data_size = 0, ImU32 seed = 0);
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-static inline ImU32     ImHash(const void* data, int size, ImU32 seed = 0) { return size ? ImHashData(data, (size_t)size, seed) : ImHashStr((const char*)data, 0, seed); } // [moved to ImHashStr/ImHashData in 1.68]
+
+static inline ImU32 ImHash(const void *data, int size, ImU32 seed = 0) {
+    return size ? ImHashData(data, (size_t) size, seed) : ImHashStr((const char *) data, 0, seed);
+} // [moved to ImHashStr/ImHashData in 1.68]
 #endif
 
 // Helpers: Sorting
@@ -821,8 +824,7 @@ struct IMGUI_API ImPool {
         if (idx == Buf.Size) {
             Buf.resize(Buf.Size + 1);
             FreeIdx++;
-        }
-        else { FreeIdx = *(int *) &Buf[idx]; }
+        } else { FreeIdx = *(int *) &Buf[idx]; }
         IM_PLACEMENT_NEW(&Buf[idx]) T();
         return &Buf[idx];
     }
@@ -3016,9 +3018,18 @@ namespace ImGui {
     RenderRectFilledWithHole(ImDrawList *draw_list, ImRect outer, ImRect inner, ImU32 col, float rounding);
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                            // [1.71: 2019/06/07: Updating prototypes of some of the internal functions. Leaving those for reference for a short while]
-    inline void RenderArrow(ImVec2 pos, ImGuiDir dir, float scale=1.0f) { ImGuiWindow* window = GetCurrentWindow(); RenderArrow(window->DrawList, pos, GetColorU32(ImGuiCol_Text), dir, scale); }
-    inline void RenderBullet(ImVec2 pos)                                { ImGuiWindow* window = GetCurrentWindow(); RenderBullet(window->DrawList, pos, GetColorU32(ImGuiCol_Text)); }
+
+    // [1.71: 2019/06/07: Updating prototypes of some of the internal functions. Leaving those for reference for a short while]
+    inline void RenderArrow(ImVec2 pos, ImGuiDir dir, float scale = 1.0f) {
+        ImGuiWindow *window = GetCurrentWindow();
+        RenderArrow(window->DrawList, pos, GetColorU32(ImGuiCol_Text), dir, scale);
+    }
+
+    inline void RenderBullet(ImVec2 pos) {
+        ImGuiWindow *window = GetCurrentWindow();
+        RenderBullet(window->DrawList, pos, GetColorU32(ImGuiCol_Text));
+    }
+
 #endif
 
     // Widgets

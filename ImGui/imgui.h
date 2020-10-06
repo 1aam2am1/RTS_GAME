@@ -1767,7 +1767,7 @@ enum ImGuiCol_ {
 
     // Obsolete names (will be removed)
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                            , ImGuiCol_ModalWindowDarkening = ImGuiCol_ModalWindowDimBg                      // [renamed in 1.63]
+    , ImGuiCol_ModalWindowDarkening = ImGuiCol_ModalWindowDimBg                      // [renamed in 1.63]
     //, ImGuiCol_CloseButton, ImGuiCol_CloseButtonActive, ImGuiCol_CloseButtonHovered// [unused since 1.60+] the close button now uses regular button colors.
 #endif
 };
@@ -1889,7 +1889,10 @@ enum ImGuiColorEditFlags_ {
 
     // Obsolete names (will be removed)
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-    , ImGuiColorEditFlags_RGB = ImGuiColorEditFlags_DisplayRGB, ImGuiColorEditFlags_HSV = ImGuiColorEditFlags_DisplayHSV, ImGuiColorEditFlags_HEX = ImGuiColorEditFlags_DisplayHex  // [renamed in 1.69]
+    ,
+    ImGuiColorEditFlags_RGB = ImGuiColorEditFlags_DisplayRGB,
+    ImGuiColorEditFlags_HSV = ImGuiColorEditFlags_DisplayHSV,
+    ImGuiColorEditFlags_HEX = ImGuiColorEditFlags_DisplayHex  // [renamed in 1.69]
 #endif
 };
 
@@ -1897,7 +1900,7 @@ enum ImGuiColorEditFlags_ {
 // We use the same sets of flags for DragXXX() and SliderXXX() functions as the features are the same and it makes it easier to swap them.
 enum ImGuiSliderFlags_ {
     ImGuiSliderFlags_None = 0,
-    ImGuiSliderFlags_ClampOnInput = 1
+    ImGuiSliderFlags_AlwaysClamp = 1
             << 4,       // Clamp value to min/max bounds when input manually with CTRL+Click. By default CTRL+Click allows going out of bounds.
     ImGuiSliderFlags_Logarithmic = 1
             << 5,       // Make the widget logarithmic (linear otherwise). Consider using ImGuiSliderFlags_NoRoundToFormat with this if using a format-string with small amount of digits.
@@ -1906,6 +1909,11 @@ enum ImGuiSliderFlags_ {
     ImGuiSliderFlags_NoInput =
     1 << 7,       // Disable CTRL+Click or Enter key allowing to input text directly into the widget
     ImGuiSliderFlags_InvalidMask_ = 0x7000000F    // [Internal] We treat using those bits as being potentially a 'float power' argument from the previous API that has got miscast to this enum, and will trigger an assert if needed.
+
+    // Obsolete names (will be removed)
+#ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
+    , ImGuiSliderFlags_ClampOnInput = ImGuiSliderFlags_AlwaysClamp, // [renamed in 1.79]
+#endif
 };
 
 // Identify a mouse button.
@@ -2249,7 +2257,7 @@ struct ImGuiStyle {
     float LogSliderDeadzone;          // The size in pixels of the dead-zone around zero on logarithmic sliders that cross zero.
     float TabRounding;                // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
     float TabBorderSize;              // Thickness of border around tabs.
-    float TabMinWidthForUnselectedCloseButton; // Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
+    float TabMinWidthForCloseButton;  // Minimum width for close button to appears on an unselected tab when hovered. Set to 0.0f to always show when hovering, set to FLT_MAX to never show close button unless selected.
     ImGuiDir ColorButtonPosition;        // Side of the color button in the ColorEdit4 widget (left/right). Defaults to ImGuiDir_Right.
     ImVec2 ButtonTextAlign;            // Alignment of button text when button is larger than text. Defaults to (0.5f, 0.5f) (centered).
     ImVec2 SelectableTextAlign;        // Alignment of selectable text. Defaults to (0.0f, 0.0f) (top-left aligned). It's generally important to keep this left-aligned if you want to lay multiple items on a same line.
@@ -2341,9 +2349,11 @@ struct ImGuiIO {
     void *ClipboardUserData;
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                            // [OBSOLETE since 1.60+] Rendering function, will be automatically called in Render(). Please call your rendering function yourself now!
+
+    // [OBSOLETE since 1.60+] Rendering function, will be automatically called in Render(). Please call your rendering function yourself now!
     // You can obtain the ImDrawData* by calling ImGui::GetDrawData() after Render(). See example applications if you are unsure of how to implement this.
-    void        (*RenderDrawListsFn)(ImDrawData* data);
+    void (*RenderDrawListsFn)(ImDrawData *data);
+
 #else
     // This is only here to keep ImGuiIO the same size/layout, so that IMGUI_DISABLE_OBSOLETE_FUNCTIONS can exceptionally be used outside of imconfig.h.
     void *RenderDrawListsFnUnused;
@@ -2544,50 +2554,109 @@ struct ImGuiPayload {
 //-----------------------------------------------------------------------------
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                        namespace ImGui
-{
+namespace ImGui {
     // OBSOLETED in 1.79 (from August 2020)
-    static inline void  OpenPopupContextItem(const char* str_id = NULL, ImGuiMouseButton mb = 1) { OpenPopupOnItemClick(str_id, mb); } // Bool return value removed. Use IsWindowAppearing() in BeginPopup() instead. Renamed in 1.77, renamed back in 1.79. Sorry!
+    static inline void OpenPopupContextItem(const char *str_id = NULL, ImGuiMouseButton mb = 1) {
+        OpenPopupOnItemClick(str_id, mb);
+    } // Bool return value removed. Use IsWindowAppearing() in BeginPopup() instead. Renamed in 1.77, renamed back in 1.79. Sorry!
     // OBSOLETED in 1.78 (from June 2020)
     // Old drag/sliders functions that took a 'float power = 1.0' argument instead of flags.
     // For shared code, you can version check at compile-time with `#if IMGUI_VERSION_NUM >= 17704`.
-    IMGUI_API bool      DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, float power);
-    IMGUI_API bool      DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, float power);
-    static inline bool  DragFloat(const char* label, float* v, float v_speed, float v_min, float v_max, const char* format, float power)    { return DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, power); }
-    static inline bool  DragFloat2(const char* label, float v[2], float v_speed, float v_min, float v_max, const char* format, float power) { return DragScalarN(label, ImGuiDataType_Float, v, 2, v_speed, &v_min, &v_max, format, power); }
-    static inline bool  DragFloat3(const char* label, float v[3], float v_speed, float v_min, float v_max, const char* format, float power) { return DragScalarN(label, ImGuiDataType_Float, v, 3, v_speed, &v_min, &v_max, format, power); }
-    static inline bool  DragFloat4(const char* label, float v[4], float v_speed, float v_min, float v_max, const char* format, float power) { return DragScalarN(label, ImGuiDataType_Float, v, 4, v_speed, &v_min, &v_max, format, power); }
-    IMGUI_API bool      SliderScalar(const char* label, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, float power);
-    IMGUI_API bool      SliderScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, const void* p_min, const void* p_max, const char* format, float power);
-    static inline bool  SliderFloat(const char* label, float* v, float v_min, float v_max, const char* format, float power)                 { return SliderScalar(label, ImGuiDataType_Float, v, &v_min, &v_max, format, power); }
-    static inline bool  SliderFloat2(const char* label, float v[2], float v_min, float v_max, const char* format, float power)              { return SliderScalarN(label, ImGuiDataType_Float, v, 2, &v_min, &v_max, format, power); }
-    static inline bool  SliderFloat3(const char* label, float v[3], float v_min, float v_max, const char* format, float power)              { return SliderScalarN(label, ImGuiDataType_Float, v, 3, &v_min, &v_max, format, power); }
-    static inline bool  SliderFloat4(const char* label, float v[4], float v_min, float v_max, const char* format, float power)              { return SliderScalarN(label, ImGuiDataType_Float, v, 4, &v_min, &v_max, format, power); }
+    IMGUI_API bool
+    DragScalar(const char *label, ImGuiDataType data_type, void *p_data, float v_speed, const void *p_min,
+               const void *p_max, const char *format, float power);
+
+    IMGUI_API bool DragScalarN(const char *label, ImGuiDataType data_type, void *p_data, int components, float v_speed,
+                               const void *p_min, const void *p_max, const char *format, float power);
+
+    static inline bool
+    DragFloat(const char *label, float *v, float v_speed, float v_min, float v_max, const char *format,
+              float power) { return DragScalar(label, ImGuiDataType_Float, v, v_speed, &v_min, &v_max, format, power); }
+
+    static inline bool
+    DragFloat2(const char *label, float v[2], float v_speed, float v_min, float v_max, const char *format,
+               float power) {
+        return DragScalarN(label, ImGuiDataType_Float, v, 2, v_speed, &v_min, &v_max, format, power);
+    }
+
+    static inline bool
+    DragFloat3(const char *label, float v[3], float v_speed, float v_min, float v_max, const char *format,
+               float power) {
+        return DragScalarN(label, ImGuiDataType_Float, v, 3, v_speed, &v_min, &v_max, format, power);
+    }
+
+    static inline bool
+    DragFloat4(const char *label, float v[4], float v_speed, float v_min, float v_max, const char *format,
+               float power) {
+        return DragScalarN(label, ImGuiDataType_Float, v, 4, v_speed, &v_min, &v_max, format, power);
+    }
+
+    IMGUI_API bool
+    SliderScalar(const char *label, ImGuiDataType data_type, void *p_data, const void *p_min, const void *p_max,
+                 const char *format, float power);
+
+    IMGUI_API bool
+    SliderScalarN(const char *label, ImGuiDataType data_type, void *p_data, int components, const void *p_min,
+                  const void *p_max, const char *format, float power);
+
+    static inline bool SliderFloat(const char *label, float *v, float v_min, float v_max, const char *format,
+                                   float power) {
+        return SliderScalar(label, ImGuiDataType_Float, v, &v_min, &v_max, format, power);
+    }
+
+    static inline bool SliderFloat2(const char *label, float v[2], float v_min, float v_max, const char *format,
+                                    float power) {
+        return SliderScalarN(label, ImGuiDataType_Float, v, 2, &v_min, &v_max, format, power);
+    }
+
+    static inline bool SliderFloat3(const char *label, float v[3], float v_min, float v_max, const char *format,
+                                    float power) {
+        return SliderScalarN(label, ImGuiDataType_Float, v, 3, &v_min, &v_max, format, power);
+    }
+
+    static inline bool SliderFloat4(const char *label, float v[4], float v_min, float v_max, const char *format,
+                                    float power) {
+        return SliderScalarN(label, ImGuiDataType_Float, v, 4, &v_min, &v_max, format, power);
+    }
+
     // OBSOLETED in 1.77 (from June 2020)
-    static inline bool  BeginPopupContextWindow(const char* str_id, ImGuiMouseButton mb, bool over_items) { return BeginPopupContextWindow(str_id, mb | (over_items ? 0 : ImGuiPopupFlags_NoOpenOverItems)); }
+    static inline bool BeginPopupContextWindow(const char *str_id, ImGuiMouseButton mb, bool over_items) {
+        return BeginPopupContextWindow(str_id, mb | (over_items ? 0 : ImGuiPopupFlags_NoOpenOverItems));
+    }
+
     // OBSOLETED in 1.72 (from April 2019)
-    static inline void  TreeAdvanceToLabelPos()               { SetCursorPosX(GetCursorPosX() + GetTreeNodeToLabelSpacing()); }
+    static inline void TreeAdvanceToLabelPos() { SetCursorPosX(GetCursorPosX() + GetTreeNodeToLabelSpacing()); }
+
     // OBSOLETED in 1.71 (from June 2019)
-    static inline void  SetNextTreeNodeOpen(bool open, ImGuiCond cond = 0) { SetNextItemOpen(open, cond); }
+    static inline void SetNextTreeNodeOpen(bool open, ImGuiCond cond = 0) { SetNextItemOpen(open, cond); }
+
     // OBSOLETED in 1.70 (from May 2019)
-    static inline float GetContentRegionAvailWidth()          { return GetContentRegionAvail().x; }
+    static inline float GetContentRegionAvailWidth() { return GetContentRegionAvail().x; }
+
     // OBSOLETED in 1.69 (from Mar 2019)
-    static inline ImDrawList* GetOverlayDrawList()            { return GetForegroundDrawList(); }
+    static inline ImDrawList *GetOverlayDrawList() { return GetForegroundDrawList(); }
+
     // OBSOLETED in 1.66 (from Sep 2018)
-    static inline void  SetScrollHere(float center_ratio=0.5f){ SetScrollHereY(center_ratio); }
+    static inline void SetScrollHere(float center_ratio = 0.5f) { SetScrollHereY(center_ratio); }
+
     // OBSOLETED in 1.63 (between Aug 2018 and Sept 2018)
-    static inline bool  IsItemDeactivatedAfterChange()        { return IsItemDeactivatedAfterEdit(); }
+    static inline bool IsItemDeactivatedAfterChange() { return IsItemDeactivatedAfterEdit(); }
     // OBSOLETED in 1.61 (between Apr 2018 and Aug 2018)
-    IMGUI_API bool      InputFloat(const char* label, float* v, float step, float step_fast, int decimal_precision, ImGuiInputTextFlags flags = 0); // Use the 'const char* format' version instead of 'decimal_precision'!
-    IMGUI_API bool      InputFloat2(const char* label, float v[2], int decimal_precision, ImGuiInputTextFlags flags = 0);
-    IMGUI_API bool      InputFloat3(const char* label, float v[3], int decimal_precision, ImGuiInputTextFlags flags = 0);
-    IMGUI_API bool      InputFloat4(const char* label, float v[4], int decimal_precision, ImGuiInputTextFlags flags = 0);
+    IMGUI_API bool InputFloat(const char *label, float *v, float step, float step_fast, int decimal_precision,
+                              ImGuiInputTextFlags flags = 0); // Use the 'const char* format' version instead of 'decimal_precision'!
+    IMGUI_API bool InputFloat2(const char *label, float v[2], int decimal_precision, ImGuiInputTextFlags flags = 0);
+
+    IMGUI_API bool InputFloat3(const char *label, float v[3], int decimal_precision, ImGuiInputTextFlags flags = 0);
+
+    IMGUI_API bool InputFloat4(const char *label, float v[4], int decimal_precision, ImGuiInputTextFlags flags = 0);
+
     // OBSOLETED in 1.60 (between Dec 2017 and Apr 2018)
-    static inline bool  IsAnyWindowFocused()                  { return IsWindowFocused(ImGuiFocusedFlags_AnyWindow); }
-    static inline bool  IsAnyWindowHovered()                  { return IsWindowHovered(ImGuiHoveredFlags_AnyWindow); }
+    static inline bool IsAnyWindowFocused() { return IsWindowFocused(ImGuiFocusedFlags_AnyWindow); }
+
+    static inline bool IsAnyWindowHovered() { return IsWindowHovered(ImGuiHoveredFlags_AnyWindow); }
 }
-typedef ImGuiInputTextCallback      ImGuiTextEditCallback;    // OBSOLETED in 1.63 (from Aug 2018): made the names consistent
-typedef ImGuiInputTextCallbackData  ImGuiTextEditCallbackData;
+typedef ImGuiInputTextCallback ImGuiTextEditCallback;    // OBSOLETED in 1.63 (from Aug 2018): made the names consistent
+typedef ImGuiInputTextCallbackData ImGuiTextEditCallbackData;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2779,7 +2848,8 @@ struct ImGuiStorage {
 // - (Step 2: empty step only required if an explicit items_height was passed to constructor or Begin() and user call Step(). Does nothing and switch to Step 3.)
 // - Step 3: the clipper validate that we have reached the expected Y position (corresponding to element DisplayEnd), advance the cursor to the end of the list and then returns 'false' to end the loop.
 struct ImGuiListClipper {
-    int DisplayStart, DisplayEnd;
+    int DisplayStart;
+    int DisplayEnd;
     int ItemsCount;
 
     // [Internal]
@@ -2790,19 +2860,16 @@ struct ImGuiListClipper {
     // items_count:  Use -1 to ignore (you can call Begin later). Use INT_MAX if you don't know how many items you have (in which case the cursor won't be advanced in the final step).
     // items_height: Use -1.0f to be calculated automatically on first step. Otherwise pass in the distance between your items, typically GetTextLineHeightWithSpacing() or GetFrameHeightWithSpacing().
     // If you don't specify an items_height, you NEED to call Step(). If you specify items_height you may call the old Begin()/End() api directly, but prefer calling Step().
-    ImGuiListClipper(int items_count = -1, float items_height = -1.0f) {
-        Begin(items_count, items_height);
-    } // NB: Begin() initialize every fields (as we allow user to call Begin/End multiple times on a same instance if they want).
-    ~ImGuiListClipper() {
-        IM_ASSERT(ItemsCount == -1);
-    }      // Assert if user forgot to call End() or Step() until false.
+    ImGuiListClipper(int items_count = -1, float items_height = -1.0f);
 
-    IMGUI_API bool
-    Step();                                              // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
+    ~ImGuiListClipper();
+
     IMGUI_API void Begin(int items_count,
                          float items_height = -1.0f);  // Automatically called by constructor if you passed 'items_count' or by Step() in Step 1.
     IMGUI_API void
     End();                                               // Automatically called on the last call of Step() that returns false.
+    IMGUI_API bool
+    Step();                                              // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
 };
 
 // Helpers macros to generate 32-bit encoded colors
@@ -3490,7 +3557,7 @@ struct ImFontAtlas {
     int PackIdLines;        // Custom texture rectangle ID for baked anti-aliased lines
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                            typedef ImFontAtlasCustomRect    CustomRect;         // OBSOLETED in 1.72+
+    typedef ImFontAtlasCustomRect CustomRect;         // OBSOLETED in 1.72+
     typedef ImFontGlyphRangesBuilder GlyphRangesBuilder; // OBSOLETED in 1.67+
 #endif
 };

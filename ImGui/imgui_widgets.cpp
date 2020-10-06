@@ -1726,10 +1726,11 @@ static const char *PatchFormatStringFloatToInt(const char *fmt) {
             fmt_start);  // Find end of format specifier, which itself is an exercise of confidence/recklessness (because snprintf is dependent on libc or user).
     if (fmt_end > fmt_start && fmt_end[-1] == 'f') {
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                                if (fmt_start == fmt && fmt_end[0] == 0)
+        if (fmt_start == fmt && fmt_end[0] == 0)
             return "%d";
-        ImGuiContext& g = *GImGui;
-        ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int)(fmt_start - fmt), fmt, fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
+        ImGuiContext &g = *GImGui;
+        ImFormatString(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), "%.*s%%d%s", (int) (fmt_start - fmt), fmt,
+                       fmt_end); // Honor leading and trailing decorations, but lose alignment/precision.
         return g.TempBuffer;
 #else
         IM_ASSERT(0 &&
@@ -2342,8 +2343,8 @@ bool ImGui::DragScalar(const char *label, ImGuiDataType data_type, void *p_data,
     }
 
     if (temp_input_is_active) {
-        // Only clamp CTRL+Click input when ImGuiSliderFlags_ClampInput is set
-        const bool is_clamp_input = (flags & ImGuiSliderFlags_ClampOnInput) != 0 &&
+        // Only clamp CTRL+Click input when ImGuiSliderFlags_AlwaysClamp is set
+        const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0 &&
                                     (p_min == NULL || p_max == NULL || DataTypeCompare(data_type, p_min, p_max) < 0);
         return TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL,
                                is_clamp_input ? p_max : NULL);
@@ -2426,7 +2427,7 @@ bool ImGui::DragFloat4(const char *label, float v[4], float v_speed, float v_min
     return DragScalarN(label, ImGuiDataType_Float, v, 4, v_speed, &v_min, &v_max, format, flags);
 }
 
-// NB: You likely want to specify the ImGuiSliderFlags_ClampOnInput when using this.
+// NB: You likely want to specify the ImGuiSliderFlags_AlwaysClamp when using this.
 bool ImGui::DragFloatRange2(const char *label, float *v_current_min, float *v_current_max, float v_speed, float v_min,
                             float v_max, const char *format, const char *format_max, ImGuiSliderFlags flags) {
     ImGuiWindow *window = GetCurrentWindow();
@@ -2481,7 +2482,7 @@ bool ImGui::DragInt4(const char *label, int v[4], float v_speed, int v_min, int 
     return DragScalarN(label, ImGuiDataType_S32, v, 4, v_speed, &v_min, &v_max, format, flags);
 }
 
-// NB: You likely want to specify the ImGuiSliderFlags_ClampOnInput when using this.
+// NB: You likely want to specify the ImGuiSliderFlags_AlwaysClamp when using this.
 bool
 ImGui::DragIntRange2(const char *label, int *v_current_min, int *v_current_max, float v_speed, int v_min, int v_max,
                      const char *format, const char *format_max, ImGuiSliderFlags flags) {
@@ -2518,25 +2519,25 @@ ImGui::DragIntRange2(const char *label, int *v_current_min, int *v_current_max, 
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
-                                                                                                                        // Obsolete versions with power parameter. See https://github.com/ocornut/imgui/issues/3361 for details.
-bool ImGui::DragScalar(const char* label, ImGuiDataType data_type, void* p_data, float v_speed, const void* p_min, const void* p_max, const char* format, float power)
-{
+// Obsolete versions with power parameter. See https://github.com/ocornut/imgui/issues/3361 for details.
+bool ImGui::DragScalar(const char *label, ImGuiDataType data_type, void *p_data, float v_speed, const void *p_min,
+                       const void *p_max, const char *format, float power) {
     ImGuiSliderFlags drag_flags = ImGuiSliderFlags_None;
-    if (power != 1.0f)
-    {
-        IM_ASSERT(power == 1.0f && "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
+    if (power != 1.0f) {
+        IM_ASSERT(power == 1.0f &&
+                  "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
         IM_ASSERT(p_min != NULL && p_max != NULL);  // When using a power curve the drag needs to have known bounds
         drag_flags |= ImGuiSliderFlags_Logarithmic;   // Fallback for non-asserting paths
     }
     return DragScalar(label, data_type, p_data, v_speed, p_min, p_max, format, drag_flags);
 }
 
-bool ImGui::DragScalarN(const char* label, ImGuiDataType data_type, void* p_data, int components, float v_speed, const void* p_min, const void* p_max, const char* format, float power)
-{
+bool ImGui::DragScalarN(const char *label, ImGuiDataType data_type, void *p_data, int components, float v_speed,
+                        const void *p_min, const void *p_max, const char *format, float power) {
     ImGuiSliderFlags drag_flags = ImGuiSliderFlags_None;
-    if (power != 1.0f)
-    {
-        IM_ASSERT(power == 1.0f && "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
+    if (power != 1.0f) {
+        IM_ASSERT(power == 1.0f &&
+                  "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
         IM_ASSERT(p_min != NULL && p_max != NULL);  // When using a power curve the drag needs to have known bounds
         drag_flags |= ImGuiSliderFlags_Logarithmic;   // Fallback for non-asserting paths
     }
@@ -2996,8 +2997,8 @@ bool ImGui::SliderScalar(const char *label, ImGuiDataType data_type, void *p_dat
     }
 
     if (temp_input_is_active) {
-        // Only clamp CTRL+Click input when ImGuiSliderFlags_ClampInput is set
-        const bool is_clamp_input = (flags & ImGuiSliderFlags_ClampOnInput) != 0;
+        // Only clamp CTRL+Click input when ImGuiSliderFlags_AlwaysClamp is set
+        const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0;
         return TempInputScalar(frame_bb, id, label, data_type, p_data, format, is_clamp_input ? p_min : NULL,
                                is_clamp_input ? p_max : NULL);
     }
@@ -3192,24 +3193,24 @@ bool ImGui::VSliderInt(const char *label, const ImVec2 &size, int *v, int v_min,
 
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
-                                                                                                                        // Obsolete versions with power parameter. See https://github.com/ocornut/imgui/issues/3361 for details.
-bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_data, const void* p_min, const void* p_max, const char* format, float power)
-{
+// Obsolete versions with power parameter. See https://github.com/ocornut/imgui/issues/3361 for details.
+bool ImGui::SliderScalar(const char *label, ImGuiDataType data_type, void *p_data, const void *p_min, const void *p_max,
+                         const char *format, float power) {
     ImGuiSliderFlags slider_flags = ImGuiSliderFlags_None;
-    if (power != 1.0f)
-    {
-        IM_ASSERT(power == 1.0f && "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
+    if (power != 1.0f) {
+        IM_ASSERT(power == 1.0f &&
+                  "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
         slider_flags |= ImGuiSliderFlags_Logarithmic;   // Fallback for non-asserting paths
     }
     return SliderScalar(label, data_type, p_data, p_min, p_max, format, slider_flags);
 }
 
-bool ImGui::SliderScalarN(const char* label, ImGuiDataType data_type, void* v, int components, const void* v_min, const void* v_max, const char* format, float power)
-{
+bool ImGui::SliderScalarN(const char *label, ImGuiDataType data_type, void *v, int components, const void *v_min,
+                          const void *v_max, const char *format, float power) {
     ImGuiSliderFlags slider_flags = ImGuiSliderFlags_None;
-    if (power != 1.0f)
-    {
-        IM_ASSERT(power == 1.0f && "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
+    if (power != 1.0f) {
+        IM_ASSERT(power == 1.0f &&
+                  "Call function with ImGuiSliderFlags_Logarithmic flags instead of using the old 'float power' function!");
         slider_flags |= ImGuiSliderFlags_Logarithmic;   // Fallback for non-asserting paths
     }
     return SliderScalarN(label, data_type, v, components, v_min, v_max, format, slider_flags);
@@ -3326,8 +3327,7 @@ bool ImGui::TempInputText(const ImRect &bb, ImGuiID id, const char *label, char 
     return value_changed;
 }
 
-// Note that Drag/Slider functions are only forwarding the min/max values clamping values if the
-//  ImGuiSliderFlags_ClampOnInput / ImGuiSliderFlags_ClampOnInput flag is set!
+// Note that Drag/Slider functions are only forwarding the min/max values clamping values if the ImGuiSliderFlags_AlwaysClamp flag is set!
 // This is intended: this way we allow CTRL+Click manual input to set a value out of bounds, for maximum flexibility.
 // However this may not be ideal for all uses, as some user code may break on out of bound values.
 bool ImGui::TempInputScalar(const ImRect &bb, ImGuiID id, const char *label, ImGuiDataType data_type, void *p_data,
@@ -3489,37 +3489,36 @@ bool ImGui::InputFloat4(const char *label, float v[4], const char *format, ImGui
 
 // Prefer using "const char* format" directly, which is more flexible and consistent with other API.
 #ifndef IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-                                                                                                                        bool ImGui::InputFloat(const char* label, float* v, float step, float step_fast, int decimal_precision, ImGuiInputTextFlags flags)
-{
+
+bool ImGui::InputFloat(const char *label, float *v, float step, float step_fast, int decimal_precision,
+                       ImGuiInputTextFlags flags) {
     char format[16] = "%f";
     if (decimal_precision >= 0)
         ImFormatString(format, IM_ARRAYSIZE(format), "%%.%df", decimal_precision);
     return InputFloat(label, v, step, step_fast, format, flags);
 }
 
-bool ImGui::InputFloat2(const char* label, float v[2], int decimal_precision, ImGuiInputTextFlags flags)
-{
+bool ImGui::InputFloat2(const char *label, float v[2], int decimal_precision, ImGuiInputTextFlags flags) {
     char format[16] = "%f";
     if (decimal_precision >= 0)
         ImFormatString(format, IM_ARRAYSIZE(format), "%%.%df", decimal_precision);
     return InputScalarN(label, ImGuiDataType_Float, v, 2, NULL, NULL, format, flags);
 }
 
-bool ImGui::InputFloat3(const char* label, float v[3], int decimal_precision, ImGuiInputTextFlags flags)
-{
+bool ImGui::InputFloat3(const char *label, float v[3], int decimal_precision, ImGuiInputTextFlags flags) {
     char format[16] = "%f";
     if (decimal_precision >= 0)
         ImFormatString(format, IM_ARRAYSIZE(format), "%%.%df", decimal_precision);
     return InputScalarN(label, ImGuiDataType_Float, v, 3, NULL, NULL, format, flags);
 }
 
-bool ImGui::InputFloat4(const char* label, float v[4], int decimal_precision, ImGuiInputTextFlags flags)
-{
+bool ImGui::InputFloat4(const char *label, float v[4], int decimal_precision, ImGuiInputTextFlags flags) {
     char format[16] = "%f";
     if (decimal_precision >= 0)
         ImFormatString(format, IM_ARRAYSIZE(format), "%%.%df", decimal_precision);
     return InputScalarN(label, ImGuiDataType_Float, v, 4, NULL, NULL, format, flags);
 }
+
 #endif // IMGUI_DISABLE_OBSOLETE_FUNCTIONS
 
 bool ImGui::InputInt(const char *label, int *v, int step, int step_fast, ImGuiInputTextFlags flags) {
@@ -4254,41 +4253,32 @@ bool ImGui::InputTextEx(const char *label, const char *hint, char *buf, int buf_
                     (is_startend_key_down ? STB_TEXTEDIT_K_LINESTART : is_wordmove_key_down ? STB_TEXTEDIT_K_WORDLEFT
                                                                                             : STB_TEXTEDIT_K_LEFT) |
                     k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_RightArrow)) {
+        } else if (IsKeyPressedMap(ImGuiKey_RightArrow)) {
             state->OnKeyPressed(
                     (is_startend_key_down ? STB_TEXTEDIT_K_LINEEND : is_wordmove_key_down ? STB_TEXTEDIT_K_WORDRIGHT
                                                                                           : STB_TEXTEDIT_K_RIGHT) |
                     k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_UpArrow) && is_multiline) {
+        } else if (IsKeyPressedMap(ImGuiKey_UpArrow) && is_multiline) {
             if (io.KeyCtrl)
                 SetScrollY(draw_window, ImMax(draw_window->Scroll.y - g.FontSize, 0.0f));
             else state->OnKeyPressed((is_startend_key_down ? STB_TEXTEDIT_K_TEXTSTART : STB_TEXTEDIT_K_UP) | k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_DownArrow) && is_multiline) {
+        } else if (IsKeyPressedMap(ImGuiKey_DownArrow) && is_multiline) {
             if (io.KeyCtrl)
                 SetScrollY(draw_window, ImMin(draw_window->Scroll.y + g.FontSize, GetScrollMaxY()));
             else state->OnKeyPressed((is_startend_key_down ? STB_TEXTEDIT_K_TEXTEND : STB_TEXTEDIT_K_DOWN) | k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_PageUp) && is_multiline) {
+        } else if (IsKeyPressedMap(ImGuiKey_PageUp) && is_multiline) {
             state->OnKeyPressed(STB_TEXTEDIT_K_PGUP | k_mask);
             scroll_y -= row_count_per_page * g.FontSize;
-        }
-        else if (IsKeyPressedMap(ImGuiKey_PageDown) && is_multiline) {
+        } else if (IsKeyPressedMap(ImGuiKey_PageDown) && is_multiline) {
             state->OnKeyPressed(STB_TEXTEDIT_K_PGDOWN | k_mask);
             scroll_y += row_count_per_page * g.FontSize;
-        }
-        else if (IsKeyPressedMap(ImGuiKey_Home)) {
+        } else if (IsKeyPressedMap(ImGuiKey_Home)) {
             state->OnKeyPressed(io.KeyCtrl ? STB_TEXTEDIT_K_TEXTSTART | k_mask : STB_TEXTEDIT_K_LINESTART | k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_End)) {
+        } else if (IsKeyPressedMap(ImGuiKey_End)) {
             state->OnKeyPressed(io.KeyCtrl ? STB_TEXTEDIT_K_TEXTEND | k_mask : STB_TEXTEDIT_K_LINEEND | k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_Delete) && !is_readonly) {
+        } else if (IsKeyPressedMap(ImGuiKey_Delete) && !is_readonly) {
             state->OnKeyPressed(STB_TEXTEDIT_K_DELETE | k_mask);
-        }
-        else if (IsKeyPressedMap(ImGuiKey_Backspace) && !is_readonly) {
+        } else if (IsKeyPressedMap(ImGuiKey_Backspace) && !is_readonly) {
             if (!state->HasSelection()) {
                 if (is_wordmove_key_down)
                     state->OnKeyPressed(STB_TEXTEDIT_K_WORDLEFT | STB_TEXTEDIT_K_SHIFT);
@@ -6109,6 +6099,7 @@ bool ImGui::Selectable(const char *label, bool selected, ImGuiSelectableFlags fl
     ItemSize(size, 0.0f);
 
     // Fill horizontal space
+    // We don't support (size < 0.0f) in Selectable() because the ItemSpacing extension would make explicitely right-aligned sizes not visibly match other widgets.
     const float min_x = span_all_columns ? window->ParentWorkRect.Min.x : pos.x;
     const float max_x = span_all_columns ? window->ParentWorkRect.Max.x : window->WorkRect.Max.x;
     if (size_arg.x == 0.0f || (flags & ImGuiSelectableFlags_SpanAvailWidth))
@@ -6312,8 +6303,9 @@ bool ImGui::ListBox(const char *label, int *current_item, bool (*items_getter)(v
     // Assume all items have even height (= 1 line of text). If you need items of different or variable sizes you can create a custom version of ListBox() in your code without using the clipper.
     ImGuiContext &g = *GImGui;
     bool value_changed = false;
-    ImGuiListClipper clipper(items_count,
-                             GetTextLineHeightWithSpacing()); // We know exactly our line height here so we pass it as a minor optimization, but generally you don't need to.
+    ImGuiListClipper clipper;
+    clipper.Begin(items_count,
+                  GetTextLineHeightWithSpacing()); // We know exactly our line height here so we pass it as a minor optimization, but generally you don't need to.
     while (clipper.Step())
         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
             const bool item_selected = (i == *current_item);
@@ -7197,16 +7189,18 @@ static void ImGui::TabBarLayout(ImGuiTabBar *tab_bar) {
         tab->IndexDuringLayout = (ImS8) tab_dst_n;
 
         // We will need sorting if tabs have changed section (e.g. moved from one of Leading/Central/Trailing to another)
-        ImGuiTabItem *prev_tab = &tab_bar->Tabs[tab_dst_n - 1];
         int curr_tab_section_n = (tab->Flags & ImGuiTabItemFlags_Leading) ? 0 : (tab->Flags &
                                                                                  ImGuiTabItemFlags_Trailing) ? 2 : 1;
-        int prev_tab_section_n = (prev_tab->Flags & ImGuiTabItemFlags_Leading) ? 0 : (prev_tab->Flags &
-                                                                                      ImGuiTabItemFlags_Trailing) ? 2
-                                                                                                                  : 1;
-        if (tab_dst_n > 0 && curr_tab_section_n == 0 && prev_tab_section_n != 0)
-            need_sort_by_section = true;
-        if (tab_dst_n > 0 && prev_tab_section_n == 2 && curr_tab_section_n != 2)
-            need_sort_by_section = true;
+        if (tab_dst_n > 0) {
+            ImGuiTabItem *prev_tab = &tab_bar->Tabs[tab_dst_n - 1];
+            int prev_tab_section_n = (prev_tab->Flags & ImGuiTabItemFlags_Leading) ? 0 : (prev_tab->Flags &
+                                                                                          ImGuiTabItemFlags_Trailing)
+                                                                                         ? 2 : 1;
+            if (curr_tab_section_n == 0 && prev_tab_section_n != 0)
+                need_sort_by_section = true;
+            if (prev_tab_section_n == 2 && curr_tab_section_n != 2)
+                need_sort_by_section = true;
+        }
 
         sections[curr_tab_section_n].TabCount++;
         tab_dst_n++;
@@ -8089,7 +8083,7 @@ bool ImGui::TabItemLabelAndCloseButton(ImDrawList *draw_list, const ImRect &bb, 
     bool close_button_pressed = false;
     bool close_button_visible = false;
     if (close_button_id != 0)
-        if (is_contents_visible || bb.GetWidth() >= g.Style.TabMinWidthForUnselectedCloseButton)
+        if (is_contents_visible || bb.GetWidth() >= g.Style.TabMinWidthForCloseButton)
             if (g.HoveredId == tab_id || g.HoveredId == close_button_id || g.ActiveId == tab_id ||
                 g.ActiveId == close_button_id)
                 close_button_visible = true;
