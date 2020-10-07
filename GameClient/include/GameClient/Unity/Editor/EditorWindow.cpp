@@ -14,12 +14,12 @@ std::vector<std::shared_ptr<EditorWindow>> &EditorWindow::get_open_windows() {
 
 EditorWindow::EditorWindow()
         : position([this](sf::FloatRect p) {
-    if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(this)).c_str())) {
+    if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
         ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), window);
         ImGui::SetWindowPos(window, p.getPosition());
         ImGui::SetWindowSize(window, p.getSize());
     } else {
-        auto s = ImGui::FindOrCreateWindowSettings(("###" + GameApi::to_string(this)).c_str());
+        auto s = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
         s->Pos.x = p.getPosition().x;
         s->Pos.y = p.getPosition().y;
         s->Size.x = p.getSize().x;
@@ -27,18 +27,18 @@ EditorWindow::EditorWindow()
     }
 }, [this]() -> auto {
     ImVec2 p{}, s{};
-    if (ImGuiWindow *window = ImGui::FindWindowByName(("###" + GameApi::to_string(this)).c_str())) {
+    if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
         s = window->Size;
         p = window->Pos;
     } else {
-        auto set = ImGui::FindOrCreateWindowSettings(("###" + GameApi::to_string(this)).c_str());
+        auto set = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
         p.x = set->Pos.x;
         p.y = set->Pos.y;
         s.x = set->Size.x;
         s.y = set->Size.y;
     }
     return sf::FloatRect{p, s};
-}) {
+}), imGuiName{"###" + GameApi::to_string(this)} {
 
 }
 
@@ -84,7 +84,7 @@ void EditorWindow::Focus() {
     switch (work) {
         case Normal:
         case Utility:
-            ImGui::SetWindowFocus(("###" + GameApi::to_string(this)).c_str());
+            ImGui::SetWindowFocus(imGuiName.c_str());
             break;
         case NotShown:
         case DropDown:
@@ -110,7 +110,7 @@ void EditorWindow::drawGui() {
         case Normal: {
             bool b = true;
             OnStyleChange();
-            if (ImGui::Begin((titleContent + "###" + GameApi::to_string(this)).c_str(), &b, flags)) {
+            if (ImGui::Begin((titleContent + imGuiName).c_str(), &b, flags)) {
                 this->OnGUI();
             }
 
@@ -124,7 +124,7 @@ void EditorWindow::drawGui() {
             bool b = true;
 
             OnStyleChange();
-            if (ImGui::Begin((titleContent + "###" + GameApi::to_string(this)).c_str(),
+            if (ImGui::Begin((titleContent + imGuiName).c_str(),
                              &b, flags | ImGuiWindowFlags_NoDocking)) {
                 this->OnGUI();
             }
@@ -139,7 +139,7 @@ void EditorWindow::drawGui() {
             ///ImGui::OpenPopup
 
             OnStyleChange();
-            if (ImGui::BeginPopup((titleContent + "###" + GameApi::to_string(this)).c_str(), flags)) {
+            if (ImGui::BeginPopup((titleContent + imGuiName).c_str(), flags)) {
                 this->OnGUI();
 
                 ImGui::EndPopup();
@@ -153,7 +153,7 @@ void EditorWindow::drawGui() {
             ///ImGui::OpenPopup
 
             OnStyleChange();
-            if (ImGui::BeginPopupModal((titleContent + "###" + GameApi::to_string(this)).c_str(), nullptr,
+            if (ImGui::BeginPopupModal((titleContent + imGuiName).c_str(), nullptr,
                                        flags | ImGuiWindowFlags_AlwaysAutoResize)) {
                 this->OnGUI();
 

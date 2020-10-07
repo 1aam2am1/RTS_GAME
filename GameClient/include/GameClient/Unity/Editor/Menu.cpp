@@ -196,7 +196,8 @@ public:
             if (ImGui::TreeNode(i.name.c_str(), "%s: %i", i.name.c_str(), i.priority)) {
                 if (i.sub_items_function.index() == 0) {
                     const auto &p = std::get<0>(i.sub_items_function);
-                    ImGui::Text("val: %i; exec: %i", p.validation.size(), p.execution.size());
+                    ImGui::Text("val: %u; exec: %u", static_cast<uint32_t>(p.validation.size()),
+                                static_cast<uint32_t>(p.execution.size()));
                 } else if (i.sub_items_function.index() == 1) {
                     display(std::get<1>(i.sub_items_function));
                 } else {

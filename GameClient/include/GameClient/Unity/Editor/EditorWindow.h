@@ -16,6 +16,8 @@
 
 class MainWindow;
 
+class WindowLayout;
+
 /// Derive from this class to create an editor window.
 /// \details Create your own custom editor window that can float free or be docked as a tab,
 /// just like the native windows in the Unity interface.
@@ -124,6 +126,8 @@ public:
 protected:
     friend class MainWindow;
 
+    friend class WindowLayout;
+
     static std::vector<std::shared_ptr<EditorWindow>> &get_open_windows();
 
     virtual void drawGui();
@@ -138,6 +142,8 @@ protected:
     };
 
     Type work = {};
+
+    const std::string imGuiName;
 };
 
 

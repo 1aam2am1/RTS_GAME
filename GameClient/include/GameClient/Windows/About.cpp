@@ -27,10 +27,10 @@ public:
         ImGui::Separator();
         ImGui::Text("Author: Michal Marszalek");
         ImGui::Separator();
-        ImGui::TextWrapped("Version: %s %i bit\n", (Version::GIT_TAG + " " +
-                                                    Version::GIT_SHA + " " +
-                                                    Version::DATE).c_str(),
-                           sizeof(void *) * 8);
+        int n;
+        ImGui::Text("Version: %n%s", &n, Version::GIT_TAG.c_str());
+        ImGui::Text("%*s%s", n, "", Version::GIT_SHA.c_str());
+        ImGui::Text("%*s%s %i bit", n, "", Version::DATE.c_str(), static_cast<int>(sizeof(void *) * 8));
     }
 };
 

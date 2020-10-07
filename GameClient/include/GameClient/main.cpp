@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
             GameApi::log(INFO.fmt("Version: %s %i bit\n", (Version::GIT_TAG + " " +
                                                            Version::GIT_SHA + " " +
                                                            Version::DATE).c_str(),
-                                  sizeof(void *) * 8));
+                                  static_cast<int>(sizeof(void *) * 8)));
         }
 
         MainWindow window(options);

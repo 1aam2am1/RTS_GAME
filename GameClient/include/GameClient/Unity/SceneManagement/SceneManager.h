@@ -14,7 +14,7 @@
 
 /// Scene management at run-time.
 class SceneManager {
-    using Scene = std::shared_ptr<Scene>;
+    using SceneP = std::shared_ptr<Scene>;
 
     /// Used when loading a Scene in a player.
     /// \details Use LoadSceneMode to choose what type of Scene loads when using SceneManager.LoadScene.
@@ -39,13 +39,13 @@ class SceneManager {
     /// To create a Scene at edit-time inherits from Scene and add to buildSettings.
     /// \param sceneName The name of the new Scene. It cannot be empty or null, or same as the name of the existing Scenes.
     /// \return A reference to the new Scene that was created, or an invalid Scene if creation failed.
-    static Scene createScene(std::string_view sceneName);
+    static SceneP createScene(std::string_view sceneName);
 
     /// Gets the currently active Scene.
     /// \details The currently active Scene is the Scene which will be used as the target for new GameObjects
     /// instantiated by scripts.
     /// \return The active Scene.
-    static Scene GetActiveScene();
+    static SceneP GetActiveScene();
 
     /// Get a Scene struct from a build index.
     /// \details This method will return a valid Scene if a Scene has been added to the build settings
@@ -53,12 +53,12 @@ class SceneManager {
     /// cannot return a valid Scene.
     /// \param buildIndex Build index as shown in the Build Settings.
     /// \return A reference to the Scene, if valid. If not, an invalid Scene is returned.
-    static Scene GetSceneByBuildIndex(int buildIndex);
+    static SceneP GetSceneByBuildIndex(int buildIndex);
 
     /// Searches through the Scenes loaded for a Scene with the given name.
     /// \param name Name of Scene to find.
     /// \return A reference to the Scene, if valid. If not, an invalid Scene is returned.
-    static Scene GetSceneByName(std::string_view name);
+    static SceneP GetSceneByName(std::string_view name);
 
     /// Loads the Scene by its name or index in Build Settings.
     /// \note  In most cases, to avoid pauses or performance hiccups while loading,
@@ -104,7 +104,7 @@ class SceneManager {
     /// \note This function is destructive: The source Scene will be destroyed once the merge has been completed.
     /// \param sourceScene The Scene that will be merged into the destination Scene.
     /// \param destinationScene Existing Scene to merge the source Scene into.
-    static void MergeScenes(Scene sourceScene, Scene destinationScene);
+    static void MergeScenes(SceneP sourceScene, SceneP destinationScene);
 
     /// Move a GameObject from its current Scene to a new Scene.
     /// \details You can only move root GameObjects from one Scene to another.
@@ -114,14 +114,14 @@ class SceneManager {
     /// you would like to move to a new Scene, otherwise Unity deletes it when it loads a new Scene.
     /// \param go GameObject to move.
     /// \param scene Scene to move into.
-    static void MoveGameObjectToScene(GameObject go, Scene scene);
+    static void MoveGameObjectToScene(GameObject go, SceneP scene);
 
     /// Set the Scene to be active.
     /// \note There must always be one Scene marked as the active Scene.
     /// Note the active Scene has no impact on what Scenes are rendered.
     /// \param scene The Scene to be set.
     /// \return Returns false if the Scene is not loaded yet.
-    static bool SetActiveScene(Scene scene);
+    static bool SetActiveScene(SceneP scene);
 
     /// Destroys all GameObjects associated with the given Scene and removes the Scene from the SceneManager.
     /// \note This is case-insensitive and due to it being async there are no guarantees about completion time.
@@ -130,19 +130,19 @@ class SceneManager {
     /// For example, a project that has a single scene cannot use this static member.
     /// \param scene Scene to unload.
     /// \return AsyncOperation Use the AsyncOperation to determine if the operation has completed.
-    static AsyncOperation UnloadSceneAsync(Scene scene);
+    static AsyncOperation UnloadSceneAsync(SceneP scene);
 
     ///Subscribe to this event to get notified when the active Scene has changed.
     /// \details This script added to activeSceneChanged takes two hidden arguments.
     /// These are the replaced Scene and the next Scene. The arguments are not visible.
     /// \note Scene is unloaded before firing event.
-    static sigslot::signal<Scene, Scene> activeSceneChanged;
+    static sigslot::signal<SceneP, SceneP> activeSceneChanged;
 
     ///Add a delegate to this to get notifications when a Scene has loaded.
-    static sigslot::signal<Scene, LoadSceneMode> sceneLoaded;
+    static sigslot::signal<SceneP, LoadSceneMode> sceneLoaded;
 
     ///Add a delegate to this to get notifications when a Scene has unloaded.
-    static sigslot::signal<std::shared_ptr<Scene>> sceneUnloaded;
+    static sigslot::signal<SceneP> sceneUnloaded;
 };
 
 
