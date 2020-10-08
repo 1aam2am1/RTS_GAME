@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
         }
 
         MainWindow window(options);
-        FontLoader font(options);
+        FontLoader{options};
 
 #if UNITY_EDITOR
         fs::create_directory("Assets");

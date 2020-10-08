@@ -25,7 +25,7 @@ FontLoader::FontLoader(const Argv_options &options) {
 
     static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 
-    io.Fonts->AddFontFromFileTTF("data/fonts/" FONT_ICON_FILE_NAME_FAS, 13.f, &config,
+    io.Fonts->AddFontFromFileTTF("Assets/fonts/" FONT_ICON_FILE_NAME_FAS, 13.f, &config,
                                  icons_ranges);
 
     //io.Fonts->Build();
