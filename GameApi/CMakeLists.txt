@@ -59,7 +59,9 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${SRC}) #EXPORT_MACRO DLL_EXPORT
 
 target_sources(GameAPI PRIVATE ${PROTO_HDRS} ${PROTO_SRCS})
 
-target_link_libraries(GameAPI ${Protobuf_LIBRARIES} sfml-network)
+add_subdirectory(include/Yaml)
+
+target_link_libraries(GameAPI ${Protobuf_LIBRARIES} sfml-network YAML)
 add_versioning(GameAPI)
 add_flags(GameAPI)
 
