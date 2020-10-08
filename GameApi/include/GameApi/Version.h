@@ -5,16 +5,16 @@
 #ifndef RTS_GAME_VERSION_H
 #define RTS_GAME_VERSION_H
 
-#include <string>
+#include <string_view>
 
 namespace GameApi {
 
     class Version {
     public:
-        static const std::string GIT_DIRTY;
-        static const std::string GIT_SHA;
-        static const std::string GIT_TAG;
-        static const std::string DATE;
+        static const std::string_view GIT_DIRTY;
+        static const std::string_view GIT_SHA;
+        static const std::string_view GIT_TAG;
+        static const std::string_view DATE;
     };
 }
 

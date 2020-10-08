@@ -17,9 +17,9 @@ int main(int argc, char **argv) {
         options.process(argc, argv);
 
         if (options.getOptions().version) {
-            GameApi::log(INFO.fmt("Version: %s %i bit\n", (Version::GIT_TAG + " " +
-                                                           Version::GIT_SHA + " " +
-                                                           Version::DATE).c_str(),
+            GameApi::log(INFO.fmt("Version: %s %s %s %i bit\n", Version::GIT_TAG.data(),
+                                  Version::GIT_SHA.data(),
+                                  Version::DATE.data(),
                                   static_cast<int>(sizeof(void *) * 8)));
         }
 

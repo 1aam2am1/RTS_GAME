@@ -27,7 +27,7 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/version.cpp"
         "#include \"Version/version.h\"\n"
         "\n"
         "\n"
-        "const std::string Version::GIT_DIRTY = \"${DIRTY}\";\n"
-        "const std::string Version::GIT_SHA = \"${_GIT_HASH}\";\n"
-        "const std::string Version::GIT_TAG = \"${_GIT_DESCRIBE}\";\n"
-        "const std::string Version::DATE = \"${_TIME}\";\n")
+        "const std::string_view Version::GIT_DIRTY = \"${DIRTY}\";\n"
+        "const std::string_view Version::GIT_SHA = \"${_GIT_HASH}\";\n"
+        "const std::string_view Version::GIT_TAG = \"${_GIT_DESCRIBE}\";\n"
+        "const std::string_view Version::DATE = \"${_TIME}\";\n")

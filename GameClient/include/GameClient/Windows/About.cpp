@@ -28,9 +28,9 @@ public:
         ImGui::Text("Author: Michal Marszalek");
         ImGui::Separator();
         int n;
-        ImGui::Text("Version: %n%s", &n, Version::GIT_TAG.c_str());
-        ImGui::Text("%*s%s", n, "", Version::GIT_SHA.c_str());
-        ImGui::Text("%*s%s %i bit", n, "", Version::DATE.c_str(), static_cast<int>(sizeof(void *) * 8));
+        ImGui::Text("Version: %n%s", &n, Version::GIT_TAG.data());
+        ImGui::Text("%*s%s", n, "", Version::GIT_SHA.data());
+        ImGui::Text("%*s%s %i bit", n, "", Version::DATE.data(), static_cast<int>(sizeof(void *) * 8));
     }
 };
 
