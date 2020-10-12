@@ -5,6 +5,7 @@ set(SRC
         ArgvOptions.cpp
         Signal.cpp
         TPtr.cpp
+        NodeBasic.cpp
         )
 
 add_executable(GameTests ${SRC})
@@ -14,7 +15,7 @@ set_target_properties(GameTests PROPERTIES
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 
-target_link_libraries(GameTests GameAPI)
+target_link_libraries(GameTests GameAPI ImGui)
 add_flags(GameTests)
 
 target_include_directories(GameTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../GameClient/include")

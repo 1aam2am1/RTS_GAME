@@ -1,6 +1,13 @@
 set(SRC
         Node/Node.cpp
         Node/Node.h
+        Node/Node.inl
+        Node/NodeType.h
+        Node/EmitterStyle.h
+        Node/convert.h
+        Node/convert.cpp
+        Node/NodeIterator.cpp
+        Node/NodeIterator.h
         )
 
 add_library(YAML STATIC ${SRC})
@@ -13,7 +20,7 @@ set_target_properties(YAML PROPERTIES
 
 target_include_directories(YAML PUBLIC
         ${PROJECT_BINARY_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR})
+        ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 add_flags(YAML)
 
