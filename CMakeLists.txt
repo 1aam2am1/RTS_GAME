@@ -43,11 +43,8 @@ add_subdirectory(Version)
 
 add_subdirectory(GameApi)
 add_subdirectory(ImGui)
-add_subdirectory(GameServer)
-add_subdirectory(GameViewer)
 add_subdirectory(GameClient)
-add_subdirectory(GameAI)
 add_subdirectory(tests)
 
 
-add_dependencies(RTS_GAME GameServer GameViewer GameClient GameAI)
+add_dependencies(RTS_GAME GameClient)
