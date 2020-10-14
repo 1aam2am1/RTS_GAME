@@ -6,6 +6,7 @@ set(SRC
         Signal.cpp
         TPtr.cpp
         NodeBasic.cpp
+        EmitterTest.cpp
         )
 
 add_executable(GameTests ${SRC})

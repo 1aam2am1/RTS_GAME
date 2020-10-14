@@ -15,6 +15,8 @@
 #include <memory>
 #include "NodeIterator.h"
 
+class Emitter;
+
 class Node {
     using Map = std::list<std::pair<Node, Node>>;
     using ItMap = std::list<std::pair<const Node, Node>>;
@@ -123,6 +125,8 @@ private:
 
     template<typename Key>
     bool equal(const Key &) const;
+
+    friend class Emitter;
 };
 
 

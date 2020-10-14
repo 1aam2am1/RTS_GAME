@@ -8,6 +8,10 @@ set(SRC
         Node/convert.cpp
         Node/NodeIterator.cpp
         Node/NodeIterator.h
+        Emitter.cpp
+        Emitter.h
+        Document.cpp
+        Document.h
         )
 
 add_library(YAML STATIC ${SRC})
