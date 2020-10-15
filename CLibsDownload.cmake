@@ -2,20 +2,23 @@ cmake_minimum_required(VERSION 3.12)
 include(FetchContent)
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
-set(FETCHCONTENT_QUIET OFF)
+set(FETCHCONTENT_QUIET ON)
 set(LOCAL_REPO ON CACHE BOOL "Use local repository to copy")
 
 if (${LOCAL_REPO})
     if (WIN32)
         set(SFML_REPO C:/Users/Michal_Marszalek/CLionProjects/SFML)
         set(box2d_REPO C:/Users/Michal_Marszalek/CLionProjects/box2d)
+        set(JSON_REPO C:/Users/Michal_Marszalek/CLionProjects/json)
     elseif (UNIX)
         set(SFML_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/SFML)
         set(box2d_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/box2d)
+        set(JSON_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/json)
     endif ()
 else ()
     set(SFML_REPO https://github.com/SFML/SFML)
     set(box2d_REPO https://github.com/erincatto/box2d)
+    set(JSON_REPO https://github.com/nlohmann/json)
 endif ()
 
 ### SFML Dependency ###
@@ -45,6 +48,22 @@ if (NOT tgui_POPULATED)
     add_subdirectory(${tgui_SOURCE_DIR} ${tgui_BINARY_DIR})
 endif ()
 #]]
+
+### JSON Dependency ###
+set(JSON_BuildTests TRUE CACHE BOOL "" FORCE)
+set(JSON_Install FALSE CACHE BOOL "" FORCE)
+set(JSON_MultipleHeaders TRUE CACHE BOOL "" FORCE)
+set(JSON_BUILD_SHARED_LIBS TRUE CACHE BOOL "TRUE to build TGUI as a shared library, FALSE to build it as a static library" FORCE)
+FetchContent_Declare(json
+        GIT_REPOSITORY ${JSON_REPO}
+        GIT_SHALLOW TRUE
+        GIT_TAG v3.9.1)
+
+FetchContent_GetProperties(json)
+if (NOT json_POPULATED)
+    FetchContent_Populate(json)
+    add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR})
+endif ()
 
 ### Box2d Dependency ###
 FetchContent_Declare(box2d
