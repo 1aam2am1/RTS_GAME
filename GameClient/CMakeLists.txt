@@ -60,6 +60,8 @@ set(SRC
         include/GameClient/Windows/Style.cpp
         include/GameClient/GarbageCollector.cpp
         include/GameClient/GarbageCollector.h
+        include/GameClient/Unity/Editor/Selection.h
+        include/GameClient/Unity/Editor/Selection.cpp
         )
 
 add_executable(GameClient ${SRC})
