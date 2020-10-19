@@ -62,6 +62,12 @@ set(SRC
         include/GameClient/GarbageCollector.h
         include/GameClient/Unity/Editor/Selection.h
         include/GameClient/Unity/Editor/Selection.cpp
+        include/GameClient/Unity/Core/Texture2D.cpp
+        include/GameClient/Unity/Core/Texture2D.h
+        include/GameClient/Unity/Core/Guid.h
+        include/GameClient/Unity/Core/TextAsset.cpp
+        include/GameClient/Unity/Core/TextAsset.h
+        include/GameClient/Unity/Editor/ImportAssetOptions.h
         )
 
 add_executable(GameClient ${SRC})

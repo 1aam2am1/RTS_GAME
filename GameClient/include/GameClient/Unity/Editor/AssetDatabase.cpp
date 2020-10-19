@@ -9,54 +9,139 @@
 #include <GameApi/StringFormatter.h>
 #include <GameApi/GlobalLogSource.h>
 
+#if defined(_WIN32)
+
+#include <windows.h>
+
+#endif
+
 namespace fs = std::filesystem;
 
-struct D {
-    std::vector<std::string> folders{};
-    std::vector<std::string> files{};
 
-    std::chrono::time_point<std::chrono::steady_clock> creation = std::chrono::steady_clock::now();
-};
+std::vector<std::string> AssetDatabase::GetSubFolders(std::string path) {
+    return std::vector<std::string>();
+}
 
-const D &dir(std::string str) {
-    //TODO: Remove static map
-    static std::map<fs::path, D> map;
+std::vector<std::string> AssetDatabase::GetDependencies(std::string pathName, bool recursive) {
+    return std::vector<std::string>();
+}
 
-    fs::path path = "./Assets/" + (str.size() ? str : ".");
+TPtr<Texture2D> AssetDatabase::GetCachedIcon(std::string path) {
+    return TPtr<Texture2D>(nullptr);
+}
 
-    if (!fs::is_directory(path)) {
-        throw std::runtime_error(std::string{"Path is not a directory: "} + path.generic_string());
-    }
+std::vector<TPtr<Object>> AssetDatabase::LoadAllAssetsAtPath(std::string assetPath) {
+    return std::vector<TPtr<Object>>();
+}
 
-    auto it = fs::directory_iterator(path, fs::directory_options::skip_permission_denied);
+std::vector<TPtr<Object>> AssetDatabase::LoadAllAssetRepresentationsAtPath(std::string assetPath) {
+    return std::vector<TPtr<Object>>();
+}
 
-    D &result = map[path];
-    if (std::chrono::steady_clock::now() - result.creation < std::chrono::seconds(1)) { return result; }
-    result.creation = std::chrono::steady_clock::now();
-    result.folders.clear();
-    result.files.clear();
+bool AssetDatabase::IsSubAsset(Object *obj) {
+    return false;
+}
 
-    auto d = DBG;
-    bool error = false;
-    for (const auto &i : it) {
-        if (i.is_directory()) {
-            result.folders.emplace_back(i.path().filename().string());
-        } else if (i.is_regular_file()) {
-            result.files.emplace_back(i.path().filename().string());
-        } else {
-            d.fmt("Object: %s not directory or file. Not supported", i.path().generic_string().c_str());
-            error = true;
+bool AssetDatabase::IsMainAsset(Object *obj) {
+    return false;
+}
+
+bool AssetDatabase::Contains(Object *obj) {
+    return false;
+}
+
+bool AssetDatabase::IsMainAssetAtPathLoaded(std::string assetPath) {
+    return false;
+}
+
+bool AssetDatabase::IsValidFolder(std::string path) {
+    return false;
+}
+
+std::string AssetDatabase::GenerateUniqueAssetPath(std::string path) {
+    return std::string();
+}
+
+std::string AssetDatabase::GetAssetOrScenePath(Object *assetObject) {
+    return std::string();
+}
+
+std::string AssetDatabase::GetAssetPath(Object *assetObject) {
+    return std::string();
+}
+
+std::string AssetDatabase::GUIDToAssetPath(Unity::GUID guid) {
+    return std::string();
+}
+
+void AssetDatabase::ImportAsset(std::string path, ImportAssetOptions options) {
+
+}
+
+TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, std::type_info type) {
+    return TPtr<Object>(nullptr);
+}
+
+TPtr<Object> AssetDatabase::LoadMainAssetAtPath(std::string assetPath) {
+    return TPtr<Object>(nullptr);
+}
+
+std::string AssetDatabase::MoveAsset(std::string oldPath, std::string newPath) {
+    return std::string();
+}
+
+bool AssetDatabase::CopyAsset(std::string path, std::string newPath) {
+    return false;
+}
+
+bool AssetDatabase::MoveAssetToTrash(std::string path) {
+    return false;
+}
+
+std::string AssetDatabase::RenameAsset(std::string pathName, std::string newName) {
+    return std::string();
+}
+
+void AssetDatabase::SaveAssets() {
+
+}
+
+bool AssetDatabase::OpenAsset(Object *target) {
+    std::string s = GetAssetPath(target);
+    if (s.empty())
+        return false;
+    try {
+#if defined(_WIN32)
+        fs::path p = s;
+        p = fs::absolute(p);
+
+        ShellExecuteW(0, 0, p.generic_wstring().data(), 0, 0, SW_SHOW);
+#elif defiend(__linux__)
+        if(fork() == 0){
+            std::system(u8"xdg-open \"" + p.generic_string() + u8"\"");
+            exit(0);
+        }else{
+            return true;
         }
+#endif
+    } catch (...) {
+        return false;
     }
-    if (error) { GameApi::log(d); }
-
-    return result;
+    return false;
 }
 
-const std::vector<std::string> &AssetDatabase::GetSubFolders(std::string path) {
-    return dir(path).folders;
+void AssetDatabase::Refresh(ImportAssetOptions options) {
+
 }
 
-const std::vector<std::string> &AssetDatabase::GetSubFiles(std::string path) {
-    return dir(path).files;
+void AssetDatabase::CreateAsset(Object *asset, std::string path) {
+
+}
+
+bool AssetDatabase::DeleteAsset(std::string path) {
+    return false;
+}
+
+Unity::GUID AssetDatabase::CreateFolder(std::string parentFolder, std::string newFolderName) {
+    return Unity::GUID();
 }

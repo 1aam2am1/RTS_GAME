@@ -56,7 +56,7 @@ void AssetWindow::OnGUI() {
     }
 
     if (ImGui::BeginChild("Tree", {0, 0}, false, ImGuiWindowFlags_NoDecoration)) {
-        display_tree({});
+        display_tree("Assets");
     }
     ImGui::EndChild();
 
