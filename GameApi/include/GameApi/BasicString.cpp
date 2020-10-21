@@ -76,6 +76,12 @@ namespace GameApi {
         return str;
     }
 
+    std::string to_hex(uint64_t number) {
+        char str[12] = {0};
+        std::sprintf(str, "%016llx", number);
+        return str;
+    }
+
     std::string to_string(void *pointer) {
         char str[24] = {0};
         std::sprintf(str, "%p", pointer);

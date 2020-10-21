@@ -7,6 +7,7 @@
 #include "FontLoader.h"
 #include <filesystem>
 #include <GameClient/Windows/AssetWindow.h>
+#include <GameClient/Unity/Editor/AssetDatabase.h>
 
 namespace fs = std::filesystem;
 
@@ -33,6 +34,7 @@ int main(int argc, char **argv) {
 #else
         if(!std::filesystem::exists("Assets")){throw std::runtime_error("Assets folder don't exists")};
 #endif
+        AssetDatabase::Refresh();
 
         window.run();
     }

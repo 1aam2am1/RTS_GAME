@@ -65,6 +65,7 @@ set(SRC
         include/GameClient/Unity/Core/Texture2D.cpp
         include/GameClient/Unity/Core/Texture2D.h
         include/GameClient/Unity/Core/Guid.h
+        include/GameClient/Unity/Core/Guid.cpp
         include/GameClient/Unity/Core/TextAsset.cpp
         include/GameClient/Unity/Core/TextAsset.h
         include/GameClient/Unity/Editor/ImportAssetOptions.h

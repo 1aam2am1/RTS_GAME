@@ -72,6 +72,8 @@ namespace GameApi {
 
     std::string to_string(int32_t number);
 
+    std::string to_hex(uint64_t number);
+
     std::string to_string(void *pointer);
 
     std::string to_string(float number);
