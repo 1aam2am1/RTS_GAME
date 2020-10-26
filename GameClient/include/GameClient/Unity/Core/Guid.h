@@ -6,6 +6,7 @@
 #define RTS_GAME_GUID_H
 
 #include <string>
+#include <GameApi/HashCombine.h>
 
 namespace Unity {
     struct GUID {
@@ -48,7 +49,8 @@ namespace Unity {
         static GUID NewGuid();
     };
 
-
 }
+
+MAKE_HASHABLE(Unity::GUID, t.first, t.second);
 
 #endif //RTS_GAME_GUID_H

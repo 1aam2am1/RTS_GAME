@@ -53,6 +53,7 @@ endif ()
 set(JSON_BuildTests TRUE CACHE BOOL "" FORCE)
 set(JSON_Install FALSE CACHE BOOL "" FORCE)
 set(JSON_MultipleHeaders TRUE CACHE BOOL "" FORCE)
+set(JSON_ImplicitConversions FALSE CACHE BOOL "" FORCE)
 set(JSON_BUILD_SHARED_LIBS TRUE CACHE BOOL "TRUE to build TGUI as a shared library, FALSE to build it as a static library" FORCE)
 FetchContent_Declare(json
         GIT_REPOSITORY ${JSON_REPO}

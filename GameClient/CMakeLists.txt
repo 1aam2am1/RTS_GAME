@@ -69,6 +69,8 @@ set(SRC
         include/GameClient/Unity/Core/TextAsset.cpp
         include/GameClient/Unity/Core/TextAsset.h
         include/GameClient/Unity/Editor/ImportAssetOptions.h
+        include/GameClient/Unity/Editor/EditorUtility.cpp
+        include/GameClient/Unity/Editor/EditorUtility.h
         )
 
 add_executable(GameClient ${SRC})

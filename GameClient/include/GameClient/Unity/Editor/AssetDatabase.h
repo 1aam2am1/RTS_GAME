@@ -69,6 +69,9 @@ public:
     /// Gets the corresponding asset path for the supplied guid, or an empty string if the GUID can't be found.
     static std::string GUIDToAssetPath(Unity::GUID guid);
 
+    /// Get the GUID for the asset at path.
+    static Unity::GUID AssetPathToGUID(std::string path);
+
     /// Import asset at path.
     static void ImportAsset(std::string path, ImportAssetOptions options = ImportAssetOptions::Default);
 
