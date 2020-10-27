@@ -50,7 +50,7 @@ endif ()
 #]]
 
 ### JSON Dependency ###
-set(JSON_BuildTests TRUE CACHE BOOL "" FORCE)
+set(JSON_BuildTests FALSE CACHE BOOL "" FORCE)
 set(JSON_Install FALSE CACHE BOOL "" FORCE)
 set(JSON_MultipleHeaders TRUE CACHE BOOL "" FORCE)
 set(JSON_ImplicitConversions FALSE CACHE BOOL "" FORCE)

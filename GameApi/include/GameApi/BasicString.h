@@ -143,14 +143,5 @@ namespace GameApi {
         }
     };
 
-#define DEFINE_BREAK_IN(name, t, member)\
-           struct name {\
-             using type = t;\
-             friend constexpr t break_in(name);\
-           };\
-           template struct break_in_<name, member>
-
-    //DEFINE_BREAK_IN(nazwa_odwolamnia, int Klasa::*, &Klasa::x);
-    // std::cout << x. *break_in(nazwa_odwolamnia());
 }
 #endif // STRING_H

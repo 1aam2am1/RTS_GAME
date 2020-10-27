@@ -5,6 +5,7 @@ set(SRC
         ArgvOptions.cpp
         Signal.cpp
         TPtr.cpp
+        ObjectFactorySerialization.cpp
         )
 
 add_executable(GameTests ${SRC})

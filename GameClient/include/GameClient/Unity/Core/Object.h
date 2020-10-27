@@ -7,6 +7,9 @@
 
 #include <GameApi/Signal.h>
 #include <SFML/Window.hpp>
+#include <variant>
+#include <GameApi/GlobalLogSource.h>
+#include <GameApi/Compiler.h>
 #include "Quaternion.h"
 
 template<typename>
@@ -17,6 +20,12 @@ class Transform;
 /// Base class for all objects Unity can reference.
 class Object : public virtual std::enable_shared_from_this<Object> {
 public:
+
+    Object();
+
+    Object(const Object &);
+
+    Object &operator=(const Object &);
 
     virtual ~Object() = default;
 

@@ -17,11 +17,11 @@ void MonoBehaviour::LateUpdate() {
 }
 
 void MonoBehaviour::OnApplicationFocus(bool hasFocus) {
-
+    UNUSED(hasFocus);
 }
 
 void MonoBehaviour::OnApplicationPause(bool pauseStatus) {
-
+    UNUSED(pauseStatus);
 }
 
 void MonoBehaviour::OnApplicationQuit() {
@@ -37,15 +37,15 @@ void MonoBehaviour::OnBecameVisible() {
 }
 
 void MonoBehaviour::OnCollisionEnter2D(const Collision2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnCollisionExit2D(const Collision2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnCollisionStay2D(const Collision2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnDestroy() {
@@ -69,7 +69,7 @@ void MonoBehaviour::OnEnable() {
 }
 
 void MonoBehaviour::OnJointBreak2D(const Joint2D &brokenJoint) {
-
+    UNUSED(brokenJoint);
 }
 
 void MonoBehaviour::OnMouseDown() {
@@ -109,15 +109,15 @@ void MonoBehaviour::OnTransformParentChanged() {
 }
 
 void MonoBehaviour::OnTriggerEnter2D(const Collider2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnTriggerExit2D(const Collider2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnTriggerStay2D(const Collider2D &other) {
-
+    UNUSED(other);
 }
 
 void MonoBehaviour::OnValidate() {

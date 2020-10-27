@@ -71,6 +71,8 @@ set(SRC
         include/GameClient/Unity/Editor/ImportAssetOptions.h
         include/GameClient/Unity/Editor/EditorUtility.cpp
         include/GameClient/Unity/Editor/EditorUtility.h
+        include/GameClient/Unity/Editor/ObjectFactory.cpp
+        include/GameClient/Unity/Editor/ObjectFactory.h
         )
 
 add_executable(GameClient ${SRC})

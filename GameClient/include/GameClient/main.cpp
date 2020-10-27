@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
         Menu::Init();
         AssetWindow::Init(); //=>To Coroutine
 #else
-        if(!std::filesystem::exists("Assets")){throw std::runtime_error("Assets folder don't exists")};
+        if (!std::filesystem::exists("Assets")) { throw std::runtime_error("Assets folder don't exists"); }
 #endif
         AssetDatabase::Refresh();
 
