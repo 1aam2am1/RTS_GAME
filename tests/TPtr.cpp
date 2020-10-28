@@ -78,7 +78,9 @@ TEST_CASE("TPtr") {
         l = nullptr;
 
         REQUIRE_THROWS(l->works());
-    }SECTION("Check define and destructor") {
+    }
+
+    SECTION("Check define and destructor") {
         struct B : MonoBehaviour {
             TPTR_P(a);
             TPTR_PT(A, b);
@@ -99,5 +101,46 @@ TEST_CASE("TPtr") {
 
         REQUIRE(b.onDestroySignal.slot_count() == 2);
         REQUIRE(i == 2);
+    }
+
+    SECTION("Operator == ") {
+        TPtr<A> l(&parent);
+        TPtr<A> l2(&parent);
+
+        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l2 = l;
+        REQUIRE(l.get() == l2.get());
+    }
+
+    SECTION("Operator == Base") {
+        TPtr<A> l(&parent);
+        TPtr<MonoBehaviour> l2(&parent);
+
+        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l2 = l;
+        REQUIRE(l.get() == l2.get());
+    }
+
+    SECTION("Operator == shared") {
+        TPtr<MonoBehaviour> l2(&parent);
+
+        l2 = std::make_shared<A>();
+        REQUIRE(l2.get());
+    }
+
+    SECTION("Operator == nullptr") {
+        TPtr<MonoBehaviour> l2(&parent);
+
+        l2 = nullptr;
+        REQUIRE(l2.expired());
+    }
+
+    SECTION("Constructor with cast") {
+        TPtr<A> l(&parent);
+        TPtr<MonoBehaviour> l2(&parent, std::make_shared<A>());
+
+        REQUIRE_NOTHROW(l2->Update());
+        l2 = l;
+        REQUIRE(l2.expired());
     }
 }

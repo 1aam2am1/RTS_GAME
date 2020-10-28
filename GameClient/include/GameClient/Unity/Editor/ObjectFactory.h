@@ -17,11 +17,17 @@ public:
     /// Creates a new component and adds it to the specified GameObject.
     static Component *AddComponent(GameObject *gameObject, std::type_info type);
 
+    template<typename T>
+    static Component *AddComponent(GameObject *gameObject);
+
     /// Creates a new GameObject.
     static GameObject *CreateGameObject(std::string name, std::vector<std::type_info> types);
 
     /// Create a new instance of the given type.
     static Object *CreateInstance(std::type_info type);
+
+    template<typename T>
+    static Object *CreateInstance();
 
     /// Create a new instance of the given type.
     template<typename T>
@@ -36,28 +42,55 @@ public:
     private:
 #endif
 
-    friend class Serialize;
+    friend class SerializerBase;
 
-    using TU = std::variant<int64_t *, double *, std::string *, Object *>;
+    using TU = std::variant<int64_t *, double *, std::string *, TPtr<Object> *>;
+    using CTU = std::variant<const int64_t *, const double *, const std::string *, const TPtr<Object> *>;
     using ST = std::vector<std::pair<std::string_view, TU>>;
+    using CST = std::vector<std::pair<std::string_view, CTU>>;
 
     struct Reflect {
-        virtual ST get(Object *) = 0;
+        virtual CST get(const Object *) const = 0;
+
+        virtual ST get(Object *) const = 0;
+
+        /// Check if object is of given type, exist mapped values
+        /// \return
+        virtual bool check(const Object *) = 0;
+
+        virtual TPtr<Object> create() = 0;
     };
 
     template<typename T>
     class Register : public Reflect {
     public:
-        using TT = std::variant<int64_t T::*, double T::*, std::string T::*, Object T::*>;
+        using TT = std::variant<int64_t T::*, double T::*, std::string T::*, TPtr<Object> T::*>;
 
         template<typename Y>
         void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
             v.emplace_back(str, ptr);
         }
 
-        ST get(Object *o) override {
+        CST get(const Object *o) const override {
+            CST result;
+            auto ptr = dynamic_cast<const T *>(o);
+            if (!ptr) {
+                return result;
+            }
+
+            result.reserve(v.size());
+
+            for (auto &it:v) {
+                result.emplace_back(it.first, std::visit([ptr](auto &&arg) -> CTU { return &((*ptr).*arg); },
+                                                         it.second));
+            }
+
+            return result;
+        }
+
+        ST get(Object *o) const override {
             ST result;
-            T *ptr = dynamic_cast<T *>(o);
+            auto ptr = dynamic_cast<T *>(o);
             if (!ptr) {
                 return result;
             }
@@ -72,44 +105,51 @@ public:
             return result;
         }
 
+        bool check(const Object *o) override {
+            return dynamic_cast<const T *>(o);
+        }
+
+        TPtr<Object> create() override {
+            return TPtr<Object>{nullptr, std::make_shared<T>()};
+        }
+
     private:
         std::vector<std::pair<std::string_view, TT>> v{};
     };
 
-    //info, name -> reflection list {name, pointer}
-    static std::map<std::pair<std::type_index, std::string_view>, const std::shared_ptr<Reflect>> reflection;
+    //TODO: Change reflection to type->name, list of valid reflections and one constructor
+    //info -> name, reflection list {name, pointer}
+    static std::map<std::type_index, std::pair<const std::string_view, const std::shared_ptr<Reflect>>> reflection;
+    //name -> info
+    static std::map<std::string_view, const std::type_index> name_type;
 };
 
 template<typename T>
 auto &ObjectFactory::register_class(std::string_view str) {
-    auto it = std::find_if(reflection.begin(), reflection.end(), [](auto &it) {
-        return it.first.first == typeid(T);
-    });
+    auto it = reflection.find(typeid(T));
 
     if (it != reflection.end()) {
-        if (it->first.second != str) {
+        if (it->second.first != str) {
             GameApi::log(ERR.fmt("Class with name: %s tried redeclaring with different name. Redeclared name: %s -> %s",
-                                 GameApi::demangle(it->first.first.name()).data(),
-                                 it->first.second.data(),
+                                 GameApi::demangle(it->first.name()).data(),
+                                 it->second.first.data(),
                                  str.data()));
         }
-        return *dynamic_cast<Register<T> *>(it->second.get());
+        return *static_cast<Register<T> *>(it->second.second.get());
     }
 
-    it = std::find_if(reflection.begin(), reflection.end(), [str](auto &it) {
-        return it.first.second == str;
-    });
+    auto[it2, b] = name_type.emplace(str, typeid(T));
 
-    if (it != reflection.end()) {
-        GameApi::log(ERR.fmt("Classes with name: %s %s redeclared with the same name. %s",
-                             GameApi::demangle(it->first.first.name()).data(),
+    if (!b) {
+        GameApi::log(ERR.fmt("Classes with type: %s %s redeclared with the same name. %s",
+                             GameApi::demangle(it2->second.name()).data(),
                              GameApi::demangle(typeid(T).name()).data(),
                              str.data()));
     }
 
     auto pointer = std::static_pointer_cast<Reflect>(std::make_shared<Register<T>>());
-    return *dynamic_cast<Register<T> *>(reflection.emplace(std::pair<std::type_index, std::string_view>{typeid(T), str},
-                                                           pointer).first->second.get());
+    reflection.emplace(typeid(T), std::pair<const std::string_view, const std::shared_ptr<Reflect>>{str, pointer});
+    return *static_cast<Register<T> *>(pointer.get());
 }
 
 

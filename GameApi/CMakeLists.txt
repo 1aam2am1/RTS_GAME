@@ -35,6 +35,7 @@ set(SRC
         include/GameApi/Compiler.cpp
         include/GameApi/Compiler.h
         include/GameApi/HashCombine.h
+        include/GameApi/IsInstance.h
         )
 
 configure_file(include/GameApi/Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/Config.h @ONLY)

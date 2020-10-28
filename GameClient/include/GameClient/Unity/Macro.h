@@ -56,6 +56,7 @@
 #define TPTR_P(NAME) TPtr<Object> NAME{this}
 #define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
+/// TODO: Change registering each parameter to registering two functions -> serialize, deserialize, and if object then callback serialization???
 /// Export class to save it in scene and use in in gameobject as component
 /// What should be serialized
 #define EXPORT_CLASS(TYPE, ...)                     \

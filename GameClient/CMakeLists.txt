@@ -73,6 +73,10 @@ set(SRC
         include/GameClient/Unity/Editor/EditorUtility.h
         include/GameClient/Unity/Editor/ObjectFactory.cpp
         include/GameClient/Unity/Editor/ObjectFactory.h
+        include/GameClient/Unity/Serialization/JsonSerializer.cpp
+        include/GameClient/Unity/Serialization/JsonSerializer.h
+        include/GameClient/Unity/Serialization/SerializerBase.h
+        include/GameClient/Unity/Serialization/SerializerBase.cpp
         )
 
 add_executable(GameClient ${SRC})

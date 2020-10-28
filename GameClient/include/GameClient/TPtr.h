@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <Core/Object.h>
+#include <GameApi/IsInstance.h>
 
 
 template<typename T>
@@ -16,8 +17,10 @@ public:
     /// Don't create default pointer without parent
     TPtr() = delete;
 
-    /// Don't crate copy when parent can't be copied
-    TPtr(const TPtr &r) = delete;
+    /// Create copy but, when return from function but watch out for parent as it could be destroyed.
+    TPtr(const TPtr &r) {
+        *this = r;
+    }
 
     /// Don't move when parent can't be moved
     TPtr(TPtr &&r) = delete;
@@ -41,13 +44,22 @@ public:
     /// Copy shared_ptr of object
     /// \param r To copy
     /// \return *this
-    template<class Y = T>
-    TPtr &operator=(const TPtr<Y> &r) noexcept {
+    template<class U>
+    TPtr &operator=(U &&r) noexcept {
         if (ptr) {
             ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
         }
 
-        ptr = r.ptr;
+        if constexpr (is_instance_v<U, TPtr>) {
+            ptr = std::forward<U>(r).ptr;
+        } else if constexpr (is_instance_v<U, std::shared_ptr>) {
+            ptr = std::forward<U>(r);
+        } else if constexpr (std::is_same_v<U, std::nullptr_t>) {
+            ptr = nullptr;
+            return *this;
+        } else {
+            static_assert(is_instance_v<U, TPtr>, "Only shared, TPtr or nullptr");
+        }
 
         if (ptr) {
             ptr->onDestroySignal.connect(&TPtr::destroy, this);
@@ -56,45 +68,12 @@ public:
         return *this;
     }
 
-    /// Copy shared_ptr of object
-    /// \param r To copy
-    /// \return *this
-    template<class Y = T>
-    TPtr &operator=(const std::shared_ptr<Y> &r) noexcept {
-        static_assert(std::is_base_of_v<T, Y>, "only subclasses, please");
+    TPtr &operator=(const TPtr &r) noexcept {
         if (ptr) {
             ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
         }
 
         ptr = r.ptr;
-
-        if (ptr) {
-            ptr->onDestroySignal.connect(&TPtr::destroy, this);
-        }
-
-        return *this;
-    }
-
-    TPtr &operator=(std::nullptr_t) noexcept {
-        if (ptr) {
-            ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
-        }
-
-        ptr = nullptr;
-
-        return *this;
-    }
-
-    /// Move shared_ptr of object
-    /// \param r To move
-    /// \return *this
-    template<class Y = T>
-    TPtr &operator=(TPtr<Y> &&r) noexcept {
-        if (ptr) {
-            ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
-        }
-
-        ptr = std::move(r.ptr);
 
         if (ptr) {
             ptr->onDestroySignal.connect(&TPtr::destroy, this);
@@ -133,7 +112,22 @@ private:
     friend
     class TPtr;
 
+    template<class X, class U>
+    friend TPtr<X> dynamic_pointer_cast(const TPtr<U> &) noexcept;
 };
+
+template<class T, class U>
+TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
+    TPtr<T> result{nullptr};
+
+    result.ptr = std::dynamic_pointer_cast<T>(r.ptr);
+
+    if (result.ptr) {
+        result.ptr->onDestroySignal.connect(&TPtr<T>::destroy, &result);
+    }
+
+    return result;
+}
 
 #include <GameClient/Unity/Macro.h>
 

@@ -14,10 +14,10 @@
 
 class TestObject : public Object {
 public:
-    int64_t x;
-    int64_t y;
+    int64_t x{};
+    int64_t y{};
     std::string str;
-    double d;
+    double d{};
 };
 
 EXPORT_CLASS(TestObject, x, y, str, d)
@@ -31,7 +31,7 @@ TEST_CASE("Object Factory Serialization") {
     SECTION("default") {
         int i = 0;
         for (auto &it : ObjectFactory::reflection) {
-            if (!it.second->get(&o).empty()) {
+            if (!it.second.second->get(&o).empty()) {
                 ++i;
             }
         }
@@ -46,11 +46,11 @@ TEST_CASE("Object Factory Serialization") {
         int object_count = 0;
         int some_else = 0;
         for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second->get(&o)) {
+            for (auto &w: it.second.second->get(&o)) {
                 auto vi = overload{[&](int64_t *) { ++i_count; },
                                    [&](double *) { ++d_count; },
                                    [&](std::string *) { ++s_count; },
-                                   [&](Object *) { ++object_count; },
+                                   [&](TPtr<Object> *) { ++object_count; },
                                    [&](auto &&) { ++some_else; }};
 
                 std::visit(vi, w.second);
@@ -66,7 +66,7 @@ TEST_CASE("Object Factory Serialization") {
 
     SECTION("Good ptr") {
         for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second->get(&o)) {
+            for (auto &w: it.second.second->get(&o)) {
                 auto vi = overload{[&](int64_t *i) {
                     if (w.first == "x") {
                         REQUIRE(i == &o.x);
@@ -118,7 +118,7 @@ TEST_CASE("Object Factory Serialization") {
         REQUIRE(o.name == "Name");
 
         for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second->get(&o)) {
+            for (auto &w: it.second.second->get(&o)) {
                 auto vi = overload{[&](int64_t *i) {
                     if (w.first == "x") {
                         REQUIRE(*i == o.x);
@@ -153,6 +153,25 @@ TEST_CASE("Object Factory Serialization") {
             }
         }
     }
+
+    SECTION("Create from name") {
+        auto it = ObjectFactory::reflection.find(typeid(TestObject));
+
+        REQUIRE(it != ObjectFactory::reflection.end());
+        REQUIRE("TestObject" == it->second.first);
+
+        auto p = it->second.second->create();
+        REQUIRE(dynamic_cast<TestObject *>(p.get()));
+        auto &so = *p.get();
+        REQUIRE(typeid(so) == typeid(TestObject));
+    }
+
+    SECTION("Type from name") {
+        auto it = ObjectFactory::name_type.find("TestObject");
+        REQUIRE(it != ObjectFactory::name_type.end());
+        REQUIRE(it->second == typeid(TestObject));
+    }
+
 
 }
 
