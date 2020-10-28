@@ -4,6 +4,10 @@
 #define TEST
 
 #include "catch.hpp"
+
+#undef WARN
+#undef INFO
+
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 

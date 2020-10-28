@@ -3,6 +3,7 @@ project(RTS_GAME)
 add_custom_target(RTS_GAME)
 
 set(CMAKE_CXX_STANDARD 17)
+link_libraries("-demangle")
 add_compile_options("-Wfatal-errors")
 add_compile_options("$<$<CONFIG:DEBUG>:-O0;-g3;-ggdb>")
 add_compile_options("$<$<CONFIG:RELEASE>:-O3;-g0;-s>")
