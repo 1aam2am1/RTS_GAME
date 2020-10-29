@@ -77,6 +77,9 @@ set(SRC
         include/GameClient/Unity/Serialization/JsonSerializer.h
         include/GameClient/Unity/Serialization/SerializerBase.h
         include/GameClient/Unity/Serialization/SerializerBase.cpp
+        include/GameClient/Unity/forEachMacro.h
+        include/GameClient/Initializer.cpp
+        include/GameClient/Initializer.h
         )
 
 add_executable(GameClient ${SRC})

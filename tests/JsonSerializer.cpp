@@ -38,14 +38,14 @@ TEST_CASE("JSON Serialization / Deserialization") {
         auto str = j.Serialize(&o).dump(-1, ' ', true);
 
         REQUIRE(str ==
-                "{\"JSONTestObject\":{\"d\":999.99,\"name\":\"\",\"str\":\"\\\"It should work!@#$%^&*(\",\"x\":6,\"y\":15}}");
+                "{\"JSONTestObject\":{\"d\":999.99,\"m_Name\":\"\",\"str\":\"\\\"It should work!@#$%^&*(\",\"x\":6,\"y\":15}}");
     }
 
     SECTION("From string") {
 
         JsonSerializer j;
         auto o = j.Deserialize("JSONTestObject",
-                               "{\"d\":999.99,\"name\":\"Name\",\"str\":\"\\\"It should work!@#$%^&*(\",\"x\":6,\"y\":15}"_json);
+                               "{\"d\":999.99,\"m_Name\":\"Name\",\"str\":\"\\\"It should work!@#$%^&*(\",\"x\":6,\"y\":15}"_json);
 
         TPtr<JSONTestObject> t{nullptr};
 

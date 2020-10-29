@@ -14,6 +14,11 @@
 
 #include <windows.h>
 
+#elif defined(__linux__)
+
+#include <sys/types.h>
+#include <unistd.h>
+
 #endif
 
 namespace fs = std::filesystem;
@@ -42,7 +47,7 @@ struct Data {
     std::map<std::string, std::vector<std::string>> dir_tree;
 };
 
-Data &get_data() {
+static Data &get_data() {
     static Data d;
     return d;
 }
@@ -251,18 +256,21 @@ bool AssetDatabase::OpenAsset(Object *target) {
     if (s.empty())
         return false;
     try {
-#if defined(_WIN32)
         fs::path p = s;
         p = fs::absolute(p);
+#if defined(_WIN32)
 
         ShellExecuteW(0, 0, p.generic_wstring().data(), 0, 0, SW_SHOW);
-#elif defiend(__linux__)
-        if(fork() == 0){
-            std::system(u8"xdg-open \"" + p.generic_string() + u8"\"");
+
+#elif defined(__linux__)
+
+        if (fork() == 0) {
+            std::system(("xdg-open \"" + p.generic_string() + "\"").data());
             exit(0);
-        }else{
+        } else {
             return true;
         }
+
 #endif
     } catch (...) {
         return false;

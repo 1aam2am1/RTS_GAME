@@ -6,7 +6,7 @@
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/ObjectFactory.h>
 
-EXPORT_CLASS(Object, name);
+EXPORT_CLASS(Object, ("m_Name", name));
 
 Object::Object() {
 

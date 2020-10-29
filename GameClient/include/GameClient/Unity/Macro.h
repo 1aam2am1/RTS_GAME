@@ -5,50 +5,22 @@
 #ifndef RTS_GAME_MACRO_H
 #define RTS_GAME_MACRO_H
 
-//region STRINGIZE
-#define REGISTER_MEMBER_FOR_SERIALIZE(arg, ...) registerMemberForSerialize(STRINGIZE(arg), __VA_ARGS__::arg)
-#define STRINGIZE_ARG(arg) STRINGIZE(arg), arg
-#define STRINGIZE(arg)  STRINGIZE1(arg)
-#define STRINGIZE1(arg) STRINGIZE2(arg)
-#define STRINGIZE2(arg) #arg
+#include <GameClient/Unity/forEachMacro.h>
 
-#define CONCATENATE(arg1, arg2)   CONCATENATE1(arg1, arg2)
-#define CONCATENATE1(arg1, arg2)  CONCATENATE2(arg1, arg2)
-#define CONCATENATE2(arg1, arg2)  arg1##arg2
-//endregion
+//region UNPAREN
+#define NOTHING_EXTRACT
+#define EXTRACT(...) EXTRACT __VA_ARGS__
+#define UNPAREN(x) CONCATENATE(NOTHING_, EXTRACT x)
 
-//region FOR_EACH
-#define FOR_EACH_0(what, y, x, ...)
-#define FOR_EACH_1(what, y, x, ...) what(x, y);
-#define FOR_EACH_2(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_1(what,y,   __VA_ARGS__)
-#define FOR_EACH_3(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_2(what, y, __VA_ARGS__)
-#define FOR_EACH_4(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_3(what, y,  __VA_ARGS__)
-#define FOR_EACH_5(what, y, x, ...)\
-  what(x, y);\
- FOR_EACH_4(what, y,  __VA_ARGS__)
-#define FOR_EACH_6(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_5(what, y,  __VA_ARGS__)
-#define FOR_EACH_7(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_6(what, y,  __VA_ARGS__)
-#define FOR_EACH_8(what, y, x, ...)\
-  what(x, y);\
-  FOR_EACH_7(what, y,  __VA_ARGS__)
+#define RMFS_SERIALIZE_1(type, arg) STRINGIZE(arg), &type::arg
+#define RMFS_SERIALIZE_2(type, name, arg) name, &type::arg
+#define RMFS_SERIALIZE_3(type, name, set, get) name, &type::set, &type::get
 
-#define FOR_EACH_NARG(...) FOR_EACH_NARG_(__VA_ARGS__ __VA_OPT__(,) FOR_EACH_RSEQ_N())
-#define FOR_EACH_NARG_(...) FOR_EACH_ARG_N(__VA_ARGS__)
-#define FOR_EACH_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
-#define FOR_EACH_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
+#define RMFS_SERIALIZE_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_, N)(type, __VA_ARGS__)
+#define RMFS_SERIALIZE(type, ...) RMFS_SERIALIZE_(FOR_EACH_NARG(__VA_ARGS__), type, __VA_ARGS__)
 
-#define FOR_EACH_(N, what, x, ...) CONCATENATE(FOR_EACH_, N)(what, x, __VA_ARGS__)
-#define FOR_EACH(what, x, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), what, x, ## __VA_ARGS__)
+//TODO: Change ____VA_ARGS__ and REGISTER_MEMBER_FOR_SERIALIZE macro so that you can place (x) or ("x", x) or ("x", set, get)
+#define REGISTER_MEMBER_FOR_SERIALIZE(arg, TYPE) registerMemberForSerialize(RMFS_SERIALIZE(TYPE, UNPAREN(arg)))
 //endregion
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
@@ -61,11 +33,11 @@
 /// What should be serialized
 #define EXPORT_CLASS(TYPE, ...)                     \
 namespace {                                         \
-    static int INTERNAL_NO_USE_CLASS_##TYPE = [](){ \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
         auto& t = ObjectFactory::register_class<TYPE>(#TYPE); \
-        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, &TYPE, __VA_ARGS__) \
+        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         return 0;                                   \
-    }();                                            \
+    });                                            \
 }
 
 /// Export class to save it in scene and allows you to place a
@@ -86,10 +58,10 @@ namespace {                                         \
 /// \param ... validation, priority
 #define MENU_ITEM(FUNC, PATH, ...) \
 namespace {                        \
-    static int UNIQUE_ID(INTERNAL_NO_USE_F_) = [](){ \
+    static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){ \
         Menu::addItem(PATH, FUNC, {__VA_ARGS__}); \
         return 0;                 \
-    }();                          \
+    });                          \
 }
 
 /// The ContextMenu attribute allows you to add commands to the context menu of this class.
@@ -102,10 +74,10 @@ namespace {                        \
 /// \param ... priority
 #define MENU_TAB(PATH, ...) \
 namespace {                 \
-    static const int UNIQUE_ID(INTERNAL_NO_USE_T_) = [](){ \
+    static const int UNIQUE_ID(INTERNAL_NO_USE_T_) = Initializer::add([](){ \
         Menu::addPlaceHolder(PATH, {__VA_ARGS__});   \
         return 0;                 \
-    }();                          \
+    });                          \
 }
 
 /// Tells an Editor class which run-time type it's an editor for.
@@ -124,5 +96,6 @@ namespace {                 \
 //DEFINE_BREAK_IN(nazwa_odwolamnia, int Klasa::*, &Klasa::x);
 // std::cout << x.*break_in(nazwa_odwolamnia());
 
+#include <GameClient/Initializer.h>
 
 #endif //RTS_GAME_MACRO_H

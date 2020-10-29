@@ -6,6 +6,7 @@
 #define RTS_GAME_OBJECTFACTORY_H
 
 #include <GameClient/Unity/Core/GameObject.h>
+#include <GameApi/function_traits.h>
 #include <typeinfo>
 #include <unordered_map>
 #include <map>
@@ -44,8 +45,11 @@ public:
 
     friend class SerializerBase;
 
-    using TU = std::variant<int64_t *, double *, std::string *, TPtr<Object> *>;
-    using CTU = std::variant<const int64_t *, const double *, const std::string *, const TPtr<Object> *>;
+    using TU = std::variant<int64_t *, double *, std::string *, TPtr<Object> *,
+            std::function<void(int64_t)>, std::function<void(double)>, std::function<void(
+                    std::string)>>;
+    using CTU = std::variant<const int64_t *, const double *, const std::string *, const TPtr<Object> *,
+            std::function<int64_t()>, std::function<double()>, std::function<std::string()>>;
     using ST = std::vector<std::pair<std::string_view, TU>>;
     using CST = std::vector<std::pair<std::string_view, CTU>>;
 
@@ -65,10 +69,20 @@ public:
     class Register : public Reflect {
     public:
         using TT = std::variant<int64_t T::*, double T::*, std::string T::*, TPtr<Object> T::*>;
+        using FT = std::variant<std::function<void(T *, int64_t)>, std::function<void(T *, double)>, std::function<void(
+                T *, std::string)>>;
+        using CFT = std::variant<std::function<int64_t(const T *)>, std::function<double(
+                const T *)>, std::function<std::string(const T *)>>;
 
         template<typename Y>
         void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
             v.emplace_back(str, ptr);
+        }
+
+        template<typename R>
+        void registerMemberForSerialize(std::string_view str, void (T::*set)(R), R (T::*get)()) {
+            f.emplace_back(str, [=](T *t, auto &&arg) { t->*set(arg); });
+            cf.emplace_back(str, [=](T *t) { return t->*get(); });
         }
 
         CST get(const Object *o) const override {
@@ -83,6 +97,13 @@ public:
             for (auto &it:v) {
                 result.emplace_back(it.first, std::visit([ptr](auto &&arg) -> CTU { return &((*ptr).*arg); },
                                                          it.second));
+            }
+            for (auto &it:cf) {
+                result.emplace_back(it.first,
+                                    std::visit([ptr](auto &&arg) -> CTU {
+                                                   return std::function<decltype(arg(ptr))()>{[=]() { return arg(ptr); }};
+                                               },
+                                               it.second));
             }
 
             return result;
@@ -101,20 +122,33 @@ public:
                 result.emplace_back(it.first, std::visit([ptr](auto &&arg) -> TU { return &((*ptr).*arg); },
                                                          it.second));
             }
+            for (auto &it:f) {
+                result.emplace_back(it.first, std::visit(
+                        [ptr](auto &&arg) -> TU {
+                            return std::function<void(
+                                    function_traits_arg_t<decltype(arg), 1>)>{
+                                    [=](auto &&value) { arg(ptr, value); }};
+                        },
+                        it.second));
+            }
 
             return result;
         }
 
-        bool check(const Object *o) override {
+        bool check(const Object *o)
+        override {
             return dynamic_cast<const T *>(o);
         }
 
-        TPtr<Object> create() override {
+        TPtr<Object> create()
+        override {
             return TPtr<Object>{nullptr, std::make_shared<T>()};
         }
 
     private:
         std::vector<std::pair<std::string_view, TT>> v{};
+        std::vector<std::pair<std::string_view, FT>> f{};
+        std::vector<std::pair<std::string_view, CFT>> cf{};
     };
 
     //TODO: Change reflection to type->name, list of valid reflections and one constructor
@@ -130,10 +164,11 @@ auto &ObjectFactory::register_class(std::string_view str) {
 
     if (it != reflection.end()) {
         if (it->second.first != str) {
-            GameApi::log(ERR.fmt("Class with name: %s tried redeclaring with different name. Redeclared name: %s -> %s",
-                                 GameApi::demangle(it->first.name()).data(),
-                                 it->second.first.data(),
-                                 str.data()));
+            GameApi::log(
+                    ERR.fmt("Class with name: %s tried redeclaring with different name. Redeclared name: %s -> %s",
+                            GameApi::demangle(it->first.name()).data(),
+                            it->second.first.data(),
+                            str.data()));
         }
         return *static_cast<Register<T> *>(it->second.second.get());
     }

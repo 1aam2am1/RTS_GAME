@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <GameClient/Windows/AssetWindow.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
+#include <GameClient/Initializer.h>
 
 namespace fs = std::filesystem;
 
@@ -24,6 +25,7 @@ int main(int argc, char **argv) {
                                   static_cast<int>(sizeof(void *) * 8)));
         }
 
+        Initializer::initialize();
         MainWindow window(options);
         FontLoader{options};
 

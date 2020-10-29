@@ -7,6 +7,7 @@
 
 #include <string>
 #include <GameApi/HashCombine.h>
+#include <nlohmann/json.hpp>
 
 namespace Unity {
     struct GUID {
@@ -49,6 +50,15 @@ namespace Unity {
         static GUID NewGuid();
     };
 
+    inline void to_json(nlohmann::json &j, const GUID &p) {
+        j = p.operator std::string();
+    }
+
+    inline void from_json(const nlohmann::json &j, GUID &p) {
+        std::string s;
+        j.get_to(s);
+        p = s;
+    }
 }
 
 MAKE_HASHABLE(Unity::GUID, t.first, t.second);

@@ -3,6 +3,8 @@
 //
 
 #include "JsonSerializer.h"
+#include <GameApi/IsInstance.h>
+#include <GameApi/function_traits.h>
 
 
 nlohmann::json JsonSerializer::Serialize(const Object *object) {
@@ -25,7 +27,14 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
                                      it2.first.data(),
                                      GameApi::demangle(typeid(*object).name()).data()));
             }
-            check = std::visit([this](auto &&p) { return this->operator()(p); }, it2.second);
+            check = std::visit([this](auto &&p) {
+                if constexpr (is_instance_v<decltype(p), std::function>) {
+                    auto value = p();
+                    return this->operator()(&value);
+                } else {
+                    return this->operator()(p);
+                }
+            }, it2.second);
         }
     }
 
@@ -48,7 +57,15 @@ TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::j
                                           it2.first.data(),
                                           GameApi::demangle(type.name()).data()));
                 } else {
-                    std::visit([this, &c = check.value()](auto &&p) { return this->operator()(p, c); }, it2.second);
+                    std::visit([this, &c = check.value()](auto &&p) {
+                        if constexpr (is_instance_v<decltype(p), std::function>) {
+                            function_traits_arg_t<decltype(p), 0> value;
+                            this->operator()(&value, c);
+                            p(value);
+                        } else {
+                            return this->operator()(p, c);
+                        }
+                    }, it2.second);
                 }
             }
         }

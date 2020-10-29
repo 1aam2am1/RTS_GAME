@@ -86,15 +86,17 @@ TEST_CASE("Object Factory Serialization") {
                                    [&](std::string *s) {
                                        if (w.first == "str") {
                                            REQUIRE(s == &o.str);
-                                       } else if (w.first == "name") {
+                                       } else if (w.first == "m_Name") {
                                            REQUIRE(s == &o.name);
                                        } else {
                                            REQUIRE(0);
                                        }
                                    },
                                    [&](Object *) {
+                                       REQUIRE(0);
                                    },
                                    [&](auto &&) {
+                                       REQUIRE(0);
                                    }};
 
                 std::visit(vi, w.second);
@@ -138,15 +140,17 @@ TEST_CASE("Object Factory Serialization") {
                                    [&](std::string *s) {
                                        if (w.first == "str") {
                                            REQUIRE(*s == o.str);
-                                       } else if (w.first == "name") {
+                                       } else if (w.first == "m_Name") {
                                            REQUIRE(*s == o.name);
                                        } else {
                                            REQUIRE(0);
                                        }
                                    },
                                    [&](Object *) {
+                                       REQUIRE(0);
                                    },
                                    [&](auto &&) {
+                                       REQUIRE(0);
                                    }};
 
                 std::visit(vi, w.second);
