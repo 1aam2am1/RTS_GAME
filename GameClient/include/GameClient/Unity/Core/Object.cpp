@@ -20,3 +20,10 @@ Object &Object::operator=(const Object &o) {
     name = o.name;
     return *this;
 }
+
+
+void Object::DestroyImmediate(Object *obj, bool allowDestroyingAssets) {
+    if (obj) {
+        obj->onDestroySignal(nullptr);
+    }
+}

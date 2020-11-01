@@ -3,6 +3,8 @@
 #include <cstdarg>
 #include <mutex>
 #include <map>
+#include <memory>
+#include <cstdio>
 
 namespace GameApi {
 
@@ -132,130 +134,17 @@ namespace GameApi {
         return static_cast<bool>(sscanf(str.c_str(), "%i", &result));
     }
 
-    namespace files {
-#ifdef _WIN32
+    std::string readFullFile(std::string_view path) {
+        std::string result;
+        FILE *file = fopen(path.data(), "rb");
+        std::shared_ptr<FILE> guard{file, [](FILE *f) { fclose(f); }};
 
-        std::vector<std::string> dirD(std::string folder) {
-            _finddata_t data{};
-            std::vector<std::string> result;
+        fseek(file, 0, SEEK_END);
+        result.resize(ftell(file));
+        fseek(file, 0, SEEK_SET);
 
-            if (folder.back() != '/') { folder += "/"; }
-            if (folder.back() == '/') { folder += "*"; }
-
-            intptr_t handle = _findfirst(folder.c_str(), &data);
-            if (handle == -1) return result;
-
-            if (data.attrib & _A_SUBDIR) { result.emplace_back(data.name); }
-            int32_t find = _findnext(handle, &data);
-            while (find != -1) {
-                if (data.attrib & _A_SUBDIR) {
-                    result.emplace_back(data.name);
-                }
-                find = _findnext(handle, &data);
-            }
-            _findclose(handle);
-            return result;
-        }
-
-        std::vector<std::string> dirF(std::string folder) {
-            _finddata_t data{};
-            std::vector<std::string> result;
-
-            if (folder.back() != '/') { folder += "/"; }
-            if (folder.back() == '/') { folder += "*"; }
-
-            intptr_t handle = _findfirst(folder.c_str(), &data);
-            if (handle == -1) return result;
-
-            if (!(data.attrib & _A_SUBDIR)) { result.emplace_back(data.name); }
-            int32_t find = _findnext(handle, &data);
-            while (find != -1) {
-                if (!(data.attrib & _A_SUBDIR)) {
-                    result.emplace_back(data.name);
-                }
-                find = _findnext(handle, &data);
-            }
-            _findclose(handle);
-            return result;
-        }
-
-        bool mkdir(const std::string &d) {
-            if (::mkdir(d.c_str())) {
-                switch (errno) {
-                    case EEXIST:
-                        return true;
-                    case ENOENT:
-                    default:
-                        return false;
-                }
-            }
-            return true;
-        }
-
-#endif // _WIN32
-#ifdef __linux__
-
-        std::vector<std::string> dirD(std::string gdzie)
-        {
-            DIR *dir;
-            dirent *drnt;
-            std::vector<std::string> result;
-
-            if(gdzie.empty()){gdzie = ".";}
-
-            if( (dir = opendir(gdzie.c_str())) != nullptr) //otwieram folder
-            {
-                drnt = readdir( dir ); //czytam 1
-
-                while(drnt != nullptr)
-                {
-                    if(drnt->d_type == DT_DIR){result.emplace_back(drnt->d_name);} //czytam nazwe
-                    drnt = readdir( dir );
-                }
-
-                closedir(dir); //zamykam folder
-            }
-
-            return result;
-        }
-
-        std::vector<std::string> dirF(std::string gdzie) {
-            DIR *dir;
-            dirent *drnt;
-            std::vector<std::string> result;
-
-            if (gdzie.empty()) { gdzie = "."; }
-
-            if ((dir = opendir(gdzie.c_str())) != nullptr) //otwieram folder
-            {
-                drnt = readdir(dir); //czytam 1
-
-                while (drnt != nullptr) {
-                    if (drnt->d_type != DT_DIR) { result.emplace_back(drnt->d_name); } //czytam nazwe
-                    drnt = readdir(dir);
-                }
-
-                closedir(dir); //zamykam folder
-            }
-
-            return result;
-        }
-
-        bool mkdir(std::string jaki) {
-            if (::mkdir(jaki.c_str(), 770)) {
-                switch (errno) {
-                    case EEXIST:
-                        return true;
-                    case ENOENT:
-                        return false;
-                    default:
-                        return false;
-                }
-            }
-            return true;
-        }
-
-#endif // __linux__
+        fread(result.data(), 1, result.size(), file);
+        return result;
     }
 
 

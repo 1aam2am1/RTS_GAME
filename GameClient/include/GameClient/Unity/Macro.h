@@ -46,7 +46,8 @@ namespace {                                         \
 namespace {                        \
     static int INTERNAL_NO_USE_IMPORTER_##TYPE = Initializer::add([](){ \
         static_assert(std::is_base_of_v<ScriptedImporter, T>, "only subclasses, please"); \
-        \
+        auto& t = MetaData::register_importer<TYPE>(#TYPE, UNPAREN(EXT));                \
+        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)    \
         return 0;                               \
     });                                   \
 }

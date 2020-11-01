@@ -112,14 +112,7 @@ namespace GameApi {
         return s;
     }
 
-    namespace files {
-        //std::string dir(std::string gdzie);
-        std::vector<std::string> dirD(std::string folder);
-
-        std::vector<std::string> dirF(std::string folder);
-
-        bool mkdir(const std::string &name);
-    }
+    std::string readFullFile(std::string_view path);
 
     namespace binary {
         template<typename T>

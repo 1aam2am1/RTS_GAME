@@ -104,8 +104,13 @@ private:
     std::shared_ptr<T> ptr;
     sigslot::scoped_connection parentConnection;
 
-    constexpr void destroy() noexcept {
-        ptr.reset();
+    void destroy(Object *o) noexcept {
+        T *t = dynamic_cast<T *>(o);
+        if (t) {
+            ptr = std::reinterpret_pointer_cast<T>(t->shared_from_this());
+        } else {
+            ptr = nullptr;
+        }
     }
 
     template<typename>

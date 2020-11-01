@@ -6,11 +6,16 @@
 #include <GameApi/IsInstance.h>
 #include <GameClient/MetaData.h>
 #include <GameClient/TPtr.h>
+#include "ISerializationCallbackReceiver.h"
 
 
 nlohmann::json JsonSerializer::Serialize(const Object *object) {
     nlohmann::json result;
 
+    {
+        auto d = dynamic_cast<ISerializationCallbackReceiver *>(const_cast<Object *>(object));
+        if (d) { d->OnBeforeSerialize(); }
+    }
     auto name = MetaData::get_name_constructor(typeid(*object)).first;
     if (name.empty()) {
         throw std::runtime_error(
@@ -70,6 +75,11 @@ TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::j
                 }
             }
         }
+    }
+
+    {
+        auto d = dynamic_cast<ISerializationCallbackReceiver *>(result.get());
+        if (d) { d->OnAfterDeserialize(); }
     }
 
     return result;

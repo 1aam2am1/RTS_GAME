@@ -82,6 +82,7 @@ set(SRC
         include/GameClient/Initializer.h
         include/GameClient/MetaData.cpp
         include/GameClient/MetaData.h
+        include/GameClient/Unity/Serialization/ISerializationCallbackReceiver.h
         )
 
 add_executable(GameClient ${SRC})

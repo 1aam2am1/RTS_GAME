@@ -38,7 +38,7 @@ TEST_CASE("TPtr") {
 
         REQUIRE_NOTHROW(l->works());
 
-        parent.onDestroySignal();
+        parent.onDestroySignal(nullptr);
 
         REQUIRE_THROWS(l->works());
 
@@ -51,7 +51,7 @@ TEST_CASE("TPtr") {
 
         REQUIRE_NOTHROW(l->works());
 
-        l->onDestroySignal();
+        l->onDestroySignal(nullptr);
 
         REQUIRE_THROWS(l->works());
         REQUIRE(l.expired());
@@ -97,7 +97,7 @@ TEST_CASE("TPtr") {
         dynamic_cast<A *>(b.a.get())->d = [&i]() { i += 1; };
         b.b->d = [&i]() { i += 1; };
 
-        b.onDestroySignal();
+        b.onDestroySignal(nullptr);
 
         REQUIRE(b.onDestroySignal.slot_count() == 2);
         REQUIRE(i == 2);

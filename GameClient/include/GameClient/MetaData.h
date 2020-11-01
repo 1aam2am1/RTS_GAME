@@ -22,11 +22,16 @@ public:
     template<typename T>
     static auto &register_class(std::string_view str);
 
+    template<typename T>
+    static auto &register_importer(std::string_view str, std::string_view extension, int64_t priority = 50);
+
     static std::vector<std::shared_ptr<Reflect>> get_reflections(const Object *);
 
     static std::pair<std::string_view, const std::shared_ptr<Reflect>> get_name_constructor(std::type_index);
 
     static std::type_index get_type(std::string_view);
+
+    static std::pair<const std::type_index, int64_t> get_importer(std::string_view);
 
 private:
     using TU = std::variant<int64_t *, double *, std::string *, TPtr<Object> *,
@@ -145,6 +150,8 @@ private:
     static std::map<std::type_index, std::pair<const std::string_view, const std::shared_ptr<Reflect>>> reflection;
     //name -> info
     static std::map<std::string_view, const std::type_index> name_type;
+
+    static std::map<std::string_view, std::pair<const std::type_index, int64_t>> ext_importer;
 };
 
 template<typename T>
@@ -176,5 +183,17 @@ auto &MetaData::register_class(std::string_view str) {
     return *static_cast<Register<T> *>(pointer.get());
 }
 
+template<typename T>
+auto &MetaData::register_importer(std::string_view str, std::string_view extension, int64_t priority) {
+    auto[it2, b] = ext_importer.emplace(extension, std::make_pair(typeid(T), priority));
+    if (!b) {
+        GameApi::log(ERR.fmt("Classes with type: %s %s import the same extension. %s",
+                             GameApi::demangle(it2->second.first.name()).data(),
+                             GameApi::demangle(typeid(T).name()).data(),
+                             extension.data()));
+    }
+
+    return register_class<T>(str);
+}
 
 #endif //RTS_GAME_METADATA_H

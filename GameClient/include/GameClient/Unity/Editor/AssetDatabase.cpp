@@ -9,6 +9,8 @@
 #include <GameApi/StringFormatter.h>
 #include <GameApi/GlobalLogSource.h>
 #include <unordered_set>
+#include <nlohmann/json.hpp>
+#include <set>
 
 #if defined(_WIN32)
 
@@ -289,6 +291,8 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
             std::time_t meta = 0;
             std::time_t filename = 0;
             std::string extension{};
+
+            mutable int64_t priority = INT64_MIN;
         };
 
         std::map<std::string, A> files;
@@ -326,38 +330,76 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
             }
         }
 
-        for (auto &f : files) {
-            auto guid = AssetPathToGUID(f.first);
-            /// guid -> exists meta to -> check time
-            /// guid -> no meta yes -> load meta
-
-            /// guid -> exists meta not -> new meta new guid
-            /// guid -> no meta no -> new meta guid
-
-            /// meta -> TextureImport, ..., DefaultImport...
-            /// import -> run
-            /// import -> meta file as default
-            /// objects -> path file as default
-            if (!guid.empty()) {
-                auto &ob = d.objects[guid];
-                if (ob.meta_time != f.second.meta || ob.asset_time != f.second.filename) {
-                    ///TODO: Load add to new container guid, and if in old container serialize data into old one
+        /// Erase deleted assets
+        for (auto iterator = d.paths.begin(); iterator != d.paths.end();) {
+            /// path don't exists (deleted files)
+            if (files.find(iterator->second) == files.end()) {
+                //remove dependences
+                d.dependency.erase(iterator->first);
+                std::for_each(d.dependency.begin(), d.dependency.end(), [&iterator](auto &&f) {
+                    f.second.erase(std::remove_if(f.second.begin(), f.second.end(), [&iterator](auto &&f) {
+                        return iterator->first == f;
+                    }), f.second.end());
+                });
+                //remove loaded objects
+                auto it_objects = d.objects.find(iterator->first);
+                if (it_objects != d.objects.end()) {
+                    std::for_each(it_objects->second.object.begin(), it_objects->second.object.end(), [](auto &&f) {
+                        Object::DestroyImmediate(f.second.get(), true);
+                    });
                 }
+                d.objects.erase(it_objects);
+
+                iterator = d.paths.erase(iterator);
             } else {
-                if (f.second.meta != 0) {
-                    ///TODO: Load and add to container
-                } else {
-                    ///TODO: Create default meta file and try loading and save meta
-                }
+                ++iterator;
             }
         }
 
-        ///TODO: Change dir_tree to new database
-        ///TODO: Move objects, delete unused, delete deleted.
+        /// Erase loaded valid assets
+        for (auto iterator = files.begin(); iterator != files.end();) {
+            bool er = [&]() {
+                auto guid = AssetPathToGUID(iterator->first);
+                if (!guid.empty()) {
+                    auto &ob = d.objects[guid];
+                    if (ob.meta_time == iterator->second.meta && ob.asset_time == iterator->second.filename) {
+                        return true;
+                    }
+                }
+                return false;
+            }();
+            if (er) {
+                iterator = files.erase(iterator);
+            } else {
+                ++iterator;
+            }
+        }
 
-    } catch (const std::exception &e) {
-        GameApi::log(ERR.fmt("%s", e.what()));
-    }
+        auto setCompare = [](auto &&f1, auto &&f2) {
+            if (f1.second.priority == INT64_MIN) {
+                f1.second.priority = 0;
+                try {
+                    f1.second.priority = MetaData::get_importer(f1.second.extension).second;
+                } EXCEPTION_PRINT
+
+            }
+            if (f2.second.priority == INT64_MIN) {
+                f2.second.priority = 0;
+                try {
+                    f2.second.priority = MetaData::get_importer(f2.second.extension).second;
+                } EXCEPTION_PRINT
+            }
+
+            return f1.second.priority < f2.second.priority;
+        };
+        std::set<std::pair<std::string, A>, decltype(setCompare)> sorted(files.begin(), files.end(), setCompare);
+
+        for (auto &f : sorted) {
+            ImportAsset(f.first, ImportAssetOptions::ForceUpdate);
+        }
+
+    } EXCEPTION_PRINT
+
 }
 
 void AssetDatabase::CreateAsset(Object *asset, std::string path) {

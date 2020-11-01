@@ -6,7 +6,7 @@
 
 decltype(MetaData::reflection) MetaData::reflection;
 decltype(MetaData::name_type) MetaData::name_type;
-
+decltype(MetaData::ext_importer) MetaData::ext_importer;
 
 std::vector<std::shared_ptr<MetaData::Reflect>> MetaData::get_reflections(const Object *o) {
     std::vector<std::shared_ptr<Reflect>> result;
@@ -42,5 +42,19 @@ std::type_index MetaData::get_type(std::string_view str) {
     s = "Type ";
     s += str;
     s += " don't have mapped object constructor: use EXPORT_CLASS";
+    throw std::runtime_error(s);
+}
+
+std::pair<const std::type_index, int64_t> MetaData::get_importer(std::string_view str) {
+    auto it = ext_importer.find(str);
+
+    if (it != ext_importer.end()) {
+        return it->second;
+    }
+    std::string s;
+    s.reserve(str.length() + 5 + 55 + 1);
+    s = "Type ";
+    s += str;
+    s += " don't have mapped object importer: use EXPORT_IMPORTER";
     throw std::runtime_error(s);
 }
