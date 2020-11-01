@@ -80,6 +80,8 @@ set(SRC
         include/GameClient/Unity/forEachMacro.h
         include/GameClient/Initializer.cpp
         include/GameClient/Initializer.h
+        include/GameClient/MetaData.cpp
+        include/GameClient/MetaData.h
         )
 
 add_executable(GameClient ${SRC})

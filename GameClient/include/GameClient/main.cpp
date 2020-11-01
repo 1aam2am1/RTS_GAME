@@ -39,10 +39,7 @@ int main(int argc, char **argv) {
         AssetDatabase::Refresh();
 
         window.run();
-    }
-    catch (const std::exception &e) {
-        GameApi::log(ERR.fmt("%s", e.what()));
-    }
+    } EXCEPTION_PRINT
 
     GameApi::log(INFO << "Bye");
 

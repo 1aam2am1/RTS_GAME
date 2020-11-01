@@ -29,14 +29,9 @@ TEST_CASE("Object Factory Serialization") {
     TestObject o;
 
     SECTION("default") {
-        int i = 0;
-        for (auto &it : ObjectFactory::reflection) {
-            if (!it.second.second->get(&o).empty()) {
-                ++i;
-            }
-        }
+        auto reflections = MetaData::get_reflections(&o);
 
-        REQUIRE(i == 2);
+        REQUIRE(reflections.size() == 2);
     }
 
     SECTION("Good export") {
@@ -45,8 +40,9 @@ TEST_CASE("Object Factory Serialization") {
         int s_count = 0;
         int object_count = 0;
         int some_else = 0;
-        for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second.second->get(&o)) {
+        auto reflections = MetaData::get_reflections(&o);
+        for (auto &it: reflections) {
+            for (auto &w: it->get(&o)) {
                 auto vi = overload{[&](int64_t *) { ++i_count; },
                                    [&](double *) { ++d_count; },
                                    [&](std::string *) { ++s_count; },
@@ -65,8 +61,9 @@ TEST_CASE("Object Factory Serialization") {
     }
 
     SECTION("Good ptr") {
-        for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second.second->get(&o)) {
+        auto reflections = MetaData::get_reflections(&o);
+        for (auto &it: reflections) {
+            for (auto &w: it->get(&o)) {
                 auto vi = overload{[&](int64_t *i) {
                     if (w.first == "x") {
                         REQUIRE(i == &o.x);
@@ -119,8 +116,9 @@ TEST_CASE("Object Factory Serialization") {
         REQUIRE(o.str == "Some string");
         REQUIRE(o.name == "Name");
 
-        for (auto &it: ObjectFactory::reflection) {
-            for (auto &w: it.second.second->get(&o)) {
+        auto reflections = MetaData::get_reflections(&o);
+        for (auto &it: reflections) {
+            for (auto &w: it->get(&o)) {
                 auto vi = overload{[&](int64_t *i) {
                     if (w.first == "x") {
                         REQUIRE(*i == o.x);
@@ -159,21 +157,20 @@ TEST_CASE("Object Factory Serialization") {
     }
 
     SECTION("Create from name") {
-        auto it = ObjectFactory::reflection.find(typeid(TestObject));
+        auto con = MetaData::get_name_constructor(typeid(TestObject));
 
-        REQUIRE(it != ObjectFactory::reflection.end());
-        REQUIRE("TestObject" == it->second.first);
+        REQUIRE(con.first == "TestObject");
 
-        auto p = it->second.second->create();
+        auto p = con.second->create();
         REQUIRE(dynamic_cast<TestObject *>(p.get()));
         auto &so = *p.get();
         REQUIRE(typeid(so) == typeid(TestObject));
     }
 
     SECTION("Type from name") {
-        auto it = ObjectFactory::name_type.find("TestObject");
-        REQUIRE(it != ObjectFactory::name_type.end());
-        REQUIRE(it->second == typeid(TestObject));
+        REQUIRE_NOTHROW(MetaData::get_type("TestObject"));
+        auto it = MetaData::get_type("TestObject");
+        REQUIRE(it == typeid(TestObject));
     }
 
 

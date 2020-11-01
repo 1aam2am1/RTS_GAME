@@ -34,10 +34,21 @@
 #define EXPORT_CLASS(TYPE, ...)                     \
 namespace {                                         \
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        auto& t = ObjectFactory::register_class<TYPE>(#TYPE); \
+        auto& t = MetaData::register_class<TYPE>(#TYPE); \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         return 0;                                   \
     });                                            \
+}
+
+
+/// Export class to import and export classes
+#define EXPORT_IMPORTER(TYPE, EXT, ...) \
+namespace {                        \
+    static int INTERNAL_NO_USE_IMPORTER_##TYPE = Initializer::add([](){ \
+        static_assert(std::is_base_of_v<ScriptedImporter, T>, "only subclasses, please"); \
+        \
+        return 0;                               \
+    });                                   \
 }
 
 /// Export class to save it in scene and allows you to place a
@@ -96,6 +107,12 @@ namespace {                 \
 //DEFINE_BREAK_IN(nazwa_odwolamnia, int Klasa::*, &Klasa::x);
 // std::cout << x.*break_in(nazwa_odwolamnia());
 
+#define EXCEPTION_PRINT                     \
+catch (const std::exception &e) {           \
+    GameApi::log(ERR.fmt("%s", e.what()));  \
+}
+
 #include <GameClient/Initializer.h>
+#include <GameClient/MetaData.h>
 
 #endif //RTS_GAME_MACRO_H

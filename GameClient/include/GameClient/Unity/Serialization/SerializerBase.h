@@ -5,11 +5,14 @@
 #ifndef RTS_GAME_SERIALIZERBASE_H
 #define RTS_GAME_SERIALIZERBASE_H
 
-#include <GameClient/Unity/Editor/ObjectFactory.h>
-#include <GameClient/TPtr.h>
+#include <GameClient/Unity/Core/Object.h>
 #include <nlohmann/json.hpp>
+#include <typeindex>
 #include <cstdint>
 #include <string>
+
+template<typename>
+class TPtr;
 
 class SerializerBase {
 public:
@@ -48,12 +51,6 @@ protected:
 
     virtual void operator()(TPtr<Object> *, const nlohmann::json &) = 0;
     //endregion
-
-    static std::vector<std::shared_ptr<ObjectFactory::Reflect>> get_reflections(const Object *);
-
-    static decltype(ObjectFactory::reflection)::mapped_type get_name_constructor(std::type_index);
-
-    static std::type_index get_type(std::string_view);
 };
 
 

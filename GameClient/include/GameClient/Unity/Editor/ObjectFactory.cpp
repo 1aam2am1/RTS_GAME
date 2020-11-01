@@ -4,5 +4,3 @@
 
 #include "ObjectFactory.h"
 
-decltype(ObjectFactory::reflection) ObjectFactory::reflection;
-decltype(ObjectFactory::name_type) ObjectFactory::name_type;

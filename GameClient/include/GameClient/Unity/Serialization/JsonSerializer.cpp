@@ -4,19 +4,20 @@
 
 #include "JsonSerializer.h"
 #include <GameApi/IsInstance.h>
-#include <GameApi/function_traits.h>
+#include <GameClient/MetaData.h>
+#include <GameClient/TPtr.h>
 
 
 nlohmann::json JsonSerializer::Serialize(const Object *object) {
     nlohmann::json result;
 
-    auto name = get_name_constructor(typeid(*object)).first;
+    auto name = MetaData::get_name_constructor(typeid(*object)).first;
     if (name.empty()) {
         throw std::runtime_error(
                 "Object don't have valid type reflection: " + GameApi::demangle(typeid(*object).name()));
     }
 
-    auto reflection = get_reflections(object);
+    auto reflection = MetaData::get_reflections(object);
 
     auto &serialized = result[name.data()];
     for (auto &it: reflection) {
@@ -42,13 +43,13 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
 }
 
 TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::json &serialized) {
-    auto constructor = get_name_constructor(type).second;
+    auto constructor = MetaData::get_name_constructor(type).second;
 
     TPtr<Object> result{nullptr};
     result = constructor->create();
 
     if (serialized.is_object()) {
-        auto reflection = get_reflections(result.get());
+        auto reflection = MetaData::get_reflections(result.get());
         for (auto &it: reflection) {
             for (auto &it2 : it->get(result.get())) {
                 auto check = serialized.find(it2.first.data());
