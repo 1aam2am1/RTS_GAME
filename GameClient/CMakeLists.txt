@@ -83,6 +83,13 @@ set(SRC
         include/GameClient/MetaData.cpp
         include/GameClient/MetaData.h
         include/GameClient/Unity/Serialization/ISerializationCallbackReceiver.h
+        include/GameClient/Unity/Editor/AssetImporter.cpp
+        include/GameClient/Unity/Editor/AssetImporter.h
+        include/GameClient/Importers/DirImporter.cpp
+        include/GameClient/Unity/Editor/AssetImportContext.cpp
+        include/GameClient/Unity/Editor/AssetImportContext.h
+        include/GameClient/Importers/TextureImporter.cpp
+        include/GameClient/Importers/TrueTypeFontImporter.cpp
         )
 
 add_executable(GameClient ${SRC})

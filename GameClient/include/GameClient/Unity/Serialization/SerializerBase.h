@@ -39,6 +39,8 @@ protected:
 
     virtual nlohmann::json operator()(const std::string *) = 0;
 
+    virtual nlohmann::json operator()(const bool *) = 0;
+
     virtual nlohmann::json operator()(const TPtr<Object> *) = 0;
     //endregion
 
@@ -48,6 +50,8 @@ protected:
     virtual void operator()(double *, const nlohmann::json &) = 0;
 
     virtual void operator()(std::string *, const nlohmann::json &) = 0;
+
+    virtual void operator()(bool *, const nlohmann::json &) = 0;
 
     virtual void operator()(TPtr<Object> *, const nlohmann::json &) = 0;
     //endregion

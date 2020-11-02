@@ -19,8 +19,9 @@
 #define RMFS_SERIALIZE_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_, N)(type, __VA_ARGS__)
 #define RMFS_SERIALIZE(type, ...) RMFS_SERIALIZE_(FOR_EACH_NARG(__VA_ARGS__), type, __VA_ARGS__)
 
-//TODO: Change ____VA_ARGS__ and REGISTER_MEMBER_FOR_SERIALIZE macro so that you can place (x) or ("x", x) or ("x", set, get)
+
 #define REGISTER_MEMBER_FOR_SERIALIZE(arg, TYPE) registerMemberForSerialize(RMFS_SERIALIZE(TYPE, UNPAREN(arg)))
+#define REGISTER_IMPORTER_EXTENSION(arg, TYPE) register_importer<TYPE>(arg)
 //endregion
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
@@ -28,13 +29,13 @@
 #define TPTR_P(NAME) TPtr<Object> NAME{this}
 #define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
-/// TODO: Change registering each parameter to registering two functions -> serialize, deserialize, and if object then callback serialization???
+/// TODO: Set TYPE SO THAT you can set to don't include base classes in serialization TYPE or (TYPE, PRIVATE) or (TYPE, OBJECT, ...)
 /// Export class to save it in scene and use in in gameobject as component
 /// What should be serialized
 #define EXPORT_CLASS(TYPE, ...)                     \
 namespace {                                         \
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        auto& t = MetaData::register_class<TYPE>(#TYPE); \
+        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE); \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         return 0;                                   \
     });                                            \
@@ -45,9 +46,10 @@ namespace {                                         \
 #define EXPORT_IMPORTER(TYPE, EXT, ...) \
 namespace {                        \
     static int INTERNAL_NO_USE_IMPORTER_##TYPE = Initializer::add([](){ \
-        static_assert(std::is_base_of_v<ScriptedImporter, T>, "only subclasses, please"); \
-        auto& t = MetaData::register_importer<TYPE>(#TYPE, UNPAREN(EXT));                \
+        static_assert(std::is_base_of_v<AssetImporter, TYPE>, "only subclasses, please"); \
+        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE);                \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)    \
+        FOR_EACH(MetaData::REGISTER_IMPORTER_EXTENSION, TYPE, UNPAREN(EXT))     \
         return 0;                               \
     });                                   \
 }

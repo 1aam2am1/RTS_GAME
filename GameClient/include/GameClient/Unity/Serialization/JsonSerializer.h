@@ -26,6 +26,8 @@ protected:
 
     nlohmann::json operator()(const std::string *) final;
 
+    nlohmann::json operator()(const bool *) final;
+
     nlohmann::json operator()(const TPtr<Object> *) override;
     //endregion
 
@@ -35,6 +37,8 @@ protected:
     void operator()(double *, const nlohmann::json &) final;
 
     void operator()(std::string *, const nlohmann::json &) final;
+
+    void operator()(bool *, const nlohmann::json &) final;
 
     void operator()(TPtr<Object> *, const nlohmann::json &) override;
     //endregion

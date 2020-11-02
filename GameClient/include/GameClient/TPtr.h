@@ -30,7 +30,8 @@ public:
     /// \param parent parent of this object that is Object as we need to reset shared when our object is destroyed
     /// \param ptr object
     template<typename Y = T>
-    constexpr explicit TPtr(Object *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept : ptr(ptr) {
+    constexpr explicit TPtr(Object *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept
+            : ptr(std::static_pointer_cast<T>(ptr)) {
         if (parent) { parentConnection = parent->onDestroySignal.connect_scoped(&TPtr::destroy, this); }
     }
 
@@ -125,11 +126,7 @@ template<class T, class U>
 TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
     TPtr<T> result{nullptr};
 
-    result.ptr = std::dynamic_pointer_cast<T>(r.ptr);
-
-    if (result.ptr) {
-        result.ptr->onDestroySignal.connect(&TPtr<T>::destroy, &result);
-    }
+    result = std::dynamic_pointer_cast<T>(r.ptr);
 
     return result;
 }

@@ -23,7 +23,10 @@ public:
     static auto &register_class(std::string_view str);
 
     template<typename T>
-    static auto &register_importer(std::string_view str, std::string_view extension, int64_t priority = 50);
+    static void register_importer(std::string_view extension);
+
+    template<typename T>
+    static void register_importer(int64_t priority);
 
     static std::vector<std::shared_ptr<Reflect>> get_reflections(const Object *);
 
@@ -34,11 +37,24 @@ public:
     static std::pair<const std::type_index, int64_t> get_importer(std::string_view);
 
 private:
-    using TU = std::variant<int64_t *, double *, std::string *, TPtr<Object> *,
-            std::function<void(int64_t)>, std::function<void(double)>, std::function<void(
-                    std::string)>>;
-    using CTU = std::variant<const int64_t *, const double *, const std::string *, const TPtr<Object> *,
-            std::function<int64_t()>, std::function<double()>, std::function<std::string()>>;
+    using TU = std::variant<
+            int64_t *,
+            double *,
+            std::string *,
+            bool *,
+            TPtr<Object> *,
+            std::function<void(int64_t)>,
+            std::function<void(double)>,
+            std::function<void(std::string)>>;
+    using CTU = std::variant<
+            const int64_t *,
+            const double *,
+            const std::string *,
+            const bool *,
+            const TPtr<Object> *,
+            std::function<int64_t()>,
+            std::function<double()>,
+            std::function<std::string()>>;
     using ST = std::vector<std::pair<std::string_view, TU>>;
     using CST = std::vector<std::pair<std::string_view, CTU>>;
 
@@ -57,11 +73,20 @@ private:
     template<typename T>
     class Register : public Reflect {
     public:
-        using TT = std::variant<int64_t T::*, double T::*, std::string T::*, TPtr<Object> T::*>;
-        using FT = std::variant<std::function<void(T *, int64_t)>, std::function<void(T *, double)>, std::function<void(
-                T *, std::string)>>;
-        using CFT = std::variant<std::function<int64_t(const T *)>, std::function<double(
-                const T *)>, std::function<std::string(const T *)>>;
+        using TT = std::variant<
+                int64_t T::*,
+                double T::*,
+                std::string T::*,
+                bool T::*,
+                TPtr<Object> T::*>;
+        using FT = std::variant<
+                std::function<void(T *, int64_t)>,
+                std::function<void(T *, double)>,
+                std::function<void(T *, std::string)>>;
+        using CFT = std::variant<
+                std::function<int64_t(const T *)>,
+                std::function<double(const T *)>,
+                std::function<std::string(const T *)>>;
 
         template<typename Y>
         void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
@@ -129,13 +154,11 @@ private:
             return result;
         }
 
-        bool check(const Object *o)
-        override {
+        bool check(const Object *o) override {
             return dynamic_cast<const T *>(o);
         }
 
-        TPtr<Object> create()
-        override {
+        TPtr<Object> create() override {
             return TPtr<Object>{nullptr, std::make_shared<T>()};
         }
 
@@ -151,7 +174,8 @@ private:
     //name -> info
     static std::map<std::string_view, const std::type_index> name_type;
 
-    static std::map<std::string_view, std::pair<const std::type_index, int64_t>> ext_importer;
+    static std::map<std::string_view, const std::type_index> ext_importer;
+    static std::map<std::type_index, int64_t> ext_priority;
 };
 
 template<typename T>
@@ -184,16 +208,44 @@ auto &MetaData::register_class(std::string_view str) {
 }
 
 template<typename T>
-auto &MetaData::register_importer(std::string_view str, std::string_view extension, int64_t priority) {
-    auto[it2, b] = ext_importer.emplace(extension, std::make_pair(typeid(T), priority));
+void MetaData::register_importer(std::string_view extension) {
+    auto[it2, b] = ext_importer.emplace(extension, typeid(T));
+
     if (!b) {
         GameApi::log(ERR.fmt("Classes with type: %s %s import the same extension. %s",
-                             GameApi::demangle(it2->second.first.name()).data(),
+                             GameApi::demangle(it2->second.name()).data(),
                              GameApi::demangle(typeid(T).name()).data(),
                              extension.data()));
     }
 
-    return register_class<T>(str);
+    auto it = reflection.find(typeid(T));
+
+    if (it == reflection.end()) {
+        GameApi::log(
+                ERR.fmt("Importer with name: %s not declared. Extension: %s",
+                        GameApi::demangle(typeid(T).name()).data(),
+                        extension.data()));
+    }
+}
+
+template<typename T>
+void MetaData::register_importer(int64_t priority) {
+    auto[it2, b] = ext_priority.emplace(typeid(T), priority);
+
+    if (!b) {
+        GameApi::log(ERR.fmt("Class with type: %s tried change. Priority: %lli",
+                             GameApi::demangle(typeid(T).name()).data(),
+                             priority));
+    }
+
+    auto it = reflection.find(typeid(T));
+
+    if (it == reflection.end()) {
+        GameApi::log(
+                ERR.fmt("Importer with name: %s not declared. Priority: %lli",
+                        GameApi::demangle(typeid(T).name()).data(),
+                        priority));
+    }
 }
 
 #endif //RTS_GAME_METADATA_H

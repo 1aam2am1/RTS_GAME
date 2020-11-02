@@ -97,6 +97,10 @@ nlohmann::json JsonSerializer::operator()(const std::string *str) {
     return nlohmann::json(*str);
 }
 
+nlohmann::json JsonSerializer::operator()(const bool *b) {
+    return nlohmann::json(*b);
+}
+
 nlohmann::json JsonSerializer::operator()(const TPtr<Object> *object) {
     if (*object) {
         return Serialize(object->get());
@@ -127,6 +131,14 @@ void JsonSerializer::operator()(std::string *str, const nlohmann::json &j) {
         *str = j.get<std::string>();
     } else {
         str->clear();
+    }
+}
+
+void JsonSerializer::operator()(bool *b, const nlohmann::json &j) {
+    if (j.is_number()) {
+        *b = j.get<bool>();
+    } else {
+        *b = false;
     }
 }
 
