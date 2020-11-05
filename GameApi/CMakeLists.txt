@@ -50,39 +50,39 @@ set_target_properties(GameAPI PROPERTIES
         CXX_EXTENSIONS OFF)
 
 target_include_directories(GameAPI PUBLIC
-        ${Protobuf_INCLUDE_DIRS}
+        #        ${Protobuf_INCLUDE_DIRS}
         ${PROJECT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(SRC
-        message.proto)
+#set(SRC
+#        message.proto)
 
 list(TRANSFORM SRC PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${SRC}) #EXPORT_MACRO DLL_EXPORT
+#protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${SRC}) #EXPORT_MACRO DLL_EXPORT
 
 
-target_sources(GameAPI PRIVATE ${PROTO_HDRS} ${PROTO_SRCS})
+#target_sources(GameAPI PRIVATE ${PROTO_HDRS} ${PROTO_SRCS})
 
-target_link_libraries(GameAPI ${Protobuf_LIBRARIES} sfml-network nlohmann_json)
+target_link_libraries(GameAPI sfml-network nlohmann_json)
 add_versioning(GameAPI)
 add_flags(GameAPI)
 
-
+#[[
 set_source_files_properties(${PROTO_HDRS} ${PROTO_SRCS} PROPERTIES COMPILE_FLAGS "-Wno-all \
 -Wno-extra \
 -Wno-pedantic \
 -Wno-return-local-addr \
 -Wno-attributes \
 -Wno-deprecated")
-
+#]]
 
 ### Copy Protobuf Dependency DLL ###
-get_filename_component(P "${Protobuf_PROTOC_EXECUTABLE}" DIRECTORY)
+#get_filename_component(P "${Protobuf_PROTOC_EXECUTABLE}" DIRECTORY)
 
 if (WIN32)
     set(GameAPI_DLL ${GameAPI_DLL}
-            "${P}/libprotobuf$<$<CONFIG:Debug>:d>.dll"
+            #            "${P}/libprotobuf$<$<CONFIG:Debug>:d>.dll"
             "${CMAKE_CURRENT_BINARY_DIR}/$<TARGET_FILE_NAME:GameAPI>"
             "${CMAKE_CURRENT_SOURCE_DIR}/mesa3d/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},4>,32bit,64bit>/opengl32.dll"
             PARENT_SCOPE)

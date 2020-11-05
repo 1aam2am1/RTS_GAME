@@ -90,6 +90,9 @@ set(SRC
         include/GameClient/Unity/Editor/AssetImportContext.h
         include/GameClient/Importers/TextureImporter.cpp
         include/GameClient/Importers/TrueTypeFontImporter.cpp
+        include/GameClient/Unity/Core/Sprite.cpp
+        include/GameClient/Unity/Core/Sprite.h
+        include/GameClient/Unity/Editor/OneGuidFile.h
         )
 
 add_executable(GameClient ${SRC})

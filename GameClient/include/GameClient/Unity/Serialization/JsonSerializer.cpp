@@ -47,11 +47,7 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
     return result;
 }
 
-TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::json &serialized) {
-    auto constructor = MetaData::get_name_constructor(type).second;
-
-    TPtr<Object> result{nullptr};
-    result = constructor->create();
+void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &serialized) {
 
     if (serialized.is_object()) {
         auto reflection = MetaData::get_reflections(result.get());
@@ -61,7 +57,8 @@ TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::j
                 if (check == serialized.end()) {
                     GameApi::log(WARN.fmt("Deserialization, value name %s not found, object type: %s",
                                           it2.first.data(),
-                                          GameApi::demangle(type.name()).data()));
+                                          GameApi::demangle(
+                                                  typeid(*result.get()).name()).data()));
                 } else {
                     std::visit([this, &c = check.value()](auto &&p) {
                         if constexpr (is_instance_v<decltype(p), std::function>) {
@@ -81,8 +78,6 @@ TPtr<Object> JsonSerializer::Deserialize(std::type_index type, const nlohmann::j
         auto d = dynamic_cast<ISerializationCallbackReceiver *>(result.get());
         if (d) { d->OnAfterDeserialize(); }
     }
-
-    return result;
 }
 
 nlohmann::json JsonSerializer::operator()(const int64_t *i) {

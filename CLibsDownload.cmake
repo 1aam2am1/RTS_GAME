@@ -79,5 +79,5 @@ endif ()
 
 
 ### Protobuf Dependency ###
-find_package(Protobuf REQUIRED)
+#ind_package(Protobuf REQUIRED)
 find_package(OpenGL REQUIRED)

@@ -14,7 +14,7 @@ public:
     template<typename T>
     TPtr<T> DeserializeT(const nlohmann::json &);
 
-    TPtr<Object> Deserialize(std::type_index type, const nlohmann::json &) final;
+    void Deserialize(TPtr<Object>, const nlohmann::json &) final;
 
     using SerializerBase::Deserialize;
 
@@ -29,6 +29,8 @@ protected:
     nlohmann::json operator()(const bool *) final;
 
     nlohmann::json operator()(const TPtr<Object> *) override;
+
+    using SerializerBase::operator();
     //endregion
 
     //region DeSerialize

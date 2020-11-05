@@ -73,9 +73,16 @@ void AssetWindow::display_tree(std::string path) {
     const auto d = AssetDatabase::GetSubFolders(path);
 
     for (const auto &it : d) {
-        if (ImGui::TreeNode(it.data())) {
+        bool open = ImGui::TreeNodeEx(it.data(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth);
+        bool clicked = ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
+
+        if (open) {
             display_tree(path + "/" + it.data());
             ImGui::TreePop();
+        }
+
+        if (clicked) {
+
         }
     }
 }

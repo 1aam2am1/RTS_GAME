@@ -23,6 +23,7 @@ Object &Object::operator=(const Object &o) {
 
 
 void Object::DestroyImmediate(Object *obj, bool allowDestroyingAssets) {
+    //TODO: Thread save
     if (obj) {
         obj->onDestroySignal(nullptr);
     }

@@ -114,6 +114,8 @@ namespace GameApi {
 
     std::string readFullFile(std::string_view path);
 
+    bool saveFullFile(std::string_view path, std::string_view data);
+
     namespace binary {
         template<typename T>
         inline T &shift_bit_left(T &co, const int8_t &ile) {

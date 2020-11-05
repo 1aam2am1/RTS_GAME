@@ -3,6 +3,7 @@
 //
 
 #include "AssetDatabase.h"
+#include "EditorUtility.h"
 #include <map>
 #include <filesystem>
 #include <chrono>
@@ -11,10 +12,13 @@
 #include <unordered_set>
 #include <nlohmann/json.hpp>
 #include <set>
+#include <execution>
+#include <GameClient/Unity/Editor/OneGuidFile.h>
 
 #if defined(_WIN32)
 
 #include <windows.h>
+#include <GameClient/Unity/Serialization/JsonSerializer.h>
 
 #elif defined(__linux__)
 
@@ -24,27 +28,16 @@
 #endif
 
 namespace fs = std::filesystem;
-using fileID = uint64_t;
-
-struct D {
-    std::map<fileID, TPtr<Object>> object{}; //fileID -> objects in this file
-
-    TPtr<Object> main{nullptr}; //main object of this file
-
-    std::time_t asset_time = 0;
-    std::time_t meta_time = 0;
-};
 
 struct Data {
     Data() = default;
 
     Data(const Data &) = delete;
 
-    std::map<Unity::GUID, D> objects;
-    std::map<Unity::GUID, std::string> paths;
+    Data &operator=(const Data &) = delete;
 
-    ///TODO: Change dependency such as prefab is dependant of all children prefabs
-    std::map<Unity::GUID, std::vector<Unity::GUID>> dependency; //root->have many dependency assets
+    std::map<Unity::GUID, OneGUIDFile> objects;
+    ///TODO: DO path to guid map
 
     std::map<std::string, std::vector<std::string>> dir_tree;
 };
@@ -64,7 +57,7 @@ std::vector<std::string> AssetDatabase::GetSubFolders(std::string path) {
 
 std::vector<std::string> AssetDatabase::GetDependencies(std::string pathName, bool recursive) {
     const auto &d = get_data();
-    std::unordered_set<Unity::GUID> guids;
+    std::unordered_set<std::string> guids;
 
     auto g = AssetPathToGUID(pathName);
 
@@ -73,12 +66,13 @@ std::vector<std::string> AssetDatabase::GetDependencies(std::string pathName, bo
             return;
         }
 
-        auto it = d.dependency.find(guid);
-        if (it != d.dependency.end()) {
-            for (auto &ik : it->second) {
+        auto it = d.objects.find(guid);
+        if (it != d.objects.end()) {
+            guids.emplace(it->second.path); //depends on itself
+            for (auto &ik : it->second.dependency) {
                 auto[it, cons] = guids.emplace(ik);
                 if (cons && recursive) {
-                    rec(ik);
+                    rec(AssetPathToGUID(ik));
                 }
             }
         }
@@ -88,10 +82,7 @@ std::vector<std::string> AssetDatabase::GetDependencies(std::string pathName, bo
 
     std::vector<std::string> result;
     for (auto &ik : guids) {
-        auto str = GUIDToAssetPath(ik);
-        if (!str.empty()) {
-            result.push_back(str);
-        }
+        result.push_back(ik);
     }
 
     return result;
@@ -99,6 +90,27 @@ std::vector<std::string> AssetDatabase::GetDependencies(std::string pathName, bo
 
 TPtr<Texture2D> AssetDatabase::GetCachedIcon(std::string path) {
     return TPtr<Texture2D>(nullptr);
+}
+
+bool AssetDatabase::TryGetGUIDAndLocalFileIdentifier(TPtr<Object> obj, Unity::GUID &guid, Unity::fileID &localId) {
+    const auto &d = get_data();
+
+    std::mutex m;
+    std::find_if(std::execution::par_unseq, d.objects.begin(), d.objects.end(), [&, obj](auto &&ob) {
+        auto found = std::find_if(ob.second.object.begin(), ob.second.object.end(), [&obj](auto &&ob) {
+            if (ob.second == obj) {
+                return true;
+            }
+            return false;
+        });
+        if (found != ob.second.object.end()) {
+            std::lock_guard<std::mutex> guard(m);
+            guid = ob.first;
+            localId = found->first;
+            return true;
+        }
+        return false;
+    });
 }
 
 std::vector<TPtr<Object>> AssetDatabase::LoadAllAssetsAtPath(std::string assetPath) {
@@ -181,7 +193,11 @@ std::string AssetDatabase::GenerateUniqueAssetPath(std::string path) {
 }
 
 std::string AssetDatabase::GetAssetOrScenePath(Object *assetObject) {
-    return std::string();
+    auto result = GetAssetPath(assetObject);
+    if (result.empty()) {
+        ///result = Scene path
+    }
+    return result;
 }
 
 std::string AssetDatabase::GetAssetPath(Object *assetObject) {
@@ -190,11 +206,7 @@ std::string AssetDatabase::GetAssetPath(Object *assetObject) {
         auto p = std::find_if(it.second.object.begin(), it.second.object.end(),
                               [&](auto &p) { return p.second.get() == assetObject; });
         if (p != it.second.object.end()) {
-            auto it2 = d.paths.find(it.first);
-            if (it2 != d.paths.end()) {
-                return it2->second;
-            }
-            break;
+            return it.second.path;
         }
     }
     return {};
@@ -202,19 +214,20 @@ std::string AssetDatabase::GetAssetPath(Object *assetObject) {
 
 std::string AssetDatabase::GUIDToAssetPath(Unity::GUID guid) {
     auto &d = get_data();
-    auto it = d.paths.find(guid);
+    auto it = d.objects.find(guid);
 
-    if (it != d.paths.end()) {
-        return it->second;
+    if (it != d.objects.end()) {
+        return it->second.path;
     } else {
         return {};
     }
 }
 
 Unity::GUID AssetDatabase::AssetPathToGUID(std::string path) {
-    auto &d = get_data();
-    auto it = std::find_if(d.paths.begin(), d.paths.end(), [&path](const auto &i) { return i.second == path; });
-    if (it != d.paths.end()) {
+    const auto &d = get_data();
+    auto it = std::find_if(d.objects.begin(), d.objects.end(),
+                           [&path](const auto &i) { return i.second.path == path; });
+    if (it != d.objects.end()) {
         return it->first;
     } else {
         return {};
@@ -222,7 +235,21 @@ Unity::GUID AssetDatabase::AssetPathToGUID(std::string path) {
 }
 
 void AssetDatabase::ImportAsset(std::string path, ImportAssetOptions options) {
+    static thread_local std::unordered_set<std::string> working;
+    auto[it, b] = working.emplace(path);
+    //TODO: Create scope exit class
+    try {
 
+        if (!b) {
+            GameApi::log(ERR.fmt("Circle in asset loading: %s", path.data()));
+            return;
+        }
+
+    } catch (...) {
+        working.erase(it);
+        throw;
+    }
+    working.erase(it);
 }
 
 TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, std::type_info type) {
@@ -234,7 +261,7 @@ TPtr<Object> AssetDatabase::LoadMainAssetAtPath(std::string assetPath) {
 }
 
 std::string AssetDatabase::MoveAsset(std::string oldPath, std::string newPath) {
-    return std::string();
+    return std::string("false");
 }
 
 bool AssetDatabase::CopyAsset(std::string path, std::string newPath) {
@@ -246,11 +273,54 @@ bool AssetDatabase::MoveAssetToTrash(std::string path) {
 }
 
 std::string AssetDatabase::RenameAsset(std::string pathName, std::string newName) {
-    return std::string();
+    fs::path p = pathName;
+    p.replace_filename(newName);
+    return MoveAsset(pathName, p.generic_string());
+}
+
+void AssetDatabase::SaveAsset(OneGUIDFile *o) {
+    if (!o->context) {
+        o->context = std::shared_ptr<AssetImportContext>(new AssetImportContext(o));
+        o->importer->importSettingsMissing = true;
+    } else {
+        o->importer->importSettingsMissing = false;
+    }
+    o->context->assetPath = o->path;
+    o->importer->m_assetPath = o->path;
+
+    if (o->importer->importSettingsMissing) {
+        try {
+            o->importer->OnExportAsset(o->context);
+        } EXCEPTION_PRINT
+    }
+
+    try {
+        JsonSerializer j;
+        auto result = j.Serialize(o->importer.get());
+
+        if (!GameApi::saveFullFile(o->path + ".meta", result.dump())) {
+            GameApi::log(ERR.fmt("Can't save object: %s",
+                                 (o->path + ".meta").data()));
+        } else {
+            std::for_each(o->object.begin(), o->object.end(), [](auto &&ob) {
+                EditorUtility::ClearDirty(ob.second);
+            });
+        }
+
+    } EXCEPTION_PRINT
 }
 
 void AssetDatabase::SaveAssets() {
+    auto &d = get_data();
+    std::for_each(d.objects.begin(), d.objects.end(), [](auto &&it) {
+        if (it.second.main && it.second.importer) {
+            if (!std::any_of(it.second.object.begin(), it.second.object.end(), [](auto &&o) {
+                return EditorUtility::IsDirty(o.second);
+            })) { return; }
 
+            SaveAsset(&it.second);
+        }
+    });
 }
 
 bool AssetDatabase::OpenAsset(Object *target) {
@@ -274,10 +344,12 @@ bool AssetDatabase::OpenAsset(Object *target) {
         }
 
 #endif
-    } catch (...) {
+    }
+    catch (const std::exception &e) {
+        GameApi::log(ERR.fmt("%s", e.what()));
         return false;
     }
-    return false;
+    return true;
 }
 
 void AssetDatabase::Refresh(ImportAssetOptions options) {
@@ -331,26 +403,21 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
         }
 
         /// Erase deleted assets
-        for (auto iterator = d.paths.begin(); iterator != d.paths.end();) {
+        for (auto iterator = d.objects.begin(); iterator != d.objects.end();) {
             /// path don't exists (deleted files)
-            if (files.find(iterator->second) == files.end()) {
+            if (files.find(iterator->second.path) == files.end()) {
                 //remove dependences
-                d.dependency.erase(iterator->first);
-                std::for_each(d.dependency.begin(), d.dependency.end(), [&iterator](auto &&f) {
-                    f.second.erase(std::remove_if(f.second.begin(), f.second.end(), [&iterator](auto &&f) {
-                        return iterator->first == f;
-                    }), f.second.end());
+                std::for_each(std::execution::par_unseq, d.objects.begin(), d.objects.end(), [&iterator](auto &&f) {
+                    f.second.dependency.erase(iterator->second.path);
                 });
                 //remove loaded objects
-                auto it_objects = d.objects.find(iterator->first);
-                if (it_objects != d.objects.end()) {
-                    std::for_each(it_objects->second.object.begin(), it_objects->second.object.end(), [](auto &&f) {
-                        Object::DestroyImmediate(f.second.get(), true);
-                    });
-                }
-                d.objects.erase(it_objects);
 
-                iterator = d.paths.erase(iterator);
+                std::for_each(std::execution::par_unseq, iterator->second.object.begin(), iterator->second.object.end(),
+                              [](auto &&f) {
+                                  Object::DestroyImmediate(f.second.get(), true);
+                              });
+
+                iterator = d.objects.erase(iterator);
             } else {
                 ++iterator;
             }
@@ -380,14 +447,16 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
                 f1.second.priority = 0;
                 try {
                     f1.second.priority = MetaData::get_importer(f1.second.extension).second;
-                } EXCEPTION_PRINT
+                }
+                EXCEPTION_PRINT
 
             }
             if (f2.second.priority == INT64_MIN) {
                 f2.second.priority = 0;
                 try {
                     f2.second.priority = MetaData::get_importer(f2.second.extension).second;
-                } EXCEPTION_PRINT
+                }
+                EXCEPTION_PRINT
             }
 
             return f1.second.priority < f2.second.priority;
@@ -398,7 +467,8 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
             ImportAsset(f.first, ImportAssetOptions::ForceUpdate);
         }
 
-    } EXCEPTION_PRINT
+    }
+    EXCEPTION_PRINT
 
 }
 

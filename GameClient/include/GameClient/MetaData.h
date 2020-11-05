@@ -43,6 +43,7 @@ private:
             std::string *,
             bool *,
             TPtr<Object> *,
+            nlohmann::json *,
             std::function<void(int64_t)>,
             std::function<void(double)>,
             std::function<void(std::string)>>;
@@ -52,6 +53,7 @@ private:
             const std::string *,
             const bool *,
             const TPtr<Object> *,
+            const nlohmann::json *,
             std::function<int64_t()>,
             std::function<double()>,
             std::function<std::string()>>;
@@ -64,7 +66,6 @@ private:
         virtual ST get(Object *) const = 0;
 
         /// Check if object is of given type, exist mapped values
-        /// \return
         virtual bool check(const Object *) = 0;
 
         virtual TPtr<Object> create() = 0;
@@ -78,7 +79,8 @@ private:
                 double T::*,
                 std::string T::*,
                 bool T::*,
-                TPtr<Object> T::*>;
+                TPtr<Object> T::*,
+                nlohmann::json T::*>;
         using FT = std::variant<
                 std::function<void(T *, int64_t)>,
                 std::function<void(T *, double)>,
@@ -159,7 +161,11 @@ private:
         }
 
         TPtr<Object> create() override {
-            return TPtr<Object>{nullptr, std::make_shared<T>()};
+            if constexpr (std::is_abstract_v<T>) {
+                return TPtr<Object>{nullptr};
+            } else {
+                return TPtr<Object>{nullptr, std::make_shared<T>()};
+            }
         }
 
     private:

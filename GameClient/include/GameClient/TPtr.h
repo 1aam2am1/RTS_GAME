@@ -22,6 +22,15 @@ public:
         *this = r;
     }
 
+    template<typename Y = T>
+    TPtr(const TPtr<Y> &r) {
+        ptr = std::static_pointer_cast<T>(r.ptr);
+
+        if (ptr) {
+            ptr->onDestroySignal.connect(&TPtr::destroy, this);
+        }
+    }
+
     /// Don't move when parent can't be moved
     TPtr(TPtr &&r) = delete;
 
@@ -121,6 +130,11 @@ private:
     template<class X, class U>
     friend TPtr<X> dynamic_pointer_cast(const TPtr<U> &) noexcept;
 };
+
+template<typename T, typename Y>
+constexpr bool operator==(const TPtr<T> &l, const TPtr<Y> &r) {
+    return static_cast<Object *>(l.get()) == static_cast<Object *>(r.get());
+}
 
 template<class T, class U>
 TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {

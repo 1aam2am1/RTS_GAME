@@ -14,9 +14,11 @@
 #include "ImportAssetOptions.h"
 #include "AssetImporter.h"
 
+class OneGUIDFile;
 
 class AssetDatabase {
 public:
+    using fileID = uint64_t;
 
     /// Given a path to a directory in the Assets folder, relative to the project folder,
     /// this method will return an array of all its subdirectories.
@@ -32,6 +34,9 @@ public:
 
     /// Retrieves an icon for the asset at the given asset path.
     static TPtr<Texture2D> GetCachedIcon(std::string path);
+
+    /// Get the GUID and local file id from an object instance id.
+    static bool TryGetGUIDAndLocalFileIdentifier(TPtr<Object> obj, Unity::GUID &guid, Unity::fileID &localId);
 
     /// Returns an array of all Assets at assetPath.
     /// Some Asset files may contain multiple sub Assets
@@ -133,6 +138,9 @@ public:
 
     /// Callback raised whenever a package import successfully completes.
     sigslot::signal<> importPackageCompleted;
+
+private:
+    static void SaveAsset(OneGUIDFile *o);
 };
 
 

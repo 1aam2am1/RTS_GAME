@@ -117,5 +117,6 @@ catch (const std::exception &e) {           \
 
 #include <GameClient/Initializer.h>
 #include <GameClient/MetaData.h>
+#include <GameAPI/Config.h>
 
 #endif //RTS_GAME_MACRO_H

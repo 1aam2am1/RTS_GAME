@@ -79,7 +79,8 @@ namespace GameApi {
     }
 
     std::string to_hex(uint64_t number) {
-        char str[12] = {0};
+        char str[17] = {0};
+        static_assert(sizeof(uint64_t) == sizeof(long long unsigned), "It should be the same");
         std::sprintf(str, "%016llx", number);
         return str;
     }
@@ -137,6 +138,7 @@ namespace GameApi {
     std::string readFullFile(std::string_view path) {
         std::string result;
         FILE *file = fopen(path.data(), "rb");
+        if (!file) { return {}; }
         std::shared_ptr<FILE> guard{file, [](FILE *f) { fclose(f); }};
 
         fseek(file, 0, SEEK_END);
@@ -147,5 +149,16 @@ namespace GameApi {
         return result;
     }
 
+    bool saveFullFile(std::string_view path, std::string_view data) {
+        FILE *file = fopen(path.data(), "wb");
+        if (!file) { return false; }
+        std::shared_ptr<FILE> guard{file, [](FILE *f) { fclose(f); }};
+
+        if (fwrite(data.data(), 1, data.length(), file) != data.length()) {
+            return false;
+        }
+
+        return true;
+    }
 
 }

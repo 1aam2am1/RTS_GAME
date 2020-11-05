@@ -24,12 +24,15 @@ public:
      */
 
     /// json -> {value: Serialization from Serialize}
-    virtual TPtr<Object> Deserialize(std::type_index type, const nlohmann::json &) = 0;
+    TPtr<Object> Deserialize(std::type_index type, const nlohmann::json &);
 
     /// Deserialize and construct Object
     /// \param str Type in string name
     /// \return Object
     TPtr<Object> Deserialize(std::string_view str, const nlohmann::json &);
+
+    /// json -> {value: Serialization from Serialize}
+    virtual void Deserialize(TPtr<Object>, const nlohmann::json &) = 0;
 
 protected:
     //region Serialize
@@ -42,6 +45,8 @@ protected:
     virtual nlohmann::json operator()(const bool *) = 0;
 
     virtual nlohmann::json operator()(const TPtr<Object> *) = 0;
+
+    nlohmann::json operator()(const nlohmann::json *);
     //endregion
 
     //region DeSerialize
@@ -54,6 +59,8 @@ protected:
     virtual void operator()(bool *, const nlohmann::json &) = 0;
 
     virtual void operator()(TPtr<Object> *, const nlohmann::json &) = 0;
+
+    void operator()(nlohmann::json *, const nlohmann::json &);
     //endregion
 };
 

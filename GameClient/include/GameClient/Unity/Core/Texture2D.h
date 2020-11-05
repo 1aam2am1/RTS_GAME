@@ -6,9 +6,11 @@
 #define RTS_GAME_TEXTURE2D_H
 
 #include <GameClient/Unity/Core/Object.h>
+#include <SFML/Graphics/Texture.hpp>
 
 class Texture2D : public Object {
 public:
+    sf::Texture t0;
 };
 
 

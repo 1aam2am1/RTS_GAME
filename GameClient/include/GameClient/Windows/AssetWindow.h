@@ -8,6 +8,7 @@
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include <GameClient/WindowLayout.h>
+#include <GameClient/Unity/Editor/AssetDatabase.h>
 
 class AssetWindow : public EditorWindow {
 public:
@@ -29,6 +30,7 @@ public:
 
 private:
     std::string search_string;
+
 
     bool start = false;
 };

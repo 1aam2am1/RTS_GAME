@@ -10,6 +10,8 @@
 #include <nlohmann/json.hpp>
 
 namespace Unity {
+    using fileID = uint64_t;
+
     struct GUID {
         uint64_t first;
         uint64_t second;

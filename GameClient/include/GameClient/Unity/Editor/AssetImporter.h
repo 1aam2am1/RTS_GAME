@@ -30,7 +30,10 @@ public:
     static TPtr<AssetImporter> GetAtPath(std::string path);
 
     /// This method must by overriden by the derived class and is called by the Asset pipeline to import files.
-    void OnImportAsset(TPtr<AssetImportContext> ctx);
+    virtual void OnImportAsset(TPtr<AssetImportContext> ctx) = 0;
+
+    /// This method is called when asset is saved without importer.
+    virtual void OnExportAsset(TPtr<AssetImportContext> ctx) = 0;
 
 private:
     friend class AssetDatabase;
