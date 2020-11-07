@@ -38,11 +38,23 @@ namespace Unity {
         }
 
         bool operator<(const GUID &l) const {
-            return first < l.first ? true : (second < l.second ? true : false);
+            if (this->first < l.first) {
+                return true;
+            }
+            if (this->first > l.first) {
+                return false;
+            }
+            return this->second < l.second;
         }
 
         bool operator>(const GUID &l) const {
-            return first > l.first ? true : (second > l.second ? true : false);
+            if (this->first > l.first) {
+                return true;
+            }
+            if (this->first < l.first) {
+                return false;
+            }
+            return this->second > l.second;
         }
 
         bool empty() const {
@@ -58,7 +70,7 @@ namespace Unity {
 
     inline void from_json(const nlohmann::json &j, GUID &p) {
         std::string s;
-        j.get_to(s);
+        if (!j.is_null()) { j.get_to(s); }
         p = s;
     }
 }

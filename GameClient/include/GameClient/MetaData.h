@@ -34,6 +34,8 @@ public:
 
     static std::type_index get_type(std::string_view);
 
+    static bool exists_importer(std::string_view);
+
     static std::pair<const std::type_index, int64_t> get_importer(std::string_view);
 
 private:
@@ -69,6 +71,8 @@ private:
         virtual bool check(const Object *) = 0;
 
         virtual TPtr<Object> create() = 0;
+
+        virtual bool copy(Object *f1, Object *f2) = 0;
     };
 
     template<typename T>
@@ -165,6 +169,17 @@ private:
                 return TPtr<Object>{nullptr};
             } else {
                 return TPtr<Object>{nullptr, std::make_shared<T>()};
+            }
+        }
+
+        bool copy(Object *f1, Object *f2) override {
+            auto left = dynamic_cast<T *>(f1);
+            auto right = dynamic_cast<T *>(f2);
+            if (left && right) {
+                *left = *right;
+                return true;
+            } else {
+                return false;
             }
         }
 

@@ -12,6 +12,10 @@ public:
     static int add(std::function<void()> f);
 
     static void initialize();
+
+    static int d_add(std::function<void()> f);
+
+    static void uninitialize();
 };
 
 

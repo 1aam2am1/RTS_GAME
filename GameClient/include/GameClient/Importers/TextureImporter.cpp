@@ -12,11 +12,11 @@ class TextureImporter : public AssetImporter {
 public:
     nlohmann::json sprites;
 
-    void OnImportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnImportAsset(AssetImportContext &ctx) override {
         TPtr<Texture2D> texture{nullptr, std::make_shared<Texture2D>()};
-        texture->t0.loadFromFile(ctx->assetPath);
-        ctx->AddObjectToAsset(0, texture, texture);
-        ctx->SetMainObject(texture);
+        texture->t0.loadFromFile(ctx.assetPath);
+        ctx.AddObjectToAsset(0, texture, texture);
+        ctx.SetMainObject(texture);
 
         std::list<TPtr<Sprite>> no_ids;
         std::vector<Unity::fileID> ids;
@@ -41,7 +41,7 @@ public:
                 id_j->get_to(id);
 
                 ids.push_back(id);
-                ctx->AddObjectToAsset(id, s);
+                ctx.AddObjectToAsset(id, s);
             } else {
                 no_ids.push_back(s);
             }
@@ -52,16 +52,16 @@ public:
             while (std::find_if(ids.begin(), ids.end(), [id](auto &&i) { return i == id; }) != ids.end()) {
                 ++id;
             }
-            ctx->AddObjectToAsset(id, it);
+            ctx.AddObjectToAsset(id, it);
             ids.push_back(id);
         }
     }
 
-    void OnExportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnExportAsset(AssetImportContext &ctx) override {
         std::vector<TPtr<Object>> objects;
-        ctx->GetObjects(objects);
+        ctx.GetObjects(objects);
 
-        auto main_texture = dynamic_pointer_cast<Texture2D>(ctx->mainObject);
+        auto main_texture = dynamic_pointer_cast<Texture2D>(ctx.mainObject);
 
         std::list<TPtr<Sprite>> no_ids;
         std::vector<Unity::fileID> ids;
@@ -105,7 +105,7 @@ public:
             throw std::runtime_error("No texture when saving in TextureImporter");
         }
         if (importSettingsMissing) {
-            main_texture->t0.copyToImage().saveToFile(ctx->assetPath);
+            main_texture->t0.copyToImage().saveToFile(ctx.assetPath);
         }
 
         Unity::fileID id = Unity::GUID::NewGuid().second;

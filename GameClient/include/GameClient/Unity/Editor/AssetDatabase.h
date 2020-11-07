@@ -138,9 +138,6 @@ public:
 
     /// Callback raised whenever a package import successfully completes.
     sigslot::signal<> importPackageCompleted;
-
-private:
-    static void SaveAsset(OneGUIDFile *o);
 };
 
 

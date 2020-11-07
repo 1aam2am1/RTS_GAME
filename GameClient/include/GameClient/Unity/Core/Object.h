@@ -80,7 +80,7 @@ public:
     /// Clones the object original and returns the clone.
     /// \param original An existing object that you want to make a copy of.
     /// \return The instantiated clone.
-    static Object Instantiate(Object original);
+    static TPtr<Object> Instantiate(Object *original);
 
     /// Clones the object original and returns the clone.
     /// \param original An existing object that you want to make a copy of.

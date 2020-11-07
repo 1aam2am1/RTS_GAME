@@ -93,6 +93,7 @@ set(SRC
         include/GameClient/Unity/Core/Sprite.cpp
         include/GameClient/Unity/Core/Sprite.h
         include/GameClient/Unity/Editor/OneGuidFile.h
+        include/GameClient/Unity/Editor/OneGUIDFile.cpp
         )
 
 add_executable(GameClient ${SRC})

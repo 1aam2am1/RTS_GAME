@@ -61,7 +61,7 @@ public:
         }
 
         if constexpr (is_instance_v<U, TPtr>) {
-            ptr = std::forward<U>(r).ptr;
+            ptr = std::static_pointer_cast<T>(std::forward<U>(r).ptr);
         } else if constexpr (is_instance_v<U, std::shared_ptr>) {
             ptr = std::forward<U>(r);
         } else if constexpr (std::is_same_v<U, std::nullptr_t>) {
@@ -110,6 +110,16 @@ public:
         return ptr.get();
     }
 
+    ///Reset all object to new one
+    void reset(TPtr<Object> o) {
+        if (ptr && ptr != o.ptr) {
+            ptr->onDestroySignal(o.get());
+        } else {
+            *this = o;
+        }
+    }
+
+    ///TODO: Signal when object ptr change
 private:
     std::shared_ptr<T> ptr;
     sigslot::scoped_connection parentConnection;
@@ -134,6 +144,11 @@ private:
 template<typename T, typename Y>
 constexpr bool operator==(const TPtr<T> &l, const TPtr<Y> &r) {
     return static_cast<Object *>(l.get()) == static_cast<Object *>(r.get());
+}
+
+template<typename T, typename Y>
+constexpr bool operator!=(const TPtr<T> &l, const TPtr<Y> &r) {
+    return !(l == r);
 }
 
 template<class T, class U>

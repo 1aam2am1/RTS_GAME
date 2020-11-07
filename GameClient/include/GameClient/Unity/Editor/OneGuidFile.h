@@ -21,14 +21,16 @@ struct OneGUIDFile {
 
     TPtr<Object> main{nullptr}; //main object of this file
 
-    std::time_t asset_time = 0;
-    std::time_t meta_time = 0;
-
-    TPtr<AssetImportContext> context{nullptr};
     TPtr<AssetImporter> importer{nullptr};
 
     //root->have many dependency assets
     std::unordered_set<std::string> dependency{}; ///this object depends on...
+
+    OneGUIDFile() = default;
+
+    OneGUIDFile(const OneGUIDFile &) = default;
+
+    OneGUIDFile &operator=(const OneGUIDFile &);
 };
 
 

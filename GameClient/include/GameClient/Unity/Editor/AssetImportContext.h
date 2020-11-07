@@ -36,12 +36,9 @@ public:
     /// Sets the main object for import.
     void SetMainObject(TPtr<Object> obj);
 
-private:
-    friend class AssetDatabase;
-
-    AssetImportContext() = delete;
-
     AssetImportContext(OneGUIDFile *);
+private:
+    AssetImportContext() = delete;
 
     OneGUIDFile *data;
 };

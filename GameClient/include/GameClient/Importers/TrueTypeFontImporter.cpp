@@ -6,11 +6,11 @@
 #include <GameClient/Unity/Macro.h>
 
 class TrueTypeFontImporter : public AssetImporter {
-    void OnImportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnImportAsset(AssetImportContext &ctx) override {
 
     }
 
-    void OnExportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnExportAsset(AssetImportContext &ctx) override {
 
     }
 };

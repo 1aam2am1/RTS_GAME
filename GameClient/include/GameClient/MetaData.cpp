@@ -47,6 +47,12 @@ std::type_index MetaData::get_type(std::string_view str) {
     throw std::runtime_error(s);
 }
 
+bool MetaData::exists_importer(std::string_view str) {
+    auto it = ext_importer.find(str);
+
+    return it != ext_importer.end();
+}
+
 std::pair<const std::type_index, int64_t> MetaData::get_importer(std::string_view str) {
     auto it = ext_importer.find(str);
 

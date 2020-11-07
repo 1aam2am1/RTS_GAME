@@ -7,6 +7,7 @@ set(SRC
         TPtr.cpp
         ObjectFactorySerialization.cpp
         JsonSerializer.cpp
+        AssetDatabase.cpp
         )
 
 add_executable(GameTests ${SRC})

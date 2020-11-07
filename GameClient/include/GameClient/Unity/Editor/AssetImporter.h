@@ -15,7 +15,7 @@ class AssetImporter : public Object {
 public:
 
     /// The path name of the asset for this importer
-    const std::string &assetPath = m_assetPath;
+    std::string assetPath;
 
     /// The value is true when no meta file is provided with the imported asset.
     bool importSettingsMissing;
@@ -30,15 +30,11 @@ public:
     static TPtr<AssetImporter> GetAtPath(std::string path);
 
     /// This method must by overriden by the derived class and is called by the Asset pipeline to import files.
-    virtual void OnImportAsset(TPtr<AssetImportContext> ctx) = 0;
+    virtual void OnImportAsset(AssetImportContext &ctx) = 0;
 
-    /// This method is called when asset is saved without importer.
-    virtual void OnExportAsset(TPtr<AssetImportContext> ctx) = 0;
+    /// This method is called when asset is saved.
+    virtual void OnExportAsset(AssetImportContext &ctx) = 0;
 
-private:
-    friend class AssetDatabase;
-
-    std::string m_assetPath;
 };
 
 

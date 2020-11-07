@@ -37,8 +37,9 @@ int main(int argc, char **argv) {
         if (!std::filesystem::exists("Assets")) { throw std::runtime_error("Assets folder don't exists"); }
 #endif
         AssetDatabase::Refresh();
-
         window.run();
+
+        Initializer::uninitialize();
     } EXCEPTION_PRINT
 
     GameApi::log(INFO << "Bye");

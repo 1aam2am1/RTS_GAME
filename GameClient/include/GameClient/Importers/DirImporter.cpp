@@ -7,11 +7,11 @@
 
 class DirImporter : public AssetImporter {
 public:
-    void OnImportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnImportAsset(AssetImportContext &ctx) override {
         UNUSED(ctx);
     }
 
-    void OnExportAsset(TPtr<AssetImportContext> ctx) override {
+    void OnExportAsset(AssetImportContext &ctx) override {
         UNUSED(ctx);
     }
 };
