@@ -64,7 +64,6 @@ list(TRANSFORM SRC PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 #target_sources(GameAPI PRIVATE ${PROTO_HDRS} ${PROTO_SRCS})
 
-target_link_libraries(GameAPI sfml-network nlohmann_json)
 add_versioning(GameAPI)
 add_flags(GameAPI)
 

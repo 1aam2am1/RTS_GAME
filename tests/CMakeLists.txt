@@ -18,6 +18,7 @@ set_target_properties(GameTests PROPERTIES
         CXX_EXTENSIONS OFF)
 
 target_link_libraries(GameTests GameAPI ImGui)
+target_link_libraries(GameTests nlohmann_json)
 add_flags(GameTests)
 
 target_include_directories(GameTests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../GameClient/include")

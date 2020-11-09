@@ -5,7 +5,6 @@
 #ifndef RTS_GAME_LOGLEVEL_H
 #define RTS_GAME_LOGLEVEL_H
 
-#include <SFML/System/NonCopyable.hpp>
 #include <string>
 #include <typeinfo>
 #include <iostream>
