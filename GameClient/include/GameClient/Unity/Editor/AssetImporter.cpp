@@ -27,3 +27,5 @@ TPtr<AssetImporter> AssetImporter::GetAtPath(std::string path) {
 
     return TPtr<AssetImporter>{nullptr};
 }
+
+void AssetImporter::OnExportAsset(AssetImportContext &ctx) {}

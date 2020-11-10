@@ -10,7 +10,7 @@
 
 class TextureImporter : public AssetImporter {
 public:
-    nlohmann::json sprites;
+    nlohmann::json sprites{};
 
     void OnImportAsset(AssetImportContext &ctx) override {
         TPtr<Texture2D> texture{nullptr, std::make_shared<Texture2D>()};

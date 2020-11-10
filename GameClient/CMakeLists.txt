@@ -42,7 +42,6 @@ set(SRC
         include/GameClient/Unity/Core/ScriptableObject.h
         include/GameClient/Unity/Macro.h
         include/GameClient/Windows/Inspector.cpp
-        include/GameClient/Windows/Inspector.h
         include/GameClient/Unity/Editor/MenuCommand.h
         include/GameClient/Unity/Editor/Menu.cpp
         include/GameClient/Unity/Editor/Menu.h
@@ -94,6 +93,14 @@ set(SRC
         include/GameClient/Unity/Core/Sprite.h
         include/GameClient/Unity/Editor/OneGuidFile.h
         include/GameClient/Unity/Editor/OneGUIDFile.cpp
+        include/GameClient/Windows/DemoWindow.cpp
+        include/GameClient/Unity/Editor/AssetPreview.cpp
+        include/GameClient/Unity/Editor/AssetPreview.h
+        include/GameClient/Unity/Editor/SceneAsset.cpp
+        include/GameClient/Unity/Editor/SceneAsset.h
+        include/GameClient/Importers/DefaultImporter.cpp
+        include/GameClient/Importers/TextScriptImporter.cpp
+        include/GameClient/Importers/ShaderImporter.cpp
         )
 
 add_executable(GameClient ${SRC})

@@ -69,7 +69,7 @@ namespace {                        \
 /// The MenuItem attribute allows you to add menu items to the main menu and inspector context menus.
 /// \param FUNC void() or void(MenuCommand) or (validation) bool() or bool(MenuCommand
 /// \param PATH -> PATH OR CONTEXT/CLASS_NAME/FUNC NAME
-/// \param ... validation, priority
+/// \param ... priority
 #define MENU_ITEM(FUNC, PATH, ...) \
 namespace {                        \
     static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){ \

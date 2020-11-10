@@ -33,7 +33,7 @@ public:
     virtual void OnImportAsset(AssetImportContext &ctx) = 0;
 
     /// This method is called when asset is saved.
-    virtual void OnExportAsset(AssetImportContext &ctx) = 0;
+    virtual void OnExportAsset(AssetImportContext &ctx);
 
 };
 

@@ -476,7 +476,7 @@ void SaveAsset(Unity::GUID g, OneGUIDFile *o) {
     auto &d = get_data();
 
     AssetImportContext context(o);
-    o->importer->importSettingsMissing = false;
+    o->importer->importSettingsMissing = !fs::directory_entry(o->path).exists();
 
     context.assetPath = o->path;
     o->importer->assetPath = o->path;

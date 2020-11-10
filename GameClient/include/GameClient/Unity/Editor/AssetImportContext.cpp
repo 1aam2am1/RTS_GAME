@@ -19,6 +19,7 @@ void AssetImportContext::AddObjectToAsset(Unity::fileID identifier, TPtr<Object>
         }
 
         auto[it, b] = data->object.emplace(identifier, obj);
+        if (!data->main) { data->main = obj; }
         if (!b) {
             GameApi::log(ERR.fmt("Tried adding object %s with the same identifier %llu",
                                  GameApi::demangle(typeid(*obj.get()).name()).data(),

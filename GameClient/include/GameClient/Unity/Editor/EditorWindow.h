@@ -179,5 +179,6 @@ std::shared_ptr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
     return s;
 }
 
+#include <Editor/Menu.h>
 
 #endif //RTS_GAME_EDITORWINDOW_H

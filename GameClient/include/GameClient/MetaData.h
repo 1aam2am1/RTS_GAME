@@ -166,6 +166,8 @@ private:
 
         TPtr<Object> create() override {
             if constexpr (std::is_abstract_v<T>) {
+                GameApi::log(ERR.fmt("Tried creating object of abstract type %s",
+                                     GameApi::demangle(typeid(T).name()).data()));
                 return TPtr<Object>{nullptr};
             } else {
                 return TPtr<Object>{nullptr, std::make_shared<T>()};
