@@ -9,8 +9,25 @@
 #include <imgui_stdlib.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 #include "GameClient/IconsFontAwesome5_c.h"
+#include <filesystem>
+#include <GameClient/Unity/Editor/Selection.h>
 
 MENU_ITEM(AssetWindow::Init, "Window/General/Project", 5)
+
+namespace fs = std::filesystem;
+
+std::vector<std::string> paths(std::string path) {
+    std::vector<std::string> result;
+    result.reserve(32);
+
+    for (auto &p: fs::directory_iterator(path, fs::directory_options::skip_permission_denied)) {
+        if (p.is_regular_file() && p.path().extension() != ".meta") {
+            result.emplace_back(p.path().filename().string());
+        }
+    }
+
+    return result;
+}
 
 void AssetWindow::Init() {
     // Get existing open window or if none, make a new one:
@@ -22,14 +39,17 @@ void AssetWindow::Init() {
 
 void AssetWindow::Awake() {
     titleContent = "Project";
+    root = "Assets";
+    objects = paths("Assets");
 }
 
 void AssetWindow::OnStyleChange() {
-//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0,0});
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0,0});
+    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0,0});
 }
 
 void AssetWindow::OnStylePop() {
-//ImGui::PopStyleVar(1);
+    //ImGui::PopStyleVar(2);
 }
 
 void AssetWindow::OnGUI() {
@@ -56,41 +76,80 @@ void AssetWindow::OnGUI() {
     }
 
     if (ImGui::BeginChild("Tree", {0, 0}, false, ImGuiWindowFlags_NoDecoration)) {
-        display_tree("Assets");
+        display_tree("Assets", "Assets");
     }
     ImGui::EndChild();
 
     ImGui::NextColumn();
 
-    if (search_string.empty()) {
-        display_files();
-    } else {
-        display_search();
-    }
+    display_files();
 }
 
-void AssetWindow::display_tree(std::string path) {
+void AssetWindow::display_tree(std::string path, std::string name) {
     const auto d = AssetDatabase::GetSubFolders(path);
 
-    for (const auto &it : d) {
-        bool open = ImGui::TreeNodeEx(it.data(), ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth);
-        bool clicked = ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
 
-        if (open) {
-            display_tree(path + "/" + it.data());
-            ImGui::TreePop();
+    if (path == "Assets") {
+        flags |= ImGuiTreeNodeFlags_DefaultOpen;
+    }
+
+    bool open = ImGui::TreeNodeEx(name.data(), flags);
+    bool clicked = ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
+
+    if (open) {
+        for (const auto &it : d) {
+            display_tree(path + "/" + it.data(), it.data());
         }
 
-        if (clicked) {
+        ImGui::TreePop();
+    }
 
-        }
+    if (clicked) {
+        root = path;
+        objects = paths(root);
     }
 }
 
 void AssetWindow::display_files() {
+    ImGui::BeginChild("ChildR", {0, 0}, false, ImGuiWindowFlags_NoDecoration);
 
+    ImGuiStyle &style = ImGui::GetStyle();
+    ImVec2 button_sz(120, 40);
+
+    float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+    for (size_t n = 0; n < objects.size(); n++) {
+        ImGui::Button(objects[n].data(), button_sz);
+        bool clicked = ImGui::IsItemClicked();
+        bool double_clicked = ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered();
+
+        if (clicked) {
+            auto guid = AssetDatabase::AssetPathToGUID(root + "/" + objects[n]);
+            auto main = AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]);
+
+            Selection::assetGUIDs.clear();
+            Selection::assetGUIDs.emplace_back(guid);
+
+            Selection::activeGameObject = main;
+            if (Selection::activeGameObject.get()) {
+                Selection::activeTransform = Selection::activeGameObject->transform;
+            } else {
+                Selection::activeTransform = nullptr;
+            }
+            Selection::activeObject = main;
+        }
+
+        if (double_clicked) {
+            AssetDatabase::OpenAsset(AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]));
+        }
+
+        float last_button_x2 = ImGui::GetItemRectMax().x;
+        float next_button_x2 = last_button_x2 + style.ItemSpacing.x +
+                               button_sz.x; // Expected position if next button was on same line
+        if (n + 1 < objects.size() && next_button_x2 < window_visible_x2)
+            ImGui::SameLine();
+    }
+
+    ImGui::EndChild();
 }
 
-void AssetWindow::display_search() {
-
-}

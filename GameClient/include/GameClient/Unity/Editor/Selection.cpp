@@ -9,3 +9,5 @@ TPtr<GameObject> Selection::activeGameObject{nullptr};
 TPtr<Object> Selection::activeObject{nullptr};
 
 TPtr<Transform> Selection::activeTransform{nullptr};
+
+std::vector<Unity::GUID> Selection::assetGUIDs;

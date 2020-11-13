@@ -108,7 +108,7 @@ public:
     static void SaveAssets();
 
     /// Opens the asset with associated application.
-    static bool OpenAsset(Object *target);
+    static bool OpenAsset(TPtr<Object> target);
 
     /// Import any changed assets.
     /// This will import any assets that have changed their content modification data or have been added-removed to the project folder.

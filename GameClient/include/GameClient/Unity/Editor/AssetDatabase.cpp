@@ -523,8 +523,8 @@ void AssetDatabase::SaveAssets() {
     }
 }
 
-bool AssetDatabase::OpenAsset(Object *target) {
-    std::string s = GetAssetPath(target);
+bool AssetDatabase::OpenAsset(TPtr<Object> target) {
+    std::string s = GetAssetPath(target.get());
     if (s.empty())
         return false;
     try {
@@ -532,17 +532,17 @@ bool AssetDatabase::OpenAsset(Object *target) {
         p = fs::absolute(p);
 #if defined(_WIN32)
 
-        ShellExecuteW(0, 0, p.generic_wstring().data(), 0, 0, SW_SHOW);
+        if (((INT) (UINT_PTR) ShellExecuteW(0, 0, p.generic_wstring().data(), 0, 0, SW_SHOW)) > 31) {
+            return true;
+        } else {
+            return false;
+        }
 
 #elif defined(__linux__)
 
-        if (fork() == 0) {
-            std::system(("xdg-open \"" + p.generic_string() + "\"").data());
-            exit(0);
-        } else {
-            return true;
-        }
-
+        int status = std::system(("xdg-open \"" + p.generic_string() + "\" &").data());
+        if (status < 0) { return false; }
+        if (!WIFEXITED(status)) { return false; }
 #endif
     }
     catch (const std::exception &e) {

@@ -48,7 +48,7 @@ public:
     std::string tag; ///< TODO: Change for enum class with int and string Layers manager
 
     /// The Transform attached to this GameObject.
-    Transform transform;
+    const TPtr<Transform> transform{this};
 
     /// Adds a component class of type componentType to the game object.
     /// \note Note that there is no RemoveComponent(), to remove a component, use Object.Destroy.

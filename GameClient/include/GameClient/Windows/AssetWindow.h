@@ -22,17 +22,17 @@ public:
 
     void OnGUI() override;
 
-    void display_tree(std::string path);
-
-    void display_files();
-
-    void display_search();
-
 private:
     std::string search_string;
 
+    std::vector<std::string> objects;
+    std::string root;
 
     bool start = false;
+
+    void display_tree(std::string path, std::string name);
+
+    void display_files();
 };
 
 

@@ -119,6 +119,7 @@ public:
     /// Style flags of window;
     uint32_t flags{};
 
+    ///TODO: Change push/ pop to struct of imgui values
     virtual void OnStyleChange() {};
 
     virtual void OnStylePop() {};
