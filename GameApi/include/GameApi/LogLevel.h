@@ -13,6 +13,8 @@ namespace GameApi {
 
     class level_value {
     public:
+        constexpr level_value(const char *n, int v, const char *c) : name(n), value(v), colorCode(c) {}
+
         level_value(const level_value &other) = delete;
 
         level_value &operator=(const level_value &other) = delete;

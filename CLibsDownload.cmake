@@ -67,6 +67,7 @@ if (NOT json_POPULATED)
 endif ()
 
 ### Box2d Dependency ###
+set(BOX2D_BUILD_TESTBED FALSE CACHE BOOL "" FORCE)
 FetchContent_Declare(box2d
         GIT_REPOSITORY ${box2d_REPO}
         GIT_SHALLOW TRUE)

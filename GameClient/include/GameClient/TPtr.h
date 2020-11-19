@@ -160,6 +160,7 @@ TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
     return result;
 }
 
-#include <GameClient/Unity/Macro.h>
+#define TPTR_P(NAME) TPtr<Object> NAME{this}
+#define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
 #endif //RTS_GAME_TPTR_H

@@ -26,8 +26,6 @@
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
 
-#define TPTR_P(NAME) TPtr<Object> NAME{this}
-#define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
 /// TODO: Set TYPE SO THAT you can set to don't include base classes in serialization TYPE or (TYPE, PRIVATE) or (TYPE, OBJECT, ...)
 /// Export class to save it in scene and use in in gameobject as component
@@ -73,7 +71,7 @@ namespace {                        \
 #define MENU_ITEM(FUNC, PATH, ...) \
 namespace {                        \
     static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){ \
-        Menu::addItem(PATH, FUNC, {__VA_ARGS__}); \
+        Menu::addItem(PATH, FUNC __VA_OPT__(,) __VA_ARGS__); \
         return 0;                 \
     });                          \
 }
@@ -89,14 +87,29 @@ namespace {                        \
 #define MENU_TAB(PATH, ...) \
 namespace {                 \
     static const int UNIQUE_ID(INTERNAL_NO_USE_T_) = Initializer::add([](){ \
-        Menu::addPlaceHolder(PATH, {__VA_ARGS__});   \
+        Menu::addPlaceHolder(PATH __VA_OPT__(,) __VA_ARGS__);   \
         return 0;                 \
     });                          \
 }
 
 /// Tells an Editor class which run-time type it's an editor for.
 /// \param isFallback	If true, match this editor only if all non-fallback editors do not match. Defaults to false.
-#define CUSTOM_EDITOR(TYPE, ...) //__VA_ARGS__
+/// \param editorForChildClasses  If true, child classes of inspectedType will also show this editor. Defaults to false.
+#define CUSTOM_EDITOR(EDITOR, TYPE, ...)   \
+namespace {                        \
+    static int INTERNAL_NO_USE_CUSTOM_EDITOR_##EDITOR = Initializer::add([](){ \
+        Editor::addCustom<EDITOR, TYPE>(__VA_ARGS__);       \
+        return 0;                               \
+    });                                   \
+}
+#define CUSTOM_EDITOR_FALLBACK(EDITOR, TYPE, ...)   \
+namespace {                        \
+    static int INTERNAL_NO_USE_CUSTOM_EDITOR_##EDITOR = Initializer::add([](){ \
+        Editor::addCustomFallback<EDITOR, TYPE>(__VA_ARGS__);       \
+        return 0;                               \
+    });                                   \
+}
+
 
 
 /// Define break in pointer that could break in inside the private class
@@ -117,6 +130,6 @@ catch (const std::exception &e) {           \
 
 #include <GameClient/Initializer.h>
 #include <GameClient/MetaData.h>
-#include <GameAPI/Config.h>
+#include <GameApi/Config.h>
 
 #endif //RTS_GAME_MACRO_H

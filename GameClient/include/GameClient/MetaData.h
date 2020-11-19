@@ -74,7 +74,7 @@ private:
 
         virtual bool copy(Object *f1, Object *f2) = 0;
     };
-
+//TODO: Change what can be stored to two list read/write and const, add list and vector, set/get functions
     template<typename T>
     class Register : public Reflect {
     public:

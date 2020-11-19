@@ -66,6 +66,10 @@ void MainWindow::run() {
         ///No for each as windows can change
         ///TODO: Change this as adding to different list and adding it on end after drawing all.
         for (size_t i = 0; i < EditorWindow::get_open_windows().size(); ++i) {
+            EditorWindow::get_open_windows()[i]->Update();  /// drawing ImGui and events to Game Scene
+        }
+
+        for (size_t i = 0; i < EditorWindow::get_open_windows().size(); ++i) {
             EditorWindow::get_open_windows()[i]->drawGui();  /// drawing ImGui and events to Game Scene
         }
 

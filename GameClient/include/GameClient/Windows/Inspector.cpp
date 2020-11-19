@@ -4,6 +4,8 @@
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include "Macro.h"
+#include <GameClient/Unity/Editor/Editor.h>
+#include <GameClient/Unity/Editor/Selection.h>
 
 class Inspector : public EditorWindow {
 public:
@@ -14,12 +16,27 @@ public:
         window->Show();
     }
 
-    void Update() override {
+    TPtr<Object> activeObject{this};
+    TPtr<Editor> editor{this};
 
+    void Update() override {
+        if (Selection::activeObject != activeObject) {
+            activeObject = Selection::activeObject;
+
+            editor = nullptr;
+            Editor::CreateCachedEditor(activeObject, editor);
+        }
+    }
+
+    void OnDrawGizmos() {
+        if (editor) { editor->OnSceneGUI(); }
     }
 
     void OnGUI() override {
+        if (editor) { editor->OnInspectorGUI(); }
 
+        /// TODO: Move OnDrawGizmos as override?
+        OnDrawGizmos();
     }
 };
 

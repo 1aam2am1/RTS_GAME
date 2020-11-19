@@ -101,6 +101,11 @@ set(SRC
         include/GameClient/Importers/DefaultImporter.cpp
         include/GameClient/Importers/TextScriptImporter.cpp
         include/GameClient/Importers/ShaderImporter.cpp
+        include/GameClient/Unity/Editor/Editor.cpp
+        include/GameClient/Unity/Editor/Editor.h
+        include/GameClient/Editors/ObjectEditor.cpp
+        include/GameClient/Editors/TextEditor.cpp
+        include/GameClient/Editors/TextureEditor.cpp
         )
 
 add_executable(GameClient ${SRC})
