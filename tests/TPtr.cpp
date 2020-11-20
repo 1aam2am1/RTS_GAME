@@ -143,4 +143,25 @@ TEST_CASE("TPtr") {
         l2 = l;
         REQUIRE(l2.expired());
     }
+
+    SECTION("Cast of types") {
+        class B : public MonoBehaviour {
+
+        };
+
+        TPtr<A> l(&parent);
+        l = std::make_shared<A>();
+
+        TPtr<MonoBehaviour> base = l;
+        REQUIRE(!base.expired());
+
+        TPtr<B> lb = l;
+        REQUIRE(lb.expired());
+
+        lb = dynamic_pointer_cast<B>(base);
+        REQUIRE(lb.expired());
+
+        TPtr<B> bb(&parent, std::make_shared<A>());
+        REQUIRE(bb.expired());
+    }
 }

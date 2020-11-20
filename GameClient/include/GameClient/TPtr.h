@@ -24,7 +24,7 @@ public:
 
     template<typename Y = T>
     TPtr(const TPtr<Y> &r) {
-        ptr = std::static_pointer_cast<T>(r.ptr);
+        ptr = std::dynamic_pointer_cast<T>(r.ptr);
 
         if (ptr) {
             ptr->onDestroySignal.connect(&TPtr::destroy, this);
@@ -40,7 +40,7 @@ public:
     /// \param ptr object
     template<typename Y = T>
     constexpr explicit TPtr(Object *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept
-            : ptr(std::static_pointer_cast<T>(ptr)) {
+            : ptr(std::dynamic_pointer_cast<T>(ptr)) {
         if (parent) { parentConnection = parent->onDestroySignal.connect_scoped(&TPtr::destroy, this); }
     }
 
@@ -61,7 +61,7 @@ public:
         }
 
         if constexpr (is_instance_v<U, TPtr>) {
-            ptr = std::static_pointer_cast<T>(std::forward<U>(r).ptr);
+            ptr = std::dynamic_pointer_cast<T>(std::forward<U>(r).ptr);
         } else if constexpr (is_instance_v<U, std::shared_ptr>) {
             ptr = std::forward<U>(r);
         } else if constexpr (std::is_same_v<U, std::nullptr_t>) {
@@ -127,7 +127,7 @@ private:
     void destroy(Object *o) noexcept {
         T *t = dynamic_cast<T *>(o);
         if (t) {
-            ptr = std::reinterpret_pointer_cast<T>(t->shared_from_this());
+            ptr = std::static_pointer_cast<T>(t->shared_from_this());
         } else {
             ptr = nullptr;
         }

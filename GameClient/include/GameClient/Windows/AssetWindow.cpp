@@ -33,6 +33,7 @@ void AssetWindow::Init() {
     // Get existing open window or if none, make a new one:
     auto window = EditorWindow::GetWindow<AssetWindow>();
     WindowLayout::dockWindow(WindowLayout::Down, window);
+    window->minSize.x = 500;
     window->flags |= ImGuiWindowFlags_MenuBar;
     window->Show();
 }
@@ -57,11 +58,13 @@ void AssetWindow::OnGUI() {
         ImGui::SetCursorPosX(0);
         ImGui::Button(ICON_FA_PLUS " " ICON_FA_ANGLE_DOWN);
 
-        const float ItemSpacing = ImGui::GetStyle().ItemSpacing.x;
+        float LocalButtonWidth = 200.0f;
+        auto pos = ImGui::GetWindowWidth() - LocalButtonWidth - 2;
+        if (pos < ImGui::GetCursorPosX()) {
+            pos = ImGui::GetCursorPosX();
+            LocalButtonWidth = ImGui::GetWindowWidth() - pos - 2;
+        }
 
-        static float LocalButtonWidth = 200.0f;
-        auto pos = ImGui::GetWindowWidth() - (LocalButtonWidth + ItemSpacing);
-        if (pos < ImGui::GetCursorPosX()) { pos = ImGui::GetCursorPosX(); }
         ImGui::SetCursorPosX(pos);
         ImGui::SetNextItemWidth(LocalButtonWidth);
         ImGui::InputTextWithHint("##Search", ICON_FA_SEARCH, &search_string);
@@ -131,7 +134,7 @@ void AssetWindow::display_files() {
             Selection::assetGUIDs.emplace_back(guid);
 
             Selection::activeGameObject = main;
-            if (Selection::activeGameObject.get()) {
+            if (Selection::activeGameObject) {
                 Selection::activeTransform = Selection::activeGameObject->transform;
             } else {
                 Selection::activeTransform = nullptr;

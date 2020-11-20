@@ -6,6 +6,7 @@
 #include "Macro.h"
 #include <GameClient/Unity/Editor/Editor.h>
 #include <GameClient/Unity/Editor/Selection.h>
+#include <GameClient/WindowLayout.h>
 
 class Inspector : public EditorWindow {
 public:
@@ -13,6 +14,7 @@ public:
     static void Init() {
         // Get existing open window or if none, make a new one:
         auto window = EditorWindow::GetWindow<Inspector>();
+        WindowLayout::dockWindow(WindowLayout::Right, window);
         window->Show();
     }
 
@@ -24,7 +26,7 @@ public:
             activeObject = Selection::activeObject;
 
             editor = nullptr;
-            Editor::CreateCachedEditor(activeObject, editor);
+            if (activeObject) Editor::CreateCachedEditor(activeObject, editor);
         }
     }
 
@@ -41,3 +43,4 @@ public:
 };
 
 MENU_ITEM(Inspector::Init, "Window/General/Inspector", 4);
+INITIALIZE_FUNC(Inspector::Init());

@@ -26,6 +26,12 @@
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
 
+#define INITIALIZE_FUNC(...)                        \
+namespace {                                         \
+    static int UNIQUE_ID(INITIALIZE_FUNC_USE_F_) = Initializer::add([]() { \
+        __VA_ARGS__;                                \
+    });                                             \
+}
 
 /// TODO: Set TYPE SO THAT you can set to don't include base classes in serialization TYPE or (TYPE, PRIVATE) or (TYPE, OBJECT, ...)
 /// Export class to save it in scene and use in in gameobject as component

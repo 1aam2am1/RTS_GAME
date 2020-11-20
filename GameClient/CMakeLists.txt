@@ -106,6 +106,7 @@ set(SRC
         include/GameClient/Editors/ObjectEditor.cpp
         include/GameClient/Editors/TextEditor.cpp
         include/GameClient/Editors/TextureEditor.cpp
+        include/GameClient/Windows/SceneWindow.cpp
         )
 
 add_executable(GameClient ${SRC})
