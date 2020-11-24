@@ -43,4 +43,7 @@ public:
 };
 
 MENU_ITEM(Inspector::Init, "Window/General/Inspector", 4);
+
+#if UNITY_EDITOR
 INITIALIZE_FUNC(Inspector::Init());
+#endif

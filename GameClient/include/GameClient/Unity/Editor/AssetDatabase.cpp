@@ -411,7 +411,7 @@ std::string AssetDatabase::GUIDToAssetPath(Unity::GUID guid) {
     }
 }
 
-Unity::GUID AssetDatabase::AssetPathToGUID(std::string path) {
+Unity::GUID AssetDatabase::AssetPathToGUID(std::string_view path) {
     const auto &d = get_data();
     /*auto it = std::find_if(d.objects.begin(), d.objects.end(),
                            [&path](const auto &i) { return i.second.path == path; });
@@ -420,7 +420,7 @@ Unity::GUID AssetDatabase::AssetPathToGUID(std::string path) {
     } else {
         return {};
     }*/
-    auto it = d.path_files.find(path);
+    auto it = d.path_files.find(std::string{path});
     if (it != d.path_files.end()) {
         return it->second.guid;
     } else {

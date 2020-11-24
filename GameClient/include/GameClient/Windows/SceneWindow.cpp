@@ -72,4 +72,7 @@ public:
 };
 
 MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 3);
+
+#if UNITY_EDITOR
 INITIALIZE_FUNC(SceneWindow::Init());
+#endif

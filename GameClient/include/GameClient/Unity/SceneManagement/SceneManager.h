@@ -148,7 +148,7 @@ public:
     ///Add a delegate to this to get notifications when a Scene has unloaded.
     static sigslot::signal<SceneP> sceneUnloaded;
 
-private:
+protected:
     friend class SceneWindow;
 
     friend class Scene;
@@ -162,7 +162,9 @@ private:
         std::vector<TPtr<GameObject>> objects{};
     };
 
-    static uint64_t id;
+    static bool LoadSceneFull(Data &, std::string_view);
+
+    static uint64_t max_id;
     static std::map<uint64_t, Data> data;
 };
 

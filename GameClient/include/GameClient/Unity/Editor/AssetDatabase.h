@@ -77,7 +77,7 @@ public:
     static std::string GUIDToAssetPath(Unity::GUID guid);
 
     /// Get the GUID for the asset at path.
-    static Unity::GUID AssetPathToGUID(std::string path);
+    static Unity::GUID AssetPathToGUID(std::string_view path);
 
     /// Import asset at path.
     static void ImportAsset(std::string path, ImportAssetOptions options = ImportAssetOptions::Default);
