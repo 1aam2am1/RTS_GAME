@@ -6,6 +6,7 @@
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/ObjectFactory.h>
 #include <GameClient/TPtr.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 EXPORT_CLASS(Object, ("m_Name", name));
 
@@ -38,6 +39,12 @@ TPtr<Object> Object::Instantiate(Object *original) {
 void Object::DestroyImmediate(Object *obj, bool allowDestroyingAssets) {
     //TODO: Thread save
     if (obj) {
-        obj->onDestroySignal(nullptr);
+        if (auto t = dynamic_cast<Transform *>(obj)) {
+            if (auto g = t->gameObject()) {
+                DestroyImmediate(g.get(), allowDestroyingAssets);
+            }
+        } else {
+            obj->onDestroySignal(nullptr);
+        }
     }
 }

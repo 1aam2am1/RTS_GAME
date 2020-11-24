@@ -8,8 +8,8 @@
 
 #include "Object.h"
 #include <GameClient/TPtr.h>
-
-class GameObject;
+#include <GameApi/SetterGetter.h>
+#include <GameClient/Unity/Core/GameObject.h>
 
 class Transform;
 
@@ -17,14 +17,18 @@ class Transform;
 class Component : public Object {
 public:
 
+    Component();
+
+    ~Component();
+
     /// The game object this component is attached to. A component is always attached to a game object.
-    ///TPtr<GameObject> gameObject; TODO: make it field;
+    [[nodiscard]] TPtr<GameObject> gameObject() const;
 
     /// The tag of this game object.
-    std::string tag;
+    SetterGetter<std::string> tag;
 
     /// The Transform attached to this GameObject.
-    ///TPtr<Transform> transform; TODO: make it field;
+    TPtr<Transform> transform();
 
     /// Is this game object tagged with tag ?
     /// \param tag The tag to compare.
@@ -69,7 +73,43 @@ public:
     /// \return
     template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int> = 0>
     std::vector<TPtr<T>> GetComponentsInParent(bool includeInactive = false) const;
+
+private:
+    friend class GameObject;
+
+    TPtr<GameObject> m_gameObject{this};
 };
+
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+TPtr<T> Component::GetComponent() const {
+    return m_gameObject->GetComponent<T>();
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+TPtr<T> Component::GetComponentInChildren() const {
+    return m_gameObject->GetComponentInChildren<T>();
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+TPtr<T> Component::GetComponentInParent() const {
+    return m_gameObject->GetComponentInParent<T>();
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+std::vector<TPtr<T>> Component::GetComponents() const {
+    return m_gameObject->GetComponents<T>();
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+std::vector<TPtr<T>> Component::GetComponentsInChildren(bool includeInactive) const {
+    return m_gameObject->GetComponentsInChildren<T>();
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+std::vector<TPtr<T>> Component::GetComponentsInParent(bool includeInactive) const {
+    return m_gameObject->GetComponentsInParent<T>();
+}
 
 
 #endif //RTS_GAME_COMPONENT_H

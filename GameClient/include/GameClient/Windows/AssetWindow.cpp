@@ -135,7 +135,7 @@ void AssetWindow::display_files() {
 
             Selection::activeGameObject = main;
             if (Selection::activeGameObject) {
-                Selection::activeTransform = Selection::activeGameObject->transform;
+                Selection::activeTransform = Selection::activeGameObject->transform();
             } else {
                 Selection::activeTransform = nullptr;
             }

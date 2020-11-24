@@ -10,6 +10,7 @@
 #include <typeindex>
 #include <cstdint>
 #include <string>
+#include <GameClient/TPtr.h>
 
 template<typename>
 class TPtr;

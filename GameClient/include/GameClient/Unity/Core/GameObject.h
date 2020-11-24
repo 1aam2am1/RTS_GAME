@@ -8,10 +8,12 @@
 
 #include <string>
 #include <GameClient/TPtr.h>
-#include "Component.h"
-#include "Transform.h"
+#include <GameApi/SetterGetter.h>
+#include <GameClient/Unity/SceneManagement/Scene.h>
 
-class Scene;
+class Component;
+
+class Transform;
 
 /// Base class for all entities in Unity Scenes.
 class GameObject : public Object {
@@ -32,23 +34,23 @@ public:
     /// Defines whether the GameObject is active in the Scene.
     /// \note This lets you know whether a GameObject is active in the game.
     /// That is the case if its GameObject.activeSelf property is enabled, as well as that of all its parents.
-    const bool activeInHierarchy;
+    bool activeInHierarchy();
 
     /// The local active state of this GameObject
-    const bool activeSelf;
+    bool activeSelf();
 
     /// The layer the game object is in.
     /// \note Layers can be used for selective rendering from cameras or ignoring raycasts.
     int layer;
 
     /// Scene that the GameObject is part of.
-    std::shared_ptr<Scene> scene;
+    SetterGetter<TPtr<Scene>> scene;
 
     /// The tag of this game object.
     std::string tag; ///< TODO: Change for enum class with int and string Layers manager
 
     /// The Transform attached to this GameObject.
-    const TPtr<Transform> transform{this};
+    TPtr<Transform> transform();
 
     /// Adds a component class of type componentType to the game object.
     /// \note Note that there is no RemoveComponent(), to remove a component, use Object.Destroy.
@@ -122,7 +124,25 @@ public:
     /// \return GameObject
     static TPtr<GameObject> FindWithTag(std::string_view tag);
 
+private:
+    friend class SceneManager;
+
+    bool m_active = true;
+
+    std::vector<TPtr<Component>> components;
+    TPtr<Scene> m_scene{this};
+
+    void initialize_component(TPtr<Component>);
 };
+
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+TPtr<T> GameObject::AddComponent() {
+    //TODO: Check meta if there is flag only one and then check if there exists
+    auto result = components.emplace_back(this, std::make_shared<T>());
+    initialize_component(result);
+    return result;
+}
 
 
 #endif //RTS_GAME_GAMEOBJECT_H

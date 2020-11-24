@@ -10,10 +10,13 @@
 #include "Component.h"
 #include "Quaternion.h"
 #include <GameClient/TPtr.h>
+#include <GameApi/SetterGetter.h>
 
 /// Position, rotation and scale of an object
-class Transform : public Component {
+class Transform final : public Component {
 public:
+    Transform();
+
     /// The coordinate space in which to operate.
     enum class Space {
         World, ///< Applies transformation relative to the world coordinate system.
@@ -21,40 +24,40 @@ public:
     };
 
     /// The number of children the parent Transform has.
-    int childCount;
+    const int childCount;
 
     /// The rotation as Euler angles in degrees.
     /// \note Euler angles can represent a three dimensional rotation by performing three separate rotations
     /// around individual axes. In Unity these rotations are performed around the \b Z axis, the \b X axis, and the \b Y axis,
     /// in that order.
-    sf::Vector3f eulerAngles;
+    //sf::Vector3f eulerAngles;
 
     /// The rotation as Euler angles in degrees relative to the parent transform's rotation.
-    sf::Vector3f localEulerAngles;
+    //sf::Vector3f localEulerAngles;
 
     /// Position of the transform relative to the parent transform.
-    sf::Vector3f localPosition;
+    //sf::Vector3f localPosition;
 
     /// The rotation of the transform relative to the transform rotation of the parent.
-    Quaternion localRotation;
+    //Quaternion localRotation;
 
     /// The scale of the transform relative to the GameObjects parent.
-    sf::Vector3f localScale;
+    //sf::Vector3f localScale;
+
+    /// A Quaternion that stores the rotation of the Transform in world space.
+    //Quaternion rotation;
+
+    /// The world space position of the Transform
+    //sf::Vector3f position;
 
     /// The parent of the transform.
     /// \note Changing the parent will modify the parent-relative position, scale and rotation
     /// but keep the world space position, rotation and scale the same.
-    TPTR_PT(Transform, parent);
+    SetterGetter<TPtr<Transform>> parent;
 
     /// Returns the topmost transform in the hierarchy.
     /// \note This never returns null, if this Transform doesn't have a parent it returns itself.
-    TPTR_PT(Transform, root);
-
-    /// A Quaternion that stores the rotation of the Transform in world space.
-    Quaternion rotation;
-
-    /// The world space position of the Transform
-    sf::Vector3f position;
+    TPtr<Transform> root();
 
     /// Unparents all children.
     /// \note Useful if you want to destroy the root of a hierarchy without destroying the children.
@@ -68,7 +71,7 @@ public:
     /// Returns a transform child by index.
     /// \param index Index of the child transform to return. Must be smaller than Transform.childCount.
     /// \return Transform Transform child by index.
-    TPtr<Transform> GetChild(int index);
+    TPtr<Transform> GetChild(int index) const;
 
     /// Gets the sibling index.
     int GetSiblingIndex();
@@ -134,6 +137,9 @@ public:
     /// (the x, y and z axes shown when selecting the object inside the Scene View.)
     /// If relativeTo is Space.World the movement is applied relative to the world coordinate system.
     void Translate(sf::Vector3f translation, Space relativeTo = Space::Self);
+
+private:
+    std::vector<TPtr<GameObject>> children{};
 };
 
 

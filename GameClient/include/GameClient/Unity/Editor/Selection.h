@@ -7,6 +7,7 @@
 
 #include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/Core/Guid.h>
+#include <GameClient/Unity/Core/Transform.h>
 #include <vector>
 #include <GameClient/TPtr.h>
 

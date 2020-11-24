@@ -38,36 +38,44 @@ bool Editor::DrawDefaultInspector() {
             auto &name = it2.first;
             //TODO: Reformat names so that thy can be unique and so that m_ be deleted _ changed for ' ' and in Pascal Case
             if (name.size() > 2 && name[1] == '_') { name = &name[2]; }
+            std::string key = "##";
+            key += it2.first.data();
 
             bool dirty = false;
             auto visitor = overload{
-                    [&name, &dirty](int64_t *i) {
-                        dirty = ImGui::InputScalar(name.data(), ImGuiDataType_S64, i, nullptr, nullptr);
+                    [&key, &dirty](int64_t *i) {
+                        ImGui::SetNextItemWidth(-1.0f);
+                        dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, i, nullptr, nullptr);
                     },
-                    [&name, &dirty](double *d) {
-                        dirty = ImGui::InputDouble(name.data(), d);
+                    [&key, &dirty](double *d) {
+                        ImGui::SetNextItemWidth(-1.0f);
+                        dirty = ImGui::InputDouble(key.data(), d);
                     },
-                    [&name, &dirty](std::string *str) {
-                        dirty = ImGui::InputText(name.data(), str);
+                    [&key, &dirty](std::string *str) {
+                        ImGui::SetNextItemWidth(-1.0f);
+                        dirty = ImGui::InputText(key.data(), str);
                     },
-                    [&name, &dirty](bool *b) {
-                        dirty = ImGui::Checkbox(name.data(), b);
+                    [&key, &dirty](bool *b) {
+                        ImGui::SetNextItemWidth(-1.0f);
+                        dirty = ImGui::Checkbox(key.data(), b);
                     },
-                    [&name, &dirty](TPtr<Object> *o) {
+                    [&key, &dirty](TPtr<Object> *o) {
                         //TODO: Drop target
                     },
-                    [&name, &dirty](nlohmann::json *) {},
-                    [&name, &dirty](std::function<void(int64_t)>) {
+                    [&key, &dirty](nlohmann::json *) {},
+                    [&key, &dirty](std::function<void(int64_t)>) {
                         //TODO: Find from cget
                     },
-                    [&name, &dirty](std::function<void(double)>) {
+                    [&key, &dirty](std::function<void(double)>) {
                         //TODO: Find from cget
                     },
-                    [&name, &dirty](std::function<void(std::string)>) {
+                    [&key, &dirty](std::function<void(std::string)>) {
                         //TODO: Find from cget
                     }
             };
 
+            ImGui::Text("%s", name.data());
+            ImGui::SameLine();
             std::visit(visitor, it2.second);
 
             if (dirty) {

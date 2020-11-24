@@ -10,27 +10,46 @@
 template<typename T>
 class SetterGetter {
 public:
-    SetterGetter(const std::function<void(const T &)> &set, const std::function<T()> &get) : set(set),
-                                                                                             get(get) {}
+    SetterGetter() = delete;
+
+    SetterGetter(const std::function<void(const T &)> &set, const std::function<T()> &get) : s(set),
+                                                                                             g(get) {}
 
     SetterGetter(const SetterGetter &) = delete;
 
-    operator T() const {
-        return get();
-    }
-
-    T operator()() const {
-        return get();
-    }
-
-    SetterGetter<T> &operator=(const T &t) {
-        set(t);
+    SetterGetter<T> &operator=(const SetterGetter<T> &r) {
+        set(r);
         return *this;
     }
 
+    SetterGetter<T> &operator=(SetterGetter<T> &&) = delete;
+
+    operator T() const {
+        return g();
+    }
+
+    T operator()() const {
+        return g();
+    }
+
+    template<typename Y>
+    SetterGetter<T> &operator=(Y &&t) {
+        s(std::forward<Y>(t));
+        return *this;
+    }
+
+    T get() const {
+        return g();
+    }
+
+    template<typename Y>
+    void set(Y &&t) {
+        s(std::forward<Y>(t));
+    }
+
 private:
-    std::function<void(const T &)> set;
-    std::function<T()> get;
+    std::function<void(const T &)> s;
+    std::function<T()> g;
 };
 
 

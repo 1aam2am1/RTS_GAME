@@ -9,10 +9,10 @@
 #undef INFO
 
 #include <GameClient/TPtr.h>
-#include <GameClient/Unity/Core/MonoBehaviour.h>
+#include <GameClient/Unity/Core/Object.h>
 
 TEST_CASE("TPtr") {
-    class A : public MonoBehaviour {
+    class A : public Object {
     public:
         ~A() {
             if (d)d();
@@ -23,7 +23,7 @@ TEST_CASE("TPtr") {
         std::function<void()> d;
     };
 
-    MonoBehaviour parent;
+    Object parent;
 
     SECTION("CREATE nullptr parent") {
         TPtr<A> l(nullptr, std::make_shared<A>());
@@ -81,7 +81,7 @@ TEST_CASE("TPtr") {
     }
 
     SECTION("Check define and destructor") {
-        struct B : MonoBehaviour {
+        struct B : Object {
             TPTR_P(a);
             TPTR_PT(A, b);
         };
@@ -114,7 +114,7 @@ TEST_CASE("TPtr") {
 
     SECTION("Operator == Base") {
         TPtr<A> l(&parent);
-        TPtr<MonoBehaviour> l2(&parent);
+        TPtr<Object> l2(&parent);
 
         l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
         l2 = l;
@@ -122,14 +122,14 @@ TEST_CASE("TPtr") {
     }
 
     SECTION("Operator == shared") {
-        TPtr<MonoBehaviour> l2(&parent);
+        TPtr<Object> l2(&parent);
 
         l2 = std::make_shared<A>();
         REQUIRE(l2.get());
     }
 
     SECTION("Operator == nullptr") {
-        TPtr<MonoBehaviour> l2(&parent);
+        TPtr<Object> l2(&parent);
 
         l2 = nullptr;
         REQUIRE(l2.expired());
@@ -137,22 +137,22 @@ TEST_CASE("TPtr") {
 
     SECTION("Constructor with cast") {
         TPtr<A> l(&parent);
-        TPtr<MonoBehaviour> l2(&parent, std::make_shared<A>());
+        TPtr<Object> l2(&parent, std::make_shared<A>());
 
-        REQUIRE_NOTHROW(l2->Update());
+        REQUIRE_NOTHROW(l2->name);
         l2 = l;
         REQUIRE(l2.expired());
     }
 
     SECTION("Cast of types") {
-        class B : public MonoBehaviour {
+        class B : public Object {
 
         };
 
         TPtr<A> l(&parent);
         l = std::make_shared<A>();
 
-        TPtr<MonoBehaviour> base = l;
+        TPtr<Object> base = l;
         REQUIRE(!base.expired());
 
         TPtr<B> lb = l;

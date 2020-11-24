@@ -27,6 +27,8 @@
 #include <GameClient/Unity/Editor/OneGuidFile.h>
 #include <GameClient/Unity/Serialization/JsonSerializer.h>
 #include <queue>
+#include <GameClient/Unity/SceneManagement/SceneManager.h>
+#include <GameClient/Unity/Editor/SceneAsset.h>
 
 namespace fs = std::filesystem;
 
@@ -527,6 +529,14 @@ bool AssetDatabase::OpenAsset(TPtr<Object> target) {
     std::string s = GetAssetPath(target.get());
     if (s.empty())
         return false;
+
+    //open types in our unity if they can be opened
+    //TODO: Make map of types and opening function
+    if (typeid(*target.get()) == typeid(SceneAsset)) {
+        SceneManager::LoadScene(s, SceneManager::LoadSceneMode::Single);
+        return true;
+    }
+
     try {
         fs::path p = s;
         p = fs::absolute(p);
@@ -543,6 +553,7 @@ bool AssetDatabase::OpenAsset(TPtr<Object> target) {
         int status = std::system(("xdg-open \"" + p.generic_string() + "\" &").data());
         if (status < 0) { return false; }
         if (!WIFEXITED(status)) { return false; }
+
 #endif
     }
     catch (const std::exception &e) {

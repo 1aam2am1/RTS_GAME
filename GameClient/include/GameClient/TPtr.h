@@ -63,7 +63,7 @@ public:
         if constexpr (is_instance_v<U, TPtr>) {
             ptr = std::dynamic_pointer_cast<T>(std::forward<U>(r).ptr);
         } else if constexpr (is_instance_v<U, std::shared_ptr>) {
-            ptr = std::forward<U>(r);
+            ptr = std::dynamic_pointer_cast<T>(std::forward<U>(r));
         } else if constexpr (std::is_same_v<U, std::nullptr_t>) {
             ptr = nullptr;
             return *this;

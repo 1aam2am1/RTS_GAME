@@ -6,15 +6,19 @@
 #define RTS_GAME_SCENEMANAGER_H
 
 #include <SceneManagement/Scene.h>
+#include <GameClient/Unity/Core/GameObject.h>
 #include <string_view>
 #include <memory>
 #include <GameClient/Unity/Yield/AsyncOperation.h>
+#include <map>
 #include "GameClient/TPtr.h"
 
 
 /// Scene management at run-time.
 class SceneManager {
-    using SceneP = std::shared_ptr<Scene>;
+public:
+
+    using SceneP = TPtr<Scene>;
 
     /// Used when loading a Scene in a player.
     /// \details Use LoadSceneMode to choose what type of Scene loads when using SceneManager.LoadScene.
@@ -114,7 +118,7 @@ class SceneManager {
     /// you would like to move to a new Scene, otherwise Unity deletes it when it loads a new Scene.
     /// \param go GameObject to move.
     /// \param scene Scene to move into.
-    static void MoveGameObjectToScene(GameObject go, SceneP scene);
+    static void MoveGameObjectToScene(TPtr<GameObject> go, SceneP scene);
 
     /// Set the Scene to be active.
     /// \note There must always be one Scene marked as the active Scene.
@@ -143,6 +147,23 @@ class SceneManager {
 
     ///Add a delegate to this to get notifications when a Scene has unloaded.
     static sigslot::signal<SceneP> sceneUnloaded;
+
+private:
+    friend class SceneWindow;
+
+    friend class Scene;
+
+    struct Data {
+        int buildIndex = 0;
+        bool isValid = true;
+        bool isLoaded = true;
+        std::string name{};
+        std::string path{};
+        std::vector<TPtr<GameObject>> objects{};
+    };
+
+    static uint64_t id;
+    static std::map<uint64_t, Data> data;
 };
 
 
