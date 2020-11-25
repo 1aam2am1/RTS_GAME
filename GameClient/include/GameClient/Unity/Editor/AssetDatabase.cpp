@@ -27,7 +27,7 @@
 #include <GameClient/Unity/Editor/OneGuidFile.h>
 #include <GameClient/Unity/Serialization/JsonSerializer.h>
 #include <queue>
-#include <GameClient/Unity/SceneManagement/SceneManager.h>
+#include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 #include <GameClient/Unity/Editor/SceneAsset.h>
 
 namespace fs = std::filesystem;
@@ -533,7 +533,7 @@ bool AssetDatabase::OpenAsset(TPtr<Object> target) {
     //open types in our unity if they can be opened
     //TODO: Make map of types and opening function
     if (typeid(*target.get()) == typeid(SceneAsset)) {
-        SceneManager::LoadScene(s, SceneManager::LoadSceneMode::Single);
+        EditorSceneManager::OpenScene(s, EditorSceneManager::OpenSceneMode::Single);
         return true;
     }
 

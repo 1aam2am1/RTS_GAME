@@ -31,11 +31,11 @@ public:
 
     /// The total number of currently loaded Scenes.
     /// \details The number of currently loaded Scenes will be returned.
-    static int sceneCount;
+    static int sceneCount();
 
     /// Number of Scenes in Build Settings.
     /// \details The number of Scenes which have been added to the Build Settings.
-    static const uint32_t sceneCountInBuildSettings;
+    static uint32_t sceneCountInBuildSettings();
 
     /// Create an empty new Scene at runtime with the given name.
     /// \details The new Scene will be opened additively into the hierarchy alongside any existing Scenes that are currently open.
@@ -155,8 +155,8 @@ protected:
 
     struct Data {
         int buildIndex = 0;
-        bool isValid = true;
-        bool isLoaded = true;
+        bool isValid = false;
+        bool isLoaded = false;
         std::string name{};
         std::string path{};
         std::vector<TPtr<GameObject>> objects{};
@@ -166,6 +166,7 @@ protected:
 
     static uint64_t max_id;
     static std::map<uint64_t, Data> data;
+    static uint64_t active_scene;
 };
 
 

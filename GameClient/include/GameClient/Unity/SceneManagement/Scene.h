@@ -18,6 +18,8 @@ class Scene : public Object {
 private:
     friend class SceneManager;
 
+    friend class EditorSceneManager;
+
     uint64_t id;
 
     explicit Scene(uint64_t id);

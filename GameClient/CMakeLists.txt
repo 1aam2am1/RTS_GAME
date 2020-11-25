@@ -111,6 +111,9 @@ set(SRC
         include/GameClient/Unity/Editor/Application.h
         include/GameClient/Unity/Serialization/SceneSerializer.cpp
         include/GameClient/Unity/Serialization/SceneSerializer.h
+        include/GameClient/Unity/SceneManagement/EditorSceneManager.cpp
+        include/GameClient/Unity/SceneManagement/EditorSceneManager.h
+        include/GameClient/Windows/NewScene.cpp
         )
 
 add_executable(GameClient ${SRC})

@@ -14,6 +14,7 @@
 namespace fs = std::filesystem;
 
 uint64_t SceneManager::max_id = 1;
+uint64_t SceneManager::active_scene = 0;
 decltype(SceneManager::data) SceneManager::data{{0, {0, false}}};
 
 void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::SceneP scene) {
@@ -44,13 +45,13 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
     auto str = GameApi::readFullFile(path);
     auto asset_guid = AssetDatabase::AssetPathToGUID(path);
 
-    auto json = nlohmann::json::parse(str.empty() ? "{}" : str);
-
-    d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
-    d.buildIndex = -1; //TODO: Make build index
-
-
     try {
+
+        auto json = nlohmann::json::parse(str.empty() ? "{}" : str);
+
+        d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
+        d.buildIndex = -1; //TODO: Make build index
+
         std::unordered_map<TPtr<Object> *, nlohmann::json> bindings;
         std::unordered_map<AssetDatabase::fileID, TPtr<Object>> objects;
 
@@ -93,6 +94,11 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
                     }
                 }
             }
+
+            if (!(*ob.first)) {
+                GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %llu} not found.",
+                                     guid.operator std::string().data(), id));
+            }
         }
 
         return true;
@@ -102,6 +108,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
     return false;
 }
 
+//TODO: !!! Make loading in new frame
 void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadSceneMode mode) {
     auto meta = fs::directory_entry(sceneName);
     //TODO: Check if only filename and load path from data
@@ -110,30 +117,46 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
         return;
     }
 
-    auto &d = data[max_id++];
-    d.path = sceneName;
+    auto new_id = max_id++;
+    Data result;
 
-    if (LoadSceneFull(d, sceneName)) {
-        d.isValid = true;
-        d.isLoaded = true;
+    result.path = sceneName;
 
-        if (mode == LoadSceneMode::Single) {
-            auto copy = d;
-            data.clear();
-            data[max_id - 1] = d;
+    if (LoadSceneFull(result, sceneName)) {
+        result.isValid = true;
+        result.isLoaded = true;
+
+        switch (mode) {
+            case LoadSceneMode::Single: {
+                data.clear();
+                data[new_id] = result;
+                active_scene = new_id;
+                break;
+            }
+            case LoadSceneMode::Addictive:
+                data[new_id] = result;
+                break;
         }
 
-    } else {
-        d.isValid = false;
-        d.isLoaded = true;
+        data[new_id] = result;
+
+        for (auto &g : result.objects) {
+            for (auto &c : g->components) {
+                //As Component, Behaviour don't Awake we only call if MonoBehaviour
+                ///TODO: Remember that some other class should be Awakened and so on...
+                if (auto m = dynamic_cast<MonoBehaviour *>(c.get())) { m->Awake(); }
+            }
+        }
+
+    }
+}
+
+int SceneManager::sceneCount() {
+    if (data.size() == 0) {
+        GameApi::log(ERR.fmt("sceneCount wrong count"));
+        std::terminate();
     }
 
-    for (auto &g : d.objects) {
-        for (auto &c : g->components) {
-            //As Component, Behaviour don't Awake we only call if MonoBehaviour
-            ///TODO: Remember that some other class should be Awakened and so on...
-            if (auto m = dynamic_cast<MonoBehaviour *>(c.get())) { m->Awake(); }
-        }
-    }
+    return data.size() - 1;
 }
 
