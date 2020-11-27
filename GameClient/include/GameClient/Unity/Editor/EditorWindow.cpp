@@ -101,6 +101,16 @@ void EditorWindow::ShowUtility() {
     if (work == NotShown) { work = Utility; }
 }
 
+void EditorWindow::ShowAsDropDown(sf::FloatRect buttonRect, sf::Vector2f windowSize) {
+    if (work == NotShown) {
+        work = DropDown;
+        ImGui::OpenPopup(imGuiName.data());
+        buttonRect.width = windowSize.x;
+        buttonRect.height = windowSize.y;
+        position = buttonRect;
+    }
+}
+
 void EditorWindow::drawGui() {
     if (work != NotShown) {
         ImGui::SetNextWindowSizeConstraints(minSize, maxSize);

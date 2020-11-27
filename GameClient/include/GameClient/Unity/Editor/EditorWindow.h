@@ -57,6 +57,7 @@ public:
     void Show();
 
     /// Shows a window with dropdown behaviour and styling.
+    /// \param buttonRect The button from which the position of the window will be determined
     void ShowAsDropDown(sf::FloatRect buttonRect, sf::Vector2f windowSize);
 
     /// Show the EditorWindow as a floating modal window.

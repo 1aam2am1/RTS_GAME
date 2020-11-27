@@ -68,7 +68,15 @@ namespace {                        \
 
 /// Mark a ScriptableObject-derived type to be automatically listed in the Assets/Create submenu,
 /// so that instances of the type can be easily created and stored in the project as ".asset" files.
-#define CREATE_ASSET_MENU(TYPE)
+#define CREATE_ASSET_MENU(TYPE, ...)                                 \
+namespace {                                         \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
+        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE); \
+        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
+        MetaData::register_asset<TYPE>()            \
+        return 0;                                   \
+    });                                             \
+}
 
 /// The MenuItem attribute allows you to add menu items to the main menu and inspector context menus.
 /// \param FUNC void() or void(MenuCommand) or (validation) bool() or bool(MenuCommand
@@ -86,7 +94,8 @@ namespace {                        \
 /// \param TYPE class type
 /// \param FUNC void() or void(MenuCommand) or (validation) bool() or bool(MenuCommand
 /// \param ... validation, priority
-#define CONTEXT_MENU(TYPE, FUNC, ...)
+#define CONTEXT_MENU(TYPE, PATH, FUNC, ...) \
+MENU_ITEM(FUNC, "CONTEXT/" #TYPE "/" PATH, __VA_ARGS__)
 
 /// The MenuItem attribute allows you to add tabs to menu
 /// \param ... priority

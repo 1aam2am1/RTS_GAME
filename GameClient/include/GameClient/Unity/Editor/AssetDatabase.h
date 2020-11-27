@@ -118,7 +118,7 @@ public:
     /// Creates a new asset at path.
     /// You must ensure that the path uses a supported extension.
     /// \details If an asset already exists at path it will be deleted prior to creating a new asset.
-    static void CreateAsset(Object *asset, std::string path);
+    static void CreateAsset(TPtr<Object> asset, std::string path);
 
     /// Deletes the asset file at path.
     /// \return true if the asset has been successfully deleted, false if it doesn't exist or couldn't be removed.

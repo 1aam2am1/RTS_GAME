@@ -690,7 +690,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
 
 }
 
-void AssetDatabase::CreateAsset(Object *asset, std::string path) {
+void AssetDatabase::CreateAsset(TPtr<Object> asset, std::string path) {
     auto &d = get_data();
     Unity::GUID g;
     std::map<Unity::GUID, OneGUIDFile>::iterator it;
@@ -708,7 +708,7 @@ void AssetDatabase::CreateAsset(Object *asset, std::string path) {
     } while (!b);
 
     it->second.path = path;
-    it->second.main = Object::Instantiate(asset);
+    it->second.main = Object::Instantiate(asset.get());
     it->second.object.emplace(0, it->second.main);
 
     it->second.importer = MetaData::get_name_constructor(

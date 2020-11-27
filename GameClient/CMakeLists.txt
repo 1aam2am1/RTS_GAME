@@ -114,6 +114,9 @@ set(SRC
         include/GameClient/Unity/SceneManagement/EditorSceneManager.cpp
         include/GameClient/Unity/SceneManagement/EditorSceneManager.h
         include/GameClient/Windows/NewScene.cpp
+        include/GameClient/Unity/Editor/ContextMenu.cpp
+        include/GameClient/Unity/Editor/ContextMenu.h
+        include/GameClient/Unity/Editor/MenuItem.h
         )
 
 add_executable(GameClient ${SRC})
