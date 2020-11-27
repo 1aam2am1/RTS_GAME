@@ -7,6 +7,7 @@
 
 
 #include "Object.h"
+#include <GameClient/TPtr.h>
 
 /// A class you can derive from if you want to create objects that don't need to be attached to game objects.
 /// \details This is most useful for assets which are only meant to store data.
@@ -20,7 +21,7 @@ public:
     /// \tparam T The type of the ScriptableObject to create, as a System.Type instance.
     /// \return The created ScriptableObject.
     template<typename T>
-    static std::shared_ptr<ScriptableObject> CreateInstance();
+    static TPtr<T> CreateInstance();
     //TODO: Not shared_ptr as one parent can exists
 
     /// Awake is called when the script instance is being loaded.

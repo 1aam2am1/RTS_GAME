@@ -10,7 +10,7 @@
 #include <GameApi/IsInstance.h>
 
 
-template<typename T>
+template<typename T = Object>
 class TPtr {
 public:
 
@@ -24,15 +24,13 @@ public:
 
     template<typename Y = T>
     TPtr(const TPtr<Y> &r) {
-        ptr = std::dynamic_pointer_cast<T>(r.ptr);
-
-        if (ptr) {
-            ptr->onDestroySignal.connect(&TPtr::destroy, this);
-        }
+        *this = r;
     }
 
     /// Don't move when parent can't be moved
-    TPtr(TPtr &&r) = delete;
+    TPtr(TPtr &&r) noexcept {
+        *this = std::move(r);
+    }
 
     /// Create new object
     /// \tparam Y type of object
@@ -71,6 +69,11 @@ public:
             static_assert(is_instance_v<U, TPtr>, "Only shared, TPtr or nullptr");
         }
 
+        //if moved r.ptr == nullptr, therefore delete moved ptr
+        if constexpr(std::is_rvalue_reference_v<U &&> && !std::is_same_v<U, std::nullptr_t>) {
+            r = nullptr;
+        }
+
         if (ptr) {
             ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
@@ -101,6 +104,14 @@ public:
     T *operator->() const {
         if (*this) {
             return ptr.get();
+        } else {
+            throw std::bad_weak_ptr();
+        }
+    }
+
+    T &operator*() const {
+        if (*this) {
+            return *ptr.get();
         } else {
             throw std::bad_weak_ptr();
         }

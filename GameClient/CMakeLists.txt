@@ -57,8 +57,8 @@ set(SRC
         include/GameClient/FontLoader.h
         include/GameClient/Windows/Metrics.cpp
         include/GameClient/Windows/Style.cpp
-        include/GameClient/GarbageCollector.cpp
-        include/GameClient/GarbageCollector.h
+        include/GameClient/MainThread.cpp
+        include/GameClient/MainThread.h
         include/GameClient/Unity/Editor/Selection.h
         include/GameClient/Unity/Editor/Selection.cpp
         include/GameClient/Unity/Core/Texture2D.cpp

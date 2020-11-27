@@ -12,7 +12,7 @@ ImU32 globalDockId = ImHashStr(dock_name.data(), dock_name.length(), 0);
 /// = {dock_id_left, dock_id_right, dock_id_center, dock_id_up, dock_id_bottom};
 ImGuiID dock[5] = {globalDockId, globalDockId, globalDockId, globalDockId, globalDockId};
 
-void WindowLayout::dockWindow(WindowLayout::Align align, std::shared_ptr<EditorWindow> ptr) {
+void WindowLayout::dockWindow(WindowLayout::Align align, TPtr<EditorWindow> ptr) {
     if (align > 5) { align = Align::Center; }
     return;
     //TODO: Docking not working repair this.

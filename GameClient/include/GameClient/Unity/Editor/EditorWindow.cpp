@@ -5,10 +5,10 @@
 #include "EditorWindow.h"
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <GameClient/GarbageCollector.h>
+#include <GameClient/MainThread.h>
 
-std::vector<std::shared_ptr<EditorWindow>> &EditorWindow::get_open_windows() {
-    static std::vector<std::shared_ptr<EditorWindow>> list;
+std::vector<TPtr<EditorWindow>> &EditorWindow::get_open_windows() {
+    static std::vector<TPtr<EditorWindow>> list;
     return list;
 }
 
@@ -42,7 +42,7 @@ EditorWindow::EditorWindow()
 
 }
 
-std::shared_ptr<EditorWindow> EditorWindow::focusedWindow() {
+TPtr<EditorWindow> EditorWindow::focusedWindow() {
     auto w = ImGui::GetCurrentContext()->NavWindow;
     if (w) {
         std::string s(w->Name);
@@ -52,10 +52,10 @@ std::shared_ptr<EditorWindow> EditorWindow::focusedWindow() {
         if (f != v.end()) { return *f; }
     }
 
-    return {};
+    return TPtr<>{nullptr};
 }
 
-std::shared_ptr<EditorWindow> EditorWindow::mouseOverWindow() {
+TPtr<EditorWindow> EditorWindow::mouseOverWindow() {
     auto w = ImGui::GetCurrentContext()->HoveredWindow;
     if (w) {
         std::string s(w->Name);
@@ -65,19 +65,15 @@ std::shared_ptr<EditorWindow> EditorWindow::mouseOverWindow() {
         if (f != v.end()) { return *f; }
     }
 
-    return {};
+    return TPtr<>{nullptr};
 }
 
 void EditorWindow::Close() {
     work = NotShown;
     ///? Destroy ?
-    auto s = shared_from_this();
-    GarbageCollector::add(s, [](auto s) {
-        auto &vec = get_open_windows();
-        auto it = std::find_if(vec.begin(), vec.end(), [&](auto &e) { return e == s; });
-        if (it != vec.end()) { vec.erase(it); }
+    MainThread::Invoke([this]() {
+        Object::DestroyImmediate(this);
     });
-
 }
 
 void EditorWindow::Focus() {

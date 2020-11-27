@@ -26,10 +26,10 @@ public:
     EditorWindow();
 
     /// The EditorWindow which currently has keyboard focus. (Read Only)
-    static std::shared_ptr<EditorWindow> focusedWindow();
+    static TPtr<EditorWindow> focusedWindow();
 
     /// The EditorWindow currently under the mouse cursor. (Read Only)
-    static std::shared_ptr<EditorWindow> mouseOverWindow();
+    static TPtr<EditorWindow> mouseOverWindow();
 
     /// The maximum size of this window.
     sf::Vector2f maxSize = {4000, 4000};
@@ -90,7 +90,7 @@ public:
     /// \param focus Whether to give the window focus, if it already exists.
     /// (If GetWindow creates a new window, it will always get focus).
     template<typename T>
-    static std::shared_ptr<T> GetWindow(std::string_view title = {}, bool focus = true);
+    static TPtr<T> GetWindow(std::string_view title = {}, bool focus = true);
 
     /// Returns the first EditorWindow of type t which is currently on the screen.
     /// \tparam T The type of the window. Must derive from EditorWindow.
@@ -98,7 +98,7 @@ public:
     /// \param title If GetWindow creates a new window, it will get this title.
     /// If this value is null, use the class name as title.
     template<typename T>
-    static std::shared_ptr<T> GetWindowWithRect(sf::FloatRect rect, std::string title = {});
+    static TPtr<T> GetWindowWithRect(sf::FloatRect rect, std::string title = {});
 
     /// Checks if an editor window is open.
     /// \param t The type of the window. Must derive from EditorWindow.
@@ -130,7 +130,7 @@ protected:
 
     friend class WindowLayout;
 
-    static std::vector<std::shared_ptr<EditorWindow>> &get_open_windows();
+    static std::vector<TPtr<EditorWindow>> &get_open_windows();
 
     virtual void drawGui();
 
@@ -150,15 +150,15 @@ protected:
 
 
 template<typename T>
-std::shared_ptr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
+TPtr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
     static_assert(std::is_base_of_v<EditorWindow, T>, "Only base of EditorWindow ara capable of getting window");
     for (auto &it : get_open_windows()) {
-        if (typeid(T) == typeid(*it)) {
+        if (it && typeid(T) == typeid(*it)) {
             if (focus) { it->Focus(); }
-            return std::dynamic_pointer_cast<T>(it);
+            return dynamic_pointer_cast<T>(it);
         }
     }
-    auto s = std::make_shared<T>();
+    auto s = TPtr<T>(nullptr, std::make_shared<T>());
     if (title.empty()) {
         s->titleContent = GameApi::demangle(typeid(T).name());
     } else {

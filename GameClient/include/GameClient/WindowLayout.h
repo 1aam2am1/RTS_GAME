@@ -20,7 +20,7 @@ public:
         Down,
     };
 
-    static void dockWindow(Align align, std::shared_ptr<EditorWindow> window);
+    static void dockWindow(Align align, TPtr<EditorWindow> window);
 
 private:
     friend class MainWindow;

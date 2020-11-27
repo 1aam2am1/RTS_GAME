@@ -164,4 +164,20 @@ TEST_CASE("TPtr") {
         TPtr<B> bb(&parent, std::make_shared<A>());
         REQUIRE(bb.expired());
     }
+
+    SECTION("move assignment") {
+        TPtr<A> l(&parent);
+        auto copy = std::make_shared<A>();
+        l = copy;
+
+        TPtr<A> m(&parent);
+        m = std::make_shared<A>();
+
+        l = std::move(m);
+
+        REQUIRE(m.expired());
+        REQUIRE(copy.unique());
+        REQUIRE(l->onDestroySignal.slot_count() == 1);
+
+    }
 }
