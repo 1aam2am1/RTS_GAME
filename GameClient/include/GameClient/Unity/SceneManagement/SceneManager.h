@@ -153,6 +153,8 @@ protected:
 
     friend class Scene;
 
+    friend class Transform;
+
     struct Data {
         int buildIndex = 0;
         bool isValid = false;
@@ -164,9 +166,9 @@ protected:
 
     static bool LoadSceneFull(Data &, std::string_view);
 
-    static uint64_t max_id;
-    static std::map<uint64_t, Data> data;
-    static uint64_t active_scene;
+    static uint64_t max_id; ///< Max used id
+    static std::map<uint64_t, Data> data; ///< Loaded scenes
+    static uint64_t active_scene; ///< Now active scene
 };
 
 

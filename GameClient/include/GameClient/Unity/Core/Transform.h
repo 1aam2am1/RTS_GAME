@@ -24,7 +24,7 @@ public:
     };
 
     /// The number of children the parent Transform has.
-    const int childCount;
+    int childCount();
 
     /// The rotation as Euler angles in degrees.
     /// \note Euler angles can represent a three dimensional rotation by performing three separate rotations
@@ -71,7 +71,7 @@ public:
     /// Returns a transform child by index.
     /// \param index Index of the child transform to return. Must be smaller than Transform.childCount.
     /// \return Transform Transform child by index.
-    TPtr<Transform> GetChild(int index) const;
+    [[nodiscard]] TPtr<Transform> GetChild(size_t index) const;
 
     /// Gets the sibling index.
     int GetSiblingIndex();
@@ -139,7 +139,8 @@ public:
     void Translate(sf::Vector3f translation, Space relativeTo = Space::Self);
 
 private:
-    std::vector<TPtr<GameObject>> children{};
+    std::vector<TPtr<Transform>> children{};
+    TPtr<Transform> m_parent{this};
 };
 
 

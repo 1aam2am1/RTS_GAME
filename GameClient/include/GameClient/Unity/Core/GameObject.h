@@ -10,6 +10,8 @@
 #include <GameClient/TPtr.h>
 #include <GameApi/SetterGetter.h>
 #include <GameClient/Unity/SceneManagement/Scene.h>
+#include <GameClient/Unity/Editor/Application.h>
+#include <GameApi/has_field.h>
 
 class Component;
 
@@ -34,10 +36,10 @@ public:
     /// Defines whether the GameObject is active in the Scene.
     /// \note This lets you know whether a GameObject is active in the game.
     /// That is the case if its GameObject.activeSelf property is enabled, as well as that of all its parents.
-    bool activeInHierarchy();
+    bool activeInHierarchy() const;
 
     /// The local active state of this GameObject
-    bool activeSelf();
+    bool activeSelf() const;
 
     /// The layer the game object is in.
     /// \note Layers can be used for selective rendering from cameras or ignoring raycasts.
@@ -50,7 +52,7 @@ public:
     std::string tag; ///< TODO: Change for enum class with int and string Layers manager
 
     /// The Transform attached to this GameObject.
-    TPtr<Transform> transform();
+    [[nodiscard]] TPtr<Transform> transform() const;
 
     /// Adds a component class of type componentType to the game object.
     /// \note Note that there is no RemoveComponent(), to remove a component, use Object.Destroy.
@@ -129,18 +131,40 @@ private:
 
     bool m_active = true;
 
+    //TODO: Start new component before running
     std::vector<TPtr<Component>> components;
+    std::unordered_map<TPtr<Component>, std::function<void()>> to_awake;
     TPtr<Scene> m_scene{this};
-
-    void initialize_component(TPtr<Component>);
 };
 
+HAS_FIELD(Awake)
 
 template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
 TPtr<T> GameObject::AddComponent() {
+    if constexpr (std::is_base_of_v<Transform, T>) {
+        if (!components.empty() && typeid(*components[0].get()) != typeid(Transform)) {
+            GameApi::log(ERR.fmt("First component should be transform"));
+        }
+    }
     //TODO: Check meta if there is flag only one and then check if there exists
     auto result = components.emplace_back(this, std::make_shared<T>());
-    initialize_component(result);
+
+    //TODO: !!! Awake of Component when game running !!!
+    result->m_gameObject = shared_from_this();
+
+    if constexpr (has_fieldAwake_v<T>) {
+        auto pointer = result.get();
+        auto f = [pointer]() {
+            static_cast<T *>(pointer)->Awake();
+        };
+
+        if (Application::isPlaying && activeInHierarchy()) {
+            f();
+        } else {
+            to_awake.emplace(result, f);
+        }
+    }
+
     return result;
 }
 

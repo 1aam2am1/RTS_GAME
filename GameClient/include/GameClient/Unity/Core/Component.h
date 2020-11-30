@@ -19,7 +19,7 @@ public:
 
     Component();
 
-    ~Component();
+    ~Component() override;
 
     /// The game object this component is attached to. A component is always attached to a game object.
     [[nodiscard]] TPtr<GameObject> gameObject() const;
@@ -33,7 +33,7 @@ public:
     /// Is this game object tagged with tag ?
     /// \param tag The tag to compare.
     /// \return Returns true if the same
-    bool CompareTag(std::string_view tag) const noexcept;
+    [[nodiscard]] bool CompareTag(std::string_view tag) const noexcept;
 
     /// Returns the component of Type type if the game object has one attached, null if it doesn't.
     /// \tparam T The type of Component to retrieve.
@@ -58,21 +58,21 @@ public:
     /// \tparam T The type of component to retrieve.
     /// \return Array of components
     template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int> = 0>
-    std::vector<TPtr<T>> GetComponents() const;
+    [[nodiscard]] std::vector<TPtr<T>> GetComponents() const;
 
     /// Returns all components of Type type in the GameObject or any of its children.
     /// \tparam T The type of Component to retrieve.
     /// \param includeInactive Should Components on inactive GameObjects be included in the found set?
     /// \return Array of components
     template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int> = 0>
-    std::vector<TPtr<T>> GetComponentsInChildren(bool includeInactive = false) const;
+    [[nodiscard]] std::vector<TPtr<T>> GetComponentsInChildren(bool includeInactive = false) const;
 
     /// Returns all components of Type type in the GameObject or any of its parents.
     /// \tparam T The type of Component to retrieve.
     /// \param includeInactive Should inactive Components be included in the found set?
     /// \return
     template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int> = 0>
-    std::vector<TPtr<T>> GetComponentsInParent(bool includeInactive = false) const;
+    [[nodiscard]] std::vector<TPtr<T>> GetComponentsInParent(bool includeInactive = false) const;
 
 private:
     friend class GameObject;
@@ -103,12 +103,12 @@ std::vector<TPtr<T>> Component::GetComponents() const {
 
 template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
 std::vector<TPtr<T>> Component::GetComponentsInChildren(bool includeInactive) const {
-    return m_gameObject->GetComponentsInChildren<T>();
+    return m_gameObject->GetComponentsInChildren<T>(includeInactive);
 }
 
 template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
 std::vector<TPtr<T>> Component::GetComponentsInParent(bool includeInactive) const {
-    return m_gameObject->GetComponentsInParent<T>();
+    return m_gameObject->GetComponentsInParent<T>(includeInactive);
 }
 
 

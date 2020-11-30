@@ -20,7 +20,9 @@ private:
 
     friend class EditorSceneManager;
 
-    uint64_t id;
+    friend class Transform;
+
+    const uint64_t id;
 
     explicit Scene(uint64_t id);
 

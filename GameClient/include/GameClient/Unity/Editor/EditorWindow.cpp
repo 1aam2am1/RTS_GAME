@@ -12,33 +12,33 @@ std::vector<TPtr<EditorWindow>> &EditorWindow::get_open_windows() {
     return list;
 }
 
-EditorWindow::EditorWindow()
-        : position([this](sf::FloatRect p) {
-    if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
-        ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), window);
-        ImGui::SetWindowPos(window, p.getPosition());
-        ImGui::SetWindowSize(window, p.getSize());
-    } else {
-        auto s = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
-        s->Pos.x = p.getPosition().x;
-        s->Pos.y = p.getPosition().y;
-        s->Size.x = p.getSize().x;
-        s->Size.y = p.getSize().y;
-    }
-}, [this]() -> auto {
-    ImVec2 p{}, s{};
-    if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
-        s = window->Size;
-        p = window->Pos;
-    } else {
-        auto set = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
-        p.x = set->Pos.x;
-        p.y = set->Pos.y;
-        s.x = set->Size.x;
-        s.y = set->Size.y;
-    }
-    return sf::FloatRect{p, s};
-}), imGuiName{"###" + GameApi::to_string(this)} {
+EditorWindow::EditorWindow() :
+        position([this](sf::FloatRect p) {
+            if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
+                ImGui::DockContextQueueUndockWindow(ImGui::GetCurrentContext(), window);
+                ImGui::SetWindowPos(window, p.getPosition());
+                ImGui::SetWindowSize(window, p.getSize());
+            } else {
+                auto s = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
+                s->Pos.x = p.getPosition().x;
+                s->Pos.y = p.getPosition().y;
+                s->Size.x = p.getSize().x;
+                s->Size.y = p.getSize().y;
+            }
+        }, [this]() -> auto {
+            ImVec2 p{}, s{};
+            if (ImGuiWindow *window = ImGui::FindWindowByName(imGuiName.c_str())) {
+                s = window->Size;
+                p = window->Pos;
+            } else {
+                auto set = ImGui::FindOrCreateWindowSettings(imGuiName.c_str());
+                p.x = set->Pos.x;
+                p.y = set->Pos.y;
+                s.x = set->Size.x;
+                s.y = set->Size.y;
+            }
+            return sf::FloatRect{p, s};
+        }), imGuiName{"###" + GameApi::to_string(this)} {
 
 }
 

@@ -17,16 +17,41 @@ GameObject::GameObject(std::string name) : GameObject() {
     Object::name = name;
 }
 
-bool GameObject::activeSelf() {
+bool GameObject::activeInHierarchy() const {
+    /*if (!activeSelf()) { return false; }
+
+    auto parent = transform()->parent.get();
+    if (parent.expired()) { return true; }
+
+    return parent->gameObject()->activeInHierarchy();*/
+
+    const GameObject *gm = this;
+
+    while (true) {
+        if (!gm->activeSelf()) { return false; }
+
+        // I'm root & i'm active!!! (check is higher)
+        auto parent = gm->transform()->parent.get();
+        if (parent.expired()) { return true; }
+
+        gm = parent->gameObject().get();
+    }
+
+}
+
+bool GameObject::activeSelf() const {
     return m_active;
 }
 
-void GameObject::initialize_component(TPtr<Component> c) {
-    //TODO: !!! Awake of Component when game running !!!
-    c->m_gameObject = shared_from_this();
+void GameObject::SetActive(bool value) noexcept {
+    m_active = value;
 }
 
-TPtr<Transform> GameObject::transform() {
+bool GameObject::CompareTag(std::string_view tag) const noexcept {
+    return this->tag == tag;
+}
+
+TPtr<Transform> GameObject::transform() const {
     if (components.empty() || typeid(*components[0].get()) != typeid(Transform)) {
         GameApi::log(ERR.fmt("First component should be transform"));
         std::terminate();

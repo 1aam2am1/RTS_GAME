@@ -49,7 +49,7 @@ public:
                         ImGui::PopStyleVar();
                     }
 
-                    for (int i = 0; open && i < d->transform()->childCount; ++i) {
+                    for (int i = 0; open && i < d->transform()->childCount(); ++i) {
                         printAll(d->transform()->GetChild(i)->gameObject());
                     }
 

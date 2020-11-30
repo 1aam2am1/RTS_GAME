@@ -150,6 +150,10 @@ private:
 
     template<class X, class U>
     friend TPtr<X> dynamic_pointer_cast(const TPtr<U> &) noexcept;
+
+    template<typename>
+    friend
+    class std::hash;
 };
 
 template<typename T, typename Y>
@@ -169,6 +173,15 @@ TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
     result = std::dynamic_pointer_cast<T>(r.ptr);
 
     return result;
+}
+
+namespace std {
+    template<typename T>
+    struct hash<TPtr<T>> {
+        std::size_t operator()(const TPtr<T> &t) const {
+            return std::hash(t.ptr);
+        }
+    };
 }
 
 #define TPTR_P(NAME) TPtr<Object> NAME{this}
