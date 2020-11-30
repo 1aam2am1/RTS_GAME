@@ -168,10 +168,11 @@ ImportAssetGlobal(std::string assetPath, ImportAssetOptions options) {
         {
             result.path = assetPath;
 
-            auto[type, priority] = MetaData::get_importer(extension);
-            auto[name, constructor] = MetaData::get_name_constructor(type);
-            nlohmann::json object = meta_j[name.data()];
-            result.importer = dynamic_pointer_cast<AssetImporter>(constructor->create());
+            auto[type, priority] = Importers::get_importer(extension);
+            auto reflection = MetaData::getReflection(type);
+            if (reflection.name.empty()) { throw std::runtime_error("Importer type without name."); }
+            nlohmann::json object = meta_j[reflection.name.data()];
+            result.importer = dynamic_pointer_cast<AssetImporter>(reflection.CreateInstance());
 
             result.importer->assetPath = assetPath;
             result.importer->importSettingsMissing = object.empty();
@@ -615,7 +616,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
             auto ob = d.path_files.find(iterator->first);
 
             ///check if can import
-            if (!MetaData::exists_importer(iterator->second.extension)) {
+            if (!Importers::exists_importer(iterator->second.extension)) {
                 GameApi::log(ERR.fmt("File %s with extension %s don't have mapped object importer: use EXPORT_IMPORTER",
                                      iterator->first.data(), iterator->second.extension.data()));
                 iterator = files.erase(iterator);
@@ -634,7 +635,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
                 d.path_files.erase(ob);
             }
 
-            iterator->second.priority = MetaData::get_importer(iterator->second.extension).second;
+            iterator->second.priority = Importers::get_importer(iterator->second.extension).second;
             ++iterator;
         }
 
@@ -711,8 +712,8 @@ void AssetDatabase::CreateAsset(TPtr<Object> asset, std::string path) {
     it->second.main = Object::Instantiate(asset.get());
     it->second.object.emplace(0, it->second.main);
 
-    it->second.importer = MetaData::get_name_constructor(
-            MetaData::get_importer(p.extension().generic_string()).first).second->create();
+    it->second.importer = MetaData::getReflection(
+            Importers::get_importer(p.extension().generic_string()).first).CreateInstance();
 
     SaveAsset(g, &it->second);
 }

@@ -20,9 +20,9 @@ TPtr<AssetImporter> AssetImporter::GetAtPath(std::string path) {
 
     auto extension = p.extension().string();
     try {
-        auto type = MetaData::get_importer(extension);
+        auto type = Importers::get_importer(extension);
 
-        return dynamic_pointer_cast<AssetImporter>(MetaData::get_name_constructor(type.first).second->create());
+        return dynamic_pointer_cast<AssetImporter>(MetaData::getReflection(type.first).CreateInstance());
     } EXCEPTION_PRINT
 
     return TPtr<AssetImporter>{nullptr};

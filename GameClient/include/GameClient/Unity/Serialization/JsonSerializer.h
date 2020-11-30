@@ -20,29 +20,29 @@ public:
 
 protected:
     //region Serialize
-    nlohmann::json operator()(const int64_t *) final;
+    nlohmann::json operator()(int64_t) final;
 
-    nlohmann::json operator()(const double *) final;
+    nlohmann::json operator()(double) final;
 
-    nlohmann::json operator()(const std::string *) final;
+    nlohmann::json operator()(const std::string &) final;
 
-    nlohmann::json operator()(const bool *) final;
+    nlohmann::json operator()(bool) final;
 
-    nlohmann::json operator()(const TPtr<Object> *) override;
+    nlohmann::json operator()(const TPtr<Object> &) override;
 
     using SerializerBase::operator();
     //endregion
 
     //region DeSerialize
-    void operator()(int64_t *, const nlohmann::json &) final;
+    void operator()(const std::function<void(int64_t)> &, const nlohmann::json &) final;
 
-    void operator()(double *, const nlohmann::json &) final;
+    void operator()(const std::function<void(double)> &, const nlohmann::json &) final;
 
-    void operator()(std::string *, const nlohmann::json &) final;
+    void operator()(const std::function<void(std::string)> &, const nlohmann::json &) final;
 
-    void operator()(bool *, const nlohmann::json &) final;
+    void operator()(const std::function<void(bool)> &, const nlohmann::json &) final;
 
-    void operator()(TPtr<Object> *, const nlohmann::json &) override;
+    void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) override;
     //endregion
 };
 

@@ -6,38 +6,64 @@
 
 decltype(MetaData::reflection) MetaData::reflection;
 decltype(MetaData::name_type) MetaData::name_type;
-decltype(MetaData::ext_importer) MetaData::ext_importer;
-decltype(MetaData::ext_priority) MetaData::ext_priority;
+decltype(Importers::ext_importer) Importers::ext_importer;
+decltype(Importers::ext_priority) Importers::ext_priority;
 
 
-std::vector<std::shared_ptr<MetaData::Reflect>> MetaData::get_reflections(const Object *o) {
-    std::vector<std::shared_ptr<Reflect>> result;
+MetaData::Reflect::Reflect(const std::string_view n, const std::type_index t,
+                           const std::function<TPtr<Object>()> &createInstance,
+                           const std::function<bool(Object *, Object *)> &copyInstance) :
+        name(n), type(t), CreateInstance(createInstance), CopyInstance(copyInstance) {}
 
-    for (auto &it: reflection) {
-        if (it.second.second->check(o)) {
-            result.emplace_back(it.second.second);
+MetaData::ReflectFull::ReflectFull(const std::string_view name, const std::type_index type,
+                                   const std::function<TPtr<Object>()> &createInstance,
+                                   const std::function<bool(Object *, Object *)> &copyInstance,
+                                   const std::vector<std::pair<std::string_view, TU>> &f) :
+        Reflect(name, type, createInstance, copyInstance), getFields(f) {}
+
+MetaData::ReflectFull MetaData::getReflection(Object *ob) {
+    auto object_reflection = getReflection(typeid(*ob));
+
+    std::vector<std::pair<std::string_view, MetaData::TU>> fields;
+
+    for (auto it : reflection) {
+        if (it.second.check(ob)) {
+            for (auto mem: it.second.members) {
+                fields.emplace_back(mem.first, mem.second(ob));
+            }
         }
     }
+
+    MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
+                                 object_reflection.CopyInstance, fields};
 
     return result;
 }
 
-std::pair<std::string_view, const std::shared_ptr<MetaData::Reflect>>
-MetaData::get_name_constructor(std::type_index type) {
-    auto it = reflection.find(type);
+MetaData::ReflectFull MetaData::getReflection(const Object *ob) {
+    auto object_reflection = getReflection(typeid(*ob));
 
-    if (it != reflection.end()) {
-        return it->second;
+    std::vector<std::pair<std::string_view, MetaData::TU>> fields;
+
+    for (auto it : reflection) {
+        if (it.second.check(ob)) {
+            for (auto mem: it.second.c_members) {
+                fields.emplace_back(mem.first, mem.second(ob));
+            }
+        }
     }
 
-    return {};
+    MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
+                                 object_reflection.CopyInstance, fields};
+
+    return result;
 }
 
-std::type_index MetaData::get_type(std::string_view str) {
+MetaData::Reflect MetaData::getReflection(std::string_view str) {
     auto it = name_type.find(str);
 
     if (it != name_type.end()) {
-        return it->second;
+        return getReflection(it->second);
     }
     std::string s;
     s.reserve(str.length() + 5 + 55 + 1);
@@ -47,13 +73,46 @@ std::type_index MetaData::get_type(std::string_view str) {
     throw std::runtime_error(s);
 }
 
-bool MetaData::exists_importer(std::string_view str) {
-    auto it = ext_importer.find(str);
+MetaData::Reflect MetaData::getReflection(std::type_index type) {
+    std::string_view name;
+    std::function<TPtr<Object>()> constructor;
+    std::function<bool(Object *, Object *)> copy;
 
-    return it != ext_importer.end();
+    auto object_reflection = reflection.find(type);
+    if (object_reflection != reflection.end()) {
+        name = object_reflection->second.name;
+        constructor = object_reflection->second.create;
+        copy = object_reflection->second.copy;
+    } else {
+        constructor = [type]() -> TPtr<Object> {
+            std::string s;
+            std::string name = GameApi::demangle(type.name());
+            s.reserve(name.length() + 5 + 55 + 1);
+            s = "Type ";
+            s += name;
+            s += " don't have mapped object constructor: use EXPORT_CLASS";
+            throw std::runtime_error(s);
+        };
+
+        copy = [type](Object *, Object *) -> bool {
+            std::string s;
+            std::string name = GameApi::demangle(type.name());
+            s.reserve(name.length() + 5 + 50 + 1);
+            s = "Type ";
+            s += name;
+            s += " don't have mapped copy function: use EXPORT_CLASS";
+            throw std::runtime_error(s);
+        };
+    }
+
+    MetaData::Reflect result{name, type, constructor, copy};
+
+    return result;
 }
 
-std::pair<const std::type_index, int64_t> MetaData::get_importer(std::string_view str) {
+/////////////////////////////////////////////////////////////////////////////////////
+
+std::pair<const std::type_index, int64_t> Importers::get_importer(std::string_view str) {
     auto it = ext_importer.find(str);
 
     if (it == ext_importer.end()) {
@@ -78,4 +137,14 @@ std::pair<const std::type_index, int64_t> MetaData::get_importer(std::string_vie
     }
 
     return std::make_pair(it->second, priority);
+}
+
+bool Importers::exists_importer(std::string_view str) {
+    auto it = ext_importer.find(str);
+
+    if (it != ext_importer.end()) {
+        return MetaData::getReflection(it->second).CreateInstance.operator bool();
+    }
+
+    return false;
 }

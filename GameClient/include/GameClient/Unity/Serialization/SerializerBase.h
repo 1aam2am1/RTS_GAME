@@ -37,31 +37,31 @@ public:
 
 protected:
     //region Serialize
-    virtual nlohmann::json operator()(const int64_t *) = 0;
+    virtual nlohmann::json operator()(int64_t) = 0;
 
-    virtual nlohmann::json operator()(const double *) = 0;
+    virtual nlohmann::json operator()(double) = 0;
 
-    virtual nlohmann::json operator()(const std::string *) = 0;
+    virtual nlohmann::json operator()(const std::string &) = 0;
 
-    virtual nlohmann::json operator()(const bool *) = 0;
+    virtual nlohmann::json operator()(bool) = 0;
 
-    virtual nlohmann::json operator()(const TPtr<Object> *) = 0;
+    virtual nlohmann::json operator()(const TPtr<Object> &) = 0;
 
-    nlohmann::json operator()(const nlohmann::json *);
+    virtual nlohmann::json operator()(const nlohmann::json &);
     //endregion
 
     //region DeSerialize
-    virtual void operator()(int64_t *, const nlohmann::json &) = 0;
+    virtual void operator()(const std::function<void(int64_t)> &, const nlohmann::json &) = 0;
 
-    virtual void operator()(double *, const nlohmann::json &) = 0;
+    virtual void operator()(const std::function<void(double)> &, const nlohmann::json &) = 0;
 
-    virtual void operator()(std::string *, const nlohmann::json &) = 0;
+    virtual void operator()(const std::function<void(std::string)> &, const nlohmann::json &) = 0;
 
-    virtual void operator()(bool *, const nlohmann::json &) = 0;
+    virtual void operator()(const std::function<void(bool)> &, const nlohmann::json &) = 0;
 
-    virtual void operator()(TPtr<Object> *, const nlohmann::json &) = 0;
+    virtual void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) = 0;
 
-    void operator()(nlohmann::json *, const nlohmann::json &);
+    virtual void operator()(const std::function<void(nlohmann::json)> &, const nlohmann::json &);
     //endregion
 };
 

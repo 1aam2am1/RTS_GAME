@@ -7,25 +7,24 @@
 #include <GameClient/MetaData.h>
 
 TPtr<Object> SerializerBase::Deserialize(std::string_view str, const nlohmann::json &j) {
-    return Deserialize(MetaData::get_type(str), j);
+    return Deserialize(MetaData::getReflection(str).type, j);
 }
 
 TPtr<Object> SerializerBase::Deserialize(std::type_index type, const nlohmann::json &j) {
-    auto constructor = MetaData::get_name_constructor(type).second;
+    auto reflection = MetaData::getReflection(type);
 
     TPtr<Object> result{nullptr};
-    result = constructor->create();
+    result = reflection.CreateInstance();
 
     Deserialize(result, j);
 
     return result;
 }
 
-nlohmann::json SerializerBase::operator()(const nlohmann::json *j) {
-    if (j) { return *j; }
-    return {};
+nlohmann::json SerializerBase::operator()(const nlohmann::json &j) {
+    return j;
 }
 
-void SerializerBase::operator()(nlohmann::json *j, const nlohmann::json &o) {
-    *j = o;
+void SerializerBase::operator()(const std::function<void(nlohmann::json)> &j, const nlohmann::json &o) {
+    j(o);
 }

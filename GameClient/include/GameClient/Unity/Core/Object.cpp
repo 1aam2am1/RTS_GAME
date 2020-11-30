@@ -25,13 +25,14 @@ Object &Object::operator=(const Object &o) {
 
 TPtr<Object> Object::Instantiate(Object *original) {
     try {
-        auto[_, constructor] = MetaData::get_name_constructor(typeid(*original));
-        auto result = constructor->create();
+        auto reflection = MetaData::getReflection(typeid(*original));
+        auto result = reflection.CreateInstance();
 
-        constructor->copy(result.get(), original);
+        reflection.CopyInstance(result.get(), original);
 
     } EXCEPTION_PRINT
 
+    //TODO: Add to scene if game object, call Awake and so on...
     return TPtr<Object>(nullptr);
 }
 

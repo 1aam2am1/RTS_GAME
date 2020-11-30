@@ -162,6 +162,9 @@ protected:
         std::string name{};
         std::string path{};
         std::vector<TPtr<GameObject>> objects{};
+        //TODO: root and objects/all
+        //TODO: New objects => start
+        //TODO: New components start?
     };
 
     static bool LoadSceneFull(Data &, std::string_view);

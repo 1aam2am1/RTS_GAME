@@ -39,7 +39,7 @@ namespace {                                         \
 #define EXPORT_CLASS(TYPE, ...)                     \
 namespace {                                         \
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE); \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE); \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         return 0;                                   \
     });                                            \
@@ -51,9 +51,9 @@ namespace {                                         \
 namespace {                        \
     static int INTERNAL_NO_USE_IMPORTER_##TYPE = Initializer::add([](){ \
         static_assert(std::is_base_of_v<AssetImporter, TYPE>, "only subclasses, please"); \
-        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE);                \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);                \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)    \
-        FOR_EACH(MetaData::REGISTER_IMPORTER_EXTENSION, TYPE, UNPAREN(EXT))     \
+        FOR_EACH(Importers::REGISTER_IMPORTER_EXTENSION, TYPE, UNPAREN(EXT))     \
         return 0;                               \
     });                                   \
 }
@@ -71,7 +71,7 @@ namespace {                        \
 #define CREATE_ASSET_MENU(TYPE, ...)                                 \
 namespace {                                         \
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        [[maybe_unused]] auto& t = MetaData::register_class<TYPE>(#TYPE); \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE); \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         MetaData::register_asset<TYPE>()            \
         return 0;                                   \

@@ -9,6 +9,7 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 #include <execution>
+#include <imgui_internal.h>
 
 decltype(Editor::t_editor) Editor::t_editor;
 decltype(Editor::t_fallback_editor) Editor::t_fallback_editor;
@@ -21,66 +22,58 @@ bool Editor::DrawDefaultInspector() {
     if (!target)
         return false;
 
-    auto reflection = MetaData::get_reflections(target.get());
-/* int64_t *,
-            double *,
-            std::string *,
-            bool *,
-            TPtr<Object> *,
-            nlohmann::json *,
-            std::function<void(int64_t)>,
-            std::function<void(double)>,
-            std::function<void(std::string)>
-*/
+    auto reflection = MetaData::getReflection(target.get());
 
-    for (auto &it: reflection) {
-        for (auto &it2 : it->get(target.get())) {
-            auto &name = it2.first;
-            //TODO: Reformat names so that thy can be unique and so that m_ be deleted _ changed for ' ' and in Pascal Case
-            if (name.size() > 2 && name[1] == '_') { name = &name[2]; }
-            std::string key = "##";
-            key += it2.first.data();
+    for (auto &it: reflection.getFields) {
+        auto name = it.first;
+        //TODO: Reformat names so that thy can be unique and so that m_ be deleted _ changed for ' ' and in Pascal Case
+        if (name.size() > 2 && name[1] == '_') { name = &name[2]; }
+        std::string key = "##";
+        key += it.first.data();
 
-            bool dirty = false;
-            auto visitor = overload{
-                    [&key, &dirty](int64_t *i) {
-                        ImGui::SetNextItemWidth(-1.0f);
-                        dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, i, nullptr, nullptr);
-                    },
-                    [&key, &dirty](double *d) {
-                        ImGui::SetNextItemWidth(-1.0f);
-                        dirty = ImGui::InputDouble(key.data(), d);
-                    },
-                    [&key, &dirty](std::string *str) {
-                        ImGui::SetNextItemWidth(-1.0f);
-                        dirty = ImGui::InputText(key.data(), str);
-                    },
-                    [&key, &dirty](bool *b) {
-                        ImGui::SetNextItemWidth(-1.0f);
-                        dirty = ImGui::Checkbox(key.data(), b);
-                    },
-                    [&key, &dirty](TPtr<Object> *o) {
-                        //TODO: Drop target
-                    },
-                    [&key, &dirty](nlohmann::json *) {},
-                    [&key, &dirty](std::function<void(int64_t)>) {
-                        //TODO: Find from cget
-                    },
-                    [&key, &dirty](std::function<void(double)>) {
-                        //TODO: Find from cget
-                    },
-                    [&key, &dirty](std::function<void(std::string)>) {
-                        //TODO: Find from cget
+        bool dirty = false;
+        auto visitor = overload{
+                [&key, &dirty](auto &&p) {
+                    using type = function_traits_arg_t<decltype(p.first), 0>;
+
+                    auto value = p.second();
+
+                    if (!p.first) {
+                        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+                        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
                     }
-            };
 
-            ImGui::Text("%s", name.data());
-            ImGui::SameLine();
-            std::visit(visitor, it2.second);
+                    ImGui::SetNextItemWidth(-1.0f);
+                    if constexpr (std::is_same_v<type, int>) {
+                        dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, &value, nullptr, nullptr);
+                    } else if constexpr (std::is_same_v<type, double>) {
+                        dirty = ImGui::InputDouble(key.data(), &value);
+                    } else if constexpr (std::is_same_v<type, std::string>) {
+                        dirty = ImGui::InputText(key.data(), &value);
+                    } else if constexpr (std::is_same_v<type, bool>) {
+                        dirty = ImGui::Checkbox(key.data(), &value);
+                    } else {
+                        ImGuiContext &g = *GImGui;
+                        g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;
+                    }
+                    //TODO: !!! Next Editor default widgets
 
-            if (dirty) {
-                EditorUtility::SetDirty(target);
-            }
+                    if (!p.first) {
+                        ImGui::PopItemFlag();
+                        ImGui::PopStyleVar();
+                    }
+                    if (dirty && p.first) {
+                        p.first(value);
+                    }
+                }
+        };
+
+        ImGui::Text("%s", name.data());
+        ImGui::SameLine();
+        std::visit(visitor, it.second);
+
+        if (dirty) {
+            EditorUtility::SetDirty(target);
         }
     }
 

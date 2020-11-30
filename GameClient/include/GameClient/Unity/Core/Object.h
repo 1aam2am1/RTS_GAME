@@ -104,7 +104,7 @@ private:
 #endif
 
     // Used in copying Object* when serializing
-    sigslot::signal<Object *> onDestroySignal;
+    sigslot::signal<Object *> onDestroySignal{};
 
     template<typename>
     friend

@@ -51,8 +51,8 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
 
         d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
         d.buildIndex = -1; //TODO: Make build index
-
-        std::unordered_map<TPtr<Object> *, nlohmann::json> bindings;
+//TODO: !!! Change scene loading
+        std::unordered_map<TPtr<Object>, nlohmann::json> bindings;
         std::unordered_map<AssetDatabase::fileID, TPtr<Object>> objects;
 
         SceneSerializer serializer(bindings);
@@ -81,7 +81,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             if (guid == asset_guid || guid.empty()) {
                 auto ref_obj = objects.find(id);
                 if (ref_obj != objects.end()) {
-                    *ob.first = ref_obj->second;
+                    ///ob.first.reset(ref_obj->second);
                 }
             } else {
                 // Load assets from asset database
@@ -89,16 +89,16 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
                 for (auto a : assets) {
                     AssetDatabase::fileID localID;
                     if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == id) {
-                        *ob.first = a;
+                        ///*ob.first = a;
                         break;
                     }
                 }
             }
-
+/**
             if (!(*ob.first)) {
                 GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %llu} not found.",
                                      guid.operator std::string().data(), id));
-            }
+            }*/
         }
 
         return true;

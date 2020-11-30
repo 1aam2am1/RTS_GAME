@@ -10,14 +10,14 @@
 
 class SceneSerializer final : public JsonSerializer {
 public:
-    SceneSerializer(std::unordered_map<TPtr<Object> *, nlohmann::json> &bindings);
+    SceneSerializer(std::unordered_map<TPtr<Object>, nlohmann::json> &bindings);
 
 protected:
-    nlohmann::json operator()(const TPtr<Object> *ptr) override;
+    nlohmann::json operator()(const TPtr<Object> &ptr) override;
 
-    void operator()(TPtr<Object> *ptr, const nlohmann::json &json) override;
+    void operator()(const std::function<void(TPtr<Object>)> &ptr, const nlohmann::json &json) override;
 
-    std::unordered_map<TPtr<Object> *, nlohmann::json> &bind;
+    std::unordered_map<TPtr<Object>, nlohmann::json> &bind;
 };
 
 
