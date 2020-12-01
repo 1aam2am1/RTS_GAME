@@ -38,7 +38,7 @@ set(SRC
         include/GameApi/IsInstance.h
         include/GameApi/function_traits.h
         include/GameApi/has_field.h
-        )
+        include/GameApi/Char8TStringLiteral.h)
 
 configure_file(include/GameApi/Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/Config.h @ONLY)
 
@@ -46,7 +46,7 @@ add_library(GameAPI SHARED ${SRC})
 
 
 set_target_properties(GameAPI PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD ${CMAKE_CXX_STANDARD}
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 

@@ -70,8 +70,15 @@ public:
         }
 
         //if moved r.ptr == nullptr, therefore delete moved ptr
-        if constexpr(std::is_rvalue_reference_v<U &&> && !std::is_same_v<U, std::nullptr_t>) {
-            r = nullptr;
+        if constexpr(std::is_rvalue_reference_v<U &&>) {
+            if constexpr (is_instance_v<U, TPtr>) {
+                if (ptr) {
+                    r.ptr = nullptr;
+                    ptr->onDestroySignal.disconnect(&U::destroy, &r);
+                }
+            } else if constexpr (is_instance_v<U, std::shared_ptr>) {
+                r = nullptr;
+            }
         }
 
         if (ptr) {

@@ -124,7 +124,7 @@ add_executable(GameClient ${SRC})
 
 
 set_target_properties(GameClient PROPERTIES
-        CXX_STANDARD 17
+        CXX_STANDARD ${CMAKE_CXX_STANDARD}
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
 

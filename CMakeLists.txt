@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(RTS_GAME)
 add_custom_target(RTS_GAME)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 link_libraries("-demangle")
 if (UNIX)
     link_libraries("-ltbb")
