@@ -4,6 +4,7 @@
 
 #include "AssetImportContext.h"
 #include <GameClient/Unity/Editor/OneGuidFile.h>
+#include <cinttypes>
 
 
 void AssetImportContext::AddObjectToAsset(Unity::fileID identifier, TPtr<Object> obj, TPtr<Texture2D> thumbnail) {
@@ -12,7 +13,7 @@ void AssetImportContext::AddObjectToAsset(Unity::fileID identifier, TPtr<Object>
             return it.second == obj;
         });
         if (is != data->object.end()) {
-            GameApi::log(ERR.fmt("Tried adding added object %s %llu -> %llu",
+            GameApi::log(ERR.fmt("Tried adding added object %s %" PRIu64 " -> %" PRIu64,
                                  GameApi::demangle(typeid(*obj.get()).name()).data(),
                                  is->first,
                                  identifier));
@@ -21,7 +22,7 @@ void AssetImportContext::AddObjectToAsset(Unity::fileID identifier, TPtr<Object>
         auto[it, b] = data->object.emplace(identifier, obj);
         if (!data->main) { data->main = obj; }
         if (!b) {
-            GameApi::log(ERR.fmt("Tried adding object %s with the same identifier %llu",
+            GameApi::log(ERR.fmt("Tried adding object %s with the same identifier %" PRIu64,
                                  GameApi::demangle(typeid(*obj.get()).name()).data(),
                                  identifier));
         }

@@ -1,3 +1,5 @@
+#include <cinttypes>
+
 struct MetaData::Reflect {
     const std::string_view name;
 
@@ -165,7 +167,7 @@ void Importers::register_importer(int64_t priority) {
     auto[it2, b] = ext_priority.emplace(typeid(T), priority);
 
     if (!b) {
-        GameApi::log(ERR.fmt("Class with type: %s tried change. Priority: %lli",
+        GameApi::log(ERR.fmt("Class with type: %s tried change. Priority: %" PRIi64,
                              GameApi::demangle(typeid(T).name()).data(),
                              priority));
     }
@@ -174,7 +176,7 @@ void Importers::register_importer(int64_t priority) {
 
     if (!it.CreateInstance) {
         GameApi::log(
-                ERR.fmt("Importer with name: %s not declared. Priority: %lli",
+                ERR.fmt("Importer with name: %s not declared. Priority: %" PRIi64,
                         GameApi::demangle(typeid(T).name()).data(),
                         priority));
     }

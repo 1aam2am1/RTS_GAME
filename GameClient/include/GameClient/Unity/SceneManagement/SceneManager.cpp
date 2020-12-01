@@ -12,6 +12,7 @@
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GuidFileIdPack.h>
 #include <GameClient/MainThread.h>
+#include <cinttypes>
 
 namespace fs = std::filesystem;
 
@@ -98,7 +99,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             }
 
             if (!found) {
-                GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %llu} not found.",
+                GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.second.guid.operator std::string().data(), ob.second.id));
             }
         }
@@ -109,7 +110,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             if (it != objects.end()) {
                 d.objects.emplace_back(it->second);
             } else {
-                GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %llu} not found.",
+                GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.guid.operator std::string().data(), ob.id));
             }
 

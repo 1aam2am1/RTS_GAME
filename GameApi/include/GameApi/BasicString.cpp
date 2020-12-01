@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <cstdio>
+#include <cinttypes>
 
 namespace GameApi {
 
@@ -80,8 +81,7 @@ namespace GameApi {
 
     std::string to_hex(uint64_t number) {
         char str[17] = {0};
-        static_assert(sizeof(uint64_t) == sizeof(long long unsigned), "It should be the same");
-        std::sprintf(str, "%016llx", number);
+        std::sprintf(str, "%016" PRIx64, number);
         return str;
     }
 
