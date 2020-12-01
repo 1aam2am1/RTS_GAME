@@ -43,6 +43,8 @@ protected:
     void operator()(const std::function<void(bool)> &, const nlohmann::json &) final;
 
     void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) override;
+
+    void operator()(const std::function<void(std::vector<TPtr<Object>>)> &, const nlohmann::json &) override;
     //endregion
 };
 

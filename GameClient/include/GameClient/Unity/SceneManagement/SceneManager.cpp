@@ -76,33 +76,57 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
                 objects.emplace(id, obj);
             }
         }
-        for (auto &ob : serializer.bind) {
-            bool found = false;
-            if (ob.second.guid == asset_guid || ob.second.guid.empty()) {
-                auto ref_obj = objects.find(ob.second.id);
+
+        auto find_object = [&asset_guid, &objects](GUIDFileIDPack g) -> TPtr<Object> {
+            if (g.guid == asset_guid || g.guid.empty()) {
+                auto ref_obj = objects.find(g.id);
                 if (ref_obj != objects.end()) {
-                    ob.first(ref_obj->second);
-                    found = true;
+                    return ref_obj->second;
                 }
             } else {
                 // Load assets from asset database
-                auto assets = AssetDatabase::LoadAllAssetsAtPath(AssetDatabase::GUIDToAssetPath(ob.second.guid));
+                auto assets = AssetDatabase::LoadAllAssetsAtPath(AssetDatabase::GUIDToAssetPath(g.guid));
                 for (auto a : assets) {
                     AssetDatabase::fileID localID;
                     Unity::GUID guid;
-                    if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == ob.second.id) {
-                        ob.first(a);
-                        found = true;
-                        break;
+                    if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == g.id) {
+                        return a;
                     }
                 }
             }
 
-            if (!found) {
+            return TPtr<>{nullptr};
+        };
+
+        for (auto &ob : serializer.bind) {
+            auto found = find_object(ob.second);
+            if (found) {
+                ob.first(found);
+            } else {
                 GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.second.guid.operator std::string().data(), ob.second.id));
             }
         }
+        for (auto &ob : serializer.bind_vector) {
+            std::vector<TPtr<Object>> value;
+
+            if (ob.second.is_array()) {
+                value.reserve(ob.second.size());
+                for (auto &v : ob.second) {
+                    auto g = v.get<GUIDFileIDPack>();
+                    auto found = find_object(g);
+
+                    value.emplace_back(found);
+
+                    if (!found && g.guid.empty() && g.id != 0) {
+                        GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %" PRIu64 "} not found.",
+                                             g.guid.operator std::string().data(), g.id));
+                    }
+                }
+            }
+            ob.first(value);
+        }
+
         //root is array
         for (auto &v : json["root"]) {
             auto ob = v.get<GUIDFileIDPack>(); ///< GUIDFileIDPack

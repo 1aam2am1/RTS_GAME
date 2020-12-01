@@ -33,3 +33,8 @@ void SceneSerializer::operator()(const std::function<void(TPtr<Object>)> &ptr, c
 
     max_id = max_id > pack.id ? max_id : pack.id;
 }
+
+void SceneSerializer::operator()(const std::function<void(std::vector<TPtr<Object>>)> &ptr,
+                                 const nlohmann::json &json) {
+    bind_vector.emplace_back(ptr, json);
+}

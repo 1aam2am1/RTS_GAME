@@ -27,8 +27,23 @@ template<typename T>
 struct MetaData::Register {
     template<typename Y>
     void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
-        d.members.emplace_back(str, [=](Object *ob) -> TU {
-            auto t = static_cast<T *>(ob);
+        auto func = [=](auto t) -> TU {
+            auto def = [&]() {
+                std::function<void(Y)> set;
+                std::function<Y()> get;
+
+                if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
+                    set = [=](Y arg) { t->*ptr = arg; };
+                }
+
+                get = [=]() -> Y { return t->*ptr; };
+
+                return std::pair<std::function<void(Y)>, std::function<Y(void)>>{
+                        set,
+                        get
+                };
+            };
+
             if constexpr (std::is_same_v<Y, Unity::GUID>) {
                 std::function<void(std::string)> f;
 
@@ -40,33 +55,54 @@ struct MetaData::Register {
                         f,
                         [=]() -> std::string { return t->*ptr; }
                 };
-            } else {
-                std::function<void(Y)> f;
+            } else if constexpr (is_instance_v<Y, std::vector>) {
+                using object_type = typename Y::value_type;
+                if constexpr(is_instance_v<object_type, TPtr>) {
+                    std::function<void(std::vector<TPtr<Object>>)> f;
 
-                if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
-                    f = [=](Y arg) { t->*ptr = arg; };
+                    if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
+                        f = [=](std::vector<TPtr<Object>> arg) {
+                            auto &vec = t->*ptr;
+                            vec.clean();
+                            vec.reserve(arg.size());
+                            for (auto &e : arg) {
+                                vec.emplace_back(dynamic_pointer_cast<object_type>(e));
+                            }
+                        };
+                    }
+
+                    return std::pair<
+                            std::function<void(std::vector<TPtr<Object>>)>,
+                            std::function<std::vector<TPtr<Object>>(void)>>{
+                            f,
+                            [=]() -> std::vector<TPtr<Object>> {
+                                std::vector<TPtr<Object>> result;
+                                auto &vec = t->*ptr;
+                                result.reserve(vec.size());
+                                for (auto &e : vec) {
+                                    result.emplace_back(dynamic_pointer_cast<Object>(e));
+                                }
+
+                                return result;
+                            }
+                    };
+
+                } else {
+                    return def();
                 }
-
-                return std::pair<std::function<void(Y)>, std::function<Y(void)>>{
-                        f,
-                        [=]() -> Y { return t->*ptr; }
-                };
+            } else {
+                return def();
             }
+        };
+
+        d.members.emplace_back(str, [=](Object *ob) -> TU {
+            auto t = static_cast<T *>(ob);
+            return func(t);
         });
 
         d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
             auto t = static_cast<const T *>(ob);
-            if constexpr (std::is_same_v<Y, Unity::GUID>) {
-                return std::pair<std::function<void(std::string)>, std::function<std::string(void)>>(
-                        std::function<void(std::string)>{},
-                        [=]() -> std::string { return t->*ptr; }
-                );
-            } else {
-                return std::pair<std::function<void(Y)>, std::function<Y(void)>>{
-                        std::function<void(Y)>{},
-                        [=]() -> Y { return t->*ptr; }
-                };
-            }
+            return func(t);
         });
     }
 
@@ -74,10 +110,16 @@ struct MetaData::Register {
     void registerMemberForSerialize(std::string_view str, void (T::*set)(R), R (T::*get)()) {
         d.members.emplace_back(str, [=](Object *ob) -> TU {
             auto t = static_cast<T *>(ob);
-            return std::pair<std::function<void(R)>, std::function<R(void)>>{
-                    [=](R arg) { t->*set(arg); },
-                    [=]() -> R { return t->*get(); }
-            };
+            std::function<void(R)> s;
+            std::function<R(void)> g;
+
+            if (set) {
+                s = [=](R arg) { t->*set(arg); };
+            }
+            if (get) {
+                g = [=]() -> R { return t->*get(); };
+            }
+            return std::pair<std::function<void(R)>, std::function<R(void)>>{s, g};
         });
 
     }

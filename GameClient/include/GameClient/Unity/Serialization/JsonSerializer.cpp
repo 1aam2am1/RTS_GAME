@@ -32,10 +32,14 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
         }
         check = std::visit([this](auto &&p) {
             if constexpr (is_instance_v<decltype(p.second()), std::vector>) {
+                auto vec = p.second();
+                nlohmann::json result;
 
-                //TODO: vector specialization
+                for (auto &it: vec) {
+                    result.emplace_back(this->operator()(it));
+                }
 
-                return nlohmann::json{};
+                return result;
             } else {
                 if (p.second) {
                     return this->operator()(p.second());
@@ -63,8 +67,29 @@ void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &seri
             } else {
                 std::visit([this, &c = check.value()](auto &&p) {
                     if constexpr (is_instance_v<function_traits_arg_t<decltype(p.first), 0>, std::vector>) {
-
                         //TODO: vector specialization
+                        if (p.first) {
+                            using vector_type = function_traits_arg_t<decltype(p.first), 0>;
+                            using object_type = typename vector_type::value_type;
+
+                            if constexpr (std::is_same_v<object_type, TPtr<Object>>) {
+                                this->operator()(p.first, c);
+                            } else {
+                                vector_type value;
+
+                                if (c.is_array()) {
+                                    value.reserve(c.size());
+                                    for (auto &v: c) {
+                                        std::function<void(object_type)> func = [&](auto n) {
+                                            value.emplace_back(n);
+                                        };
+                                        this->operator()(func, v);
+                                    }
+                                }
+
+                                p.first(value);
+                            }
+                        }
                     } else if (p.first) {
                         this->operator()(p.first, c);
                     }
@@ -142,4 +167,20 @@ void JsonSerializer::operator()(const std::function<void(TPtr<Object>)> &o, cons
     } else {
         o(TPtr<>{nullptr});
     }
+}
+
+void JsonSerializer::operator()(const std::function<void(std::vector<TPtr<Object>>)> &f, const nlohmann::json &j) {
+    std::vector<TPtr<Object>> value;
+
+    if (j.is_array()) {
+        value.reserve(j.size());
+        for (auto &v: j) {
+            auto func = [&](TPtr<Object> n) {
+                value.emplace_back(n);
+            };
+            this->operator()(func, v);
+        }
+    }
+
+    f(value);
 }

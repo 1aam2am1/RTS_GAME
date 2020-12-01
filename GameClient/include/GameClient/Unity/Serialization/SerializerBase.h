@@ -62,6 +62,8 @@ protected:
     virtual void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) = 0;
 
     virtual void operator()(const std::function<void(nlohmann::json)> &, const nlohmann::json &);
+
+    virtual void operator()(const std::function<void(std::vector<TPtr<Object>>)> &, const nlohmann::json &) = 0;
     //endregion
 };
 
