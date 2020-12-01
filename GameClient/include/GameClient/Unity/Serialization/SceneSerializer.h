@@ -6,18 +6,22 @@
 #define RTS_GAME_SCENESERIALIZER_H
 
 #include <GameClient/Unity/Serialization/JsonSerializer.h>
+#include <GameClient/GuidFileIdPack.h>
 
 
 class SceneSerializer final : public JsonSerializer {
 public:
-    SceneSerializer(std::unordered_map<TPtr<Object>, nlohmann::json> &bindings);
+    explicit SceneSerializer();
 
 protected:
     nlohmann::json operator()(const TPtr<Object> &ptr) override;
 
     void operator()(const std::function<void(TPtr<Object>)> &ptr, const nlohmann::json &json) override;
 
-    std::unordered_map<TPtr<Object>, nlohmann::json> &bind;
+public:
+    std::vector<std::pair<std::function<void(TPtr<Object>)>, GUIDFileIDPack>> bind;
+    std::unordered_map<TPtr<Object>, GUIDFileIDPack> serialize_map;
+    Unity::fileID max_id = 0;
 };
 
 

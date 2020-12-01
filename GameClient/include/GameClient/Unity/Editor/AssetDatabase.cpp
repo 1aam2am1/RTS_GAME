@@ -60,6 +60,9 @@ struct Data {
     std::map<std::string, std::set<std::string>> dir_tree;
 };
 
+decltype(AssetDatabase::importPackageStarted) AssetDatabase::importPackageStarted;
+decltype(AssetDatabase::importPackageCompleted) AssetDatabase::importPackageCompleted;
+
 static Data &get_data() {
     static Data d;
     return d;

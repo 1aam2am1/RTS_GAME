@@ -10,6 +10,8 @@
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 #include <GameClient/Unity/Serialization/SceneSerializer.h>
 #include <GameClient/Unity/Core/MonoBehaviour.h>
+#include <GameClient/GuidFileIdPack.h>
+#include <GameClient/MainThread.h>
 
 namespace fs = std::filesystem;
 
@@ -51,54 +53,66 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
 
         d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
         d.buildIndex = -1; //TODO: Make build index
-//TODO: !!! Change scene loading
-        std::unordered_map<TPtr<Object>, nlohmann::json> bindings;
+
         std::unordered_map<AssetDatabase::fileID, TPtr<Object>> objects;
 
-        SceneSerializer serializer(bindings);
+        SceneSerializer serializer;
 
-        for (auto &v : json["GameObject"].items()) {
-            AssetDatabase::fileID id = GameApi::to_int(v.key());
+        /// [{id : {GameObject: {}}}, {id : {Component: {}}}, {id : {Prefab: [GUIDFileIDPack, {GameObject: {}}]}}]
+        //objects is array
+        for (auto &v : json["objects"]) {
+            ///asset(v.is_object());
+            auto ob = v.begin(); ///< id : {GameObject: {}}
 
-            auto obj = dynamic_pointer_cast<GameObject>(serializer.Deserialize(typeid(GameObject), v.value()));
+            AssetDatabase::fileID id = GameApi::to_int(ob.key());
 
-            objects.emplace(id, obj);
-            d.objects.push_back(obj);
+            auto &object_type = ob.value().begin().key();
+            auto &object_value = ob.value().begin().value();
+            if (object_type == "Prefab") {
+                //TODO: Load prefab
+            } else {
+                auto obj = serializer.Deserialize(object_type, object_value);
+                objects.emplace(id, obj);
+            }
         }
-        for (auto &v : json["Component"].items()) {
-            AssetDatabase::fileID id = GameApi::to_int(v.key());
-
-            auto p = v.value().get<std::pair<std::string, nlohmann::json>>();
-            auto obj = serializer.Deserialize(p.first, p.second);
-
-            objects.emplace(id, obj);
-        }
-        for (auto &ob : bindings) {
-            auto guid = ob.second["guid"].get<Unity::GUID>();
-            AssetDatabase::fileID id;
-            ob.second["fileID"].get_to(id);
-
-            if (guid == asset_guid || guid.empty()) {
-                auto ref_obj = objects.find(id);
+        for (auto &ob : serializer.bind) {
+            bool found = false;
+            if (ob.second.guid == asset_guid || ob.second.guid.empty()) {
+                auto ref_obj = objects.find(ob.second.id);
                 if (ref_obj != objects.end()) {
-                    ///ob.first.reset(ref_obj->second);
+                    ob.first(ref_obj->second);
+                    found = true;
                 }
             } else {
                 // Load assets from asset database
-                auto assets = AssetDatabase::LoadAllAssetsAtPath(AssetDatabase::GUIDToAssetPath(guid));
+                auto assets = AssetDatabase::LoadAllAssetsAtPath(AssetDatabase::GUIDToAssetPath(ob.second.guid));
                 for (auto a : assets) {
                     AssetDatabase::fileID localID;
-                    if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == id) {
-                        ///*ob.first = a;
+                    Unity::GUID guid;
+                    if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == ob.second.id) {
+                        ob.first(a);
+                        found = true;
                         break;
                     }
                 }
             }
-/**
-            if (!(*ob.first)) {
+
+            if (!found) {
                 GameApi::log(ERR.fmt("Binding: {guid: %s, fileID: %llu} not found.",
-                                     guid.operator std::string().data(), id));
-            }*/
+                                     ob.second.guid.operator std::string().data(), ob.second.id));
+            }
+        }
+        //root is array
+        for (auto &v : json["root"]) {
+            auto ob = v.get<GUIDFileIDPack>(); ///< GUIDFileIDPack
+            auto it = objects.find(ob.id);
+            if (it != objects.end()) {
+                d.objects.emplace_back(it->second);
+            } else {
+                GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %llu} not found.",
+                                     ob.guid.operator std::string().data(), ob.id));
+            }
+
         }
 
         return true;
@@ -108,7 +122,6 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
     return false;
 }
 
-//TODO: !!! Make loading in new frame
 void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadSceneMode mode) {
     auto meta = fs::directory_entry(sceneName);
     //TODO: Check if only filename and load path from data
@@ -117,38 +130,47 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
         return;
     }
 
-    auto new_id = max_id++;
-    Data result;
+    std::string s;
 
+    Data result;
     result.path = sceneName;
 
-    if (LoadSceneFull(result, sceneName)) {
-        result.isValid = true;
-        result.isLoaded = true;
+    auto new_id = max_id++;
+    data[new_id] = result;
 
-        switch (mode) {
-            case LoadSceneMode::Single: {
-                data.clear();
-                data[new_id] = result;
-                active_scene = new_id;
-                break;
+    MainThread::Invoke([s, mode, new_id]() {
+        Data result;
+
+        result.path = s;
+
+        if (LoadSceneFull(result, result.path)) {
+            result.isValid = true;
+            result.isLoaded = true;
+
+            switch (mode) {
+                case LoadSceneMode::Single: {
+                    data.clear();
+                    data[new_id] = result;
+                    active_scene = new_id;
+                    break;
+                }
+                case LoadSceneMode::Addictive:
+                    data[new_id] = result;
+                    break;
             }
-            case LoadSceneMode::Addictive:
-                data[new_id] = result;
-                break;
-        }
 
-        data[new_id] = result;
+            data[new_id] = result;
 
-        for (auto &g : result.objects) {
-            for (auto &c : g->components) {
-                //As Component, Behaviour don't Awake we only call if MonoBehaviour
-                ///TODO: Remember that some other class should be Awakened and so on...
-                if (auto m = dynamic_cast<MonoBehaviour *>(c.get())) { m->Awake(); }
+            for (auto &g : result.objects) {
+                for (auto &c : g->components) {
+                    //As Component, Behaviour don't Awake we only call if MonoBehaviour
+                    ///TODO: Remember that some other class should be Awakened and so on...
+                    if (auto m = dynamic_cast<MonoBehaviour *>(c.get())) { m->Awake(); }
+                }
             }
-        }
 
-    }
+        }
+    });
 }
 
 int SceneManager::sceneCount() {

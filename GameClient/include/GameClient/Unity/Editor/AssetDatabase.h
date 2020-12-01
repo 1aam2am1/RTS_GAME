@@ -36,6 +36,7 @@ public:
     static TPtr<Texture2D> GetCachedIcon(std::string path);
 
     /// Get the GUID and local file id from an object instance id.
+    /// \return true if found
     static bool TryGetGUIDAndLocalFileIdentifier(TPtr<Object> obj, Unity::GUID &guid, Unity::fileID &localId);
 
     /// Returns an array of all Assets at assetPath.
@@ -134,10 +135,10 @@ public:
     ///static void AllowAutoRefresh();
 
     /// Callback raised whenever a package import starts.
-    sigslot::signal<> importPackageStarted;
+    static sigslot::signal<> importPackageStarted;
 
     /// Callback raised whenever a package import successfully completes.
-    sigslot::signal<> importPackageCompleted;
+    static sigslot::signal<> importPackageCompleted;
 };
 
 

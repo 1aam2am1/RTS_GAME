@@ -179,7 +179,7 @@ namespace std {
     template<typename T>
     struct hash<TPtr<T>> {
         std::size_t operator()(const TPtr<T> &t) const {
-            return std::hash(t.ptr);
+            return std::hash<decltype(t.ptr)>()(t.ptr);
         }
     };
 }

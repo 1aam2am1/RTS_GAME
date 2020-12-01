@@ -38,21 +38,22 @@ namespace {                                         \
 /// What should be serialized
 #define EXPORT_CLASS(TYPE, ...)                     \
 namespace {                                         \
-    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE); \
-        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
-        return 0;                                   \
-    });                                            \
+    struct MetaExporter{                            \
+        void operator()(){                          \
+            [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);    \
+            FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)        \
+        }                                                                       \
+    };                                                                          \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add(MetaExporter()); \
 }
 
 
 /// Export class to import and export classes
 #define EXPORT_IMPORTER(TYPE, EXT, ...) \
-namespace {                        \
+EXPORT_CLASS(TYPE, __VA_ARGS__)         \
+namespace {                             \
     static int INTERNAL_NO_USE_IMPORTER_##TYPE = Initializer::add([](){ \
         static_assert(std::is_base_of_v<AssetImporter, TYPE>, "only subclasses, please"); \
-        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);                \
-        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)    \
         FOR_EACH(Importers::REGISTER_IMPORTER_EXTENSION, TYPE, UNPAREN(EXT))     \
         return 0;                               \
     });                                   \
@@ -68,11 +69,10 @@ namespace {                        \
 
 /// Mark a ScriptableObject-derived type to be automatically listed in the Assets/Create submenu,
 /// so that instances of the type can be easily created and stored in the project as ".asset" files.
-#define CREATE_ASSET_MENU(TYPE, ...)                                 \
+#define CREATE_ASSET_MENU(TYPE, ...) \
+EXPORT_CLASS(TYPE, __VA_ARGS__)      \
 namespace {                                         \
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){ \
-        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE); \
-        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__) \
         MetaData::register_asset<TYPE>()            \
         return 0;                                   \
     });                                             \

@@ -117,6 +117,7 @@ set(SRC
         include/GameClient/Unity/Editor/ContextMenu.cpp
         include/GameClient/Unity/Editor/ContextMenu.h
         include/GameClient/Unity/Editor/MenuItem.h
+        include/GameClient/GuidFileIdPack.h
         )
 
 add_executable(GameClient ${SRC})
