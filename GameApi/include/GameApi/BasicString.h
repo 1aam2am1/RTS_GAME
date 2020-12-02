@@ -132,13 +132,5 @@ namespace GameApi {
         }
     }
 
-
-    template<typename Tag, typename Tag::type Member>
-    struct break_in_ {
-        friend constexpr typename Tag::type break_in(Tag) {
-            return Member;
-        }
-    };
-
 }
 #endif // STRING_H

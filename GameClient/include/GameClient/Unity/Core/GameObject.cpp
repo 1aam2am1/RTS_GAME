@@ -5,7 +5,9 @@
 #include "GameObject.h"
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
+#include <GameClient/Unity/Macro.h>
 
+EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components, m_scene)
 
 TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());

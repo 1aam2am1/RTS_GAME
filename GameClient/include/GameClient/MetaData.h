@@ -27,6 +27,14 @@ public:
     template<typename T>
     static auto register_class(std::string_view str);
 
+    /// Register class meta data with fields
+    /// \tparam T Type of class
+    /// \param str Name of class
+    /// \param constructor Function that will construct new object
+    /// \return
+    template<typename T>
+    static auto register_class(std::string_view str, std::function<TPtr<T>()> constructor);
+
     /// Get Reflections of object
     static ReflectFull getReflection(Object *);
 

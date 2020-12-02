@@ -13,6 +13,7 @@
 template<typename T = Object>
 class TPtr {
 public:
+    using element_type = std::remove_extent_t<T>;
 
     /// Don't create default pointer without parent
     TPtr() = delete;
@@ -158,6 +159,9 @@ private:
     template<class X, class U>
     friend TPtr<X> dynamic_pointer_cast(const TPtr<U> &) noexcept;
 
+    template<class X, class U>
+    friend TPtr<X> static_pointer_cast(const TPtr<U> &) noexcept;
+
     template<typename>
     friend
     class std::hash;
@@ -178,6 +182,15 @@ TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
     TPtr<T> result{nullptr};
 
     result = std::dynamic_pointer_cast<T>(r.ptr);
+
+    return result;
+}
+
+template<class T, class U>
+TPtr<T> static_pointer_cast(const TPtr<U> &r) noexcept {
+    TPtr<T> result{nullptr};
+
+    result = std::static_pointer_cast<T>(r.ptr);
 
     return result;
 }

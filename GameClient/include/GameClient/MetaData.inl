@@ -63,10 +63,10 @@ struct MetaData::Register {
                     if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
                         f = [=](std::vector<TPtr<Object>> arg) {
                             auto &vec = t->*ptr;
-                            vec.clean();
+                            vec.clear();
                             vec.reserve(arg.size());
                             for (auto &e : arg) {
-                                vec.emplace_back(dynamic_pointer_cast<object_type>(e));
+                                vec.emplace_back(dynamic_pointer_cast<typename object_type::element_type>(e));
                             }
                         };
                     }
@@ -80,7 +80,7 @@ struct MetaData::Register {
                                 auto &vec = t->*ptr;
                                 result.reserve(vec.size());
                                 for (auto &e : vec) {
-                                    result.emplace_back(dynamic_pointer_cast<Object>(e));
+                                    result.emplace_back(static_pointer_cast<Object>(e));
                                 }
 
                                 return result;
@@ -129,6 +129,21 @@ struct MetaData::Register {
 
 template<typename T>
 auto MetaData::register_class(std::string_view str) {
+    return register_class<T>(str, []() {
+        if constexpr (std::is_abstract_v<T>) {
+            GameApi::log(ERR.fmt("Tried creating object of abstract type %s",
+                                 GameApi::demangle(typeid(T).name()).data()));
+            return TPtr<Object>{nullptr};
+        } else {
+            return TPtr<Object>{nullptr, std::make_shared<T>()};
+        }
+    });
+}
+
+template<typename T>
+auto MetaData::register_class(std::string_view str, std::function<TPtr<T>()> constructor) {
+    static_assert(std::is_base_of_v<Object, T>, "only subclasses, please");
+
     auto it = reflection.find(typeid(T));
 
     if (it != reflection.end()) {
@@ -153,13 +168,12 @@ auto MetaData::register_class(std::string_view str) {
 
     Data result;
     result.name = str;
-    result.create = []() {
-        if constexpr (std::is_abstract_v<T>) {
-            GameApi::log(ERR.fmt("Tried creating object of abstract type %s",
-                                 GameApi::demangle(typeid(T).name()).data()));
+    result.create = [constructor]() {
+        if (!constructor) {
+            GameApi::log(ERR.fmt("Tried creating object with empty constructor function"));
             return TPtr<Object>{nullptr};
         } else {
-            return TPtr<Object>{nullptr, std::make_shared<T>()};
+            return static_pointer_cast<Object>(constructor());
         }
     };
     result.copy = [](auto f1, auto f2) {

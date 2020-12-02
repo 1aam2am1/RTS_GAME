@@ -12,9 +12,10 @@
 #define EXTRACT(...) EXTRACT __VA_ARGS__
 #define UNPAREN(x) CONCATENATE(NOTHING_, EXTRACT x)
 
-#define RMFS_SERIALIZE_1(type, arg) STRINGIZE(arg), &type::arg
-#define RMFS_SERIALIZE_2(type, name, arg) name, &type::arg
-#define RMFS_SERIALIZE_3(type, name, set, get) name, &type::set, &type::get
+//region REGISTER_MEMBER_FOR_SERIALIZE
+#define RMFS_SERIALIZE_1(type, arg) STRINGIZE(arg), break_in(type##_##arg())
+#define RMFS_SERIALIZE_2(type, name, arg) name, break_in(type##_##arg())
+#define RMFS_SERIALIZE_3(type, name, set, get) name, set, get
 
 #define RMFS_SERIALIZE_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_, N)(type, __VA_ARGS__)
 #define RMFS_SERIALIZE(type, ...) RMFS_SERIALIZE_(FOR_EACH_NARG(__VA_ARGS__), type, __VA_ARGS__)
@@ -22,6 +23,18 @@
 
 #define REGISTER_MEMBER_FOR_SERIALIZE(arg, TYPE) registerMemberForSerialize(RMFS_SERIALIZE(TYPE, UNPAREN(arg)))
 #define REGISTER_IMPORTER_EXTENSION(arg, TYPE) register_importer<TYPE>(arg)
+//endregion
+
+//region REGISTER_MEMBER_FOR_PRIVATE_BREAK
+#define RMFS_SERIALIZE_PRIVATE_BREAK_1(type, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg);
+#define RMFS_SERIALIZE_PRIVATE_BREAK_2(type, name, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg);
+#define RMFS_SERIALIZE_PRIVATE_BREAK_3(type, name, set, get)
+
+#define RMFS_SERIALIZE_PRIVATE_BREAK_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_PRIVATE_BREAK_, N)(type, __VA_ARGS__)
+#define RMFS_SERIALIZE_PRIVATE_BREAK(type, ...) RMFS_SERIALIZE_PRIVATE_BREAK_(FOR_EACH_NARG(__VA_ARGS__), type, __VA_ARGS__)
+
+#define REGISTER_MEMBER_FOR_PRIVATE_BREAK(arg, TYPE) RMFS_SERIALIZE_PRIVATE_BREAK(TYPE, UNPAREN(arg))
+//endregion
 //endregion
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
@@ -35,16 +48,29 @@ namespace {                                         \
 
 /// TODO: Set TYPE SO THAT you can set to don't include base classes in serialization TYPE or (TYPE, PRIVATE) or (TYPE, OBJECT, ...)
 /// Export class to save it in scene and use in in gameobject as component
-/// What should be serialized
-#define EXPORT_CLASS(TYPE, ...)                     \
-namespace {                                         \
-    struct MetaExporter{                            \
-        void operator()(){                          \
-            [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);    \
-            FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)        \
-        }                                                                       \
-    };                                                                          \
-    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add(MetaExporter()); \
+/// \param TYPE TYPE of class
+/// \param ... What should be serialized
+#define EXPORT_CLASS(TYPE, ...)                                                 \
+namespace {                                                                     \
+    DEFINE_BREAK_IN_CLASS(TYPE)                                                 \
+    FOR_EACH(REGISTER_MEMBER_FOR_PRIVATE_BREAK, TYPE, __VA_ARGS__)              \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){            \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);        \
+        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)            \
+    });                                                                         \
+}
+
+/// Export class to save it in scene and use in in gameobject as component
+/// \param TYPE TYPE of class
+/// \param ... What should be serialized
+#define EXPORT_CLASS_CONSTRUCTOR(TYPE, CONSTRUCTOR, ...)                    \
+namespace {                                                                 \
+    DEFINE_BREAK_IN_CLASS(TYPE)                                             \
+    FOR_EACH(REGISTER_MEMBER_FOR_PRIVATE_BREAK, TYPE, __VA_ARGS__)          \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){        \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE, CONSTRUCTOR);    \
+        FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)        \
+    });                                                                     \
 }
 
 
@@ -126,16 +152,22 @@ namespace {                        \
 }
 
 
+#define DEFINE_BREAK_IN_CLASS(type)         \
+template<typename Tag, auto Member>         \
+struct break_in_##type {                    \
+    friend constexpr auto break_in(Tag) {   \
+        return Member;                      \
+    }                                       \
+};
 
 /// Define break in pointer that could break in inside the private class
-#define DEFINE_BREAK_IN(name, t, member)\
+#define DEFINE_BREAK_IN(type, name, member)\
            struct name {\
-             using type = t;\
-             friend constexpr t break_in(name);\
+             friend constexpr auto break_in(name);\
            };\
-           template struct break_in_<name, member>
+           template struct break_in_##type<name, member>;
 
-//DEFINE_BREAK_IN(nazwa_odwolamnia, int Klasa::*, &Klasa::x);
+//DEFINE_BREAK_IN(type_in_class_break, nazwa_odwolamnia, &Klasa::x);
 // std::cout << x.*break_in(nazwa_odwolamnia());
 
 #define EXCEPTION_PRINT                     \
