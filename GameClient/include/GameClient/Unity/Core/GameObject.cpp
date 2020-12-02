@@ -6,6 +6,22 @@
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 
+
+TPtr<GameObject> newGameObject() {
+    auto i = std::shared_ptr<GameObject>(new GameObject());
+    i->scene = SceneManager::GetActiveScene();
+
+    return TPtr<GameObject>{nullptr, i};
+}
+
+TPtr<GameObject> newGameObject(std::string name) {
+    auto i = std::shared_ptr<GameObject>(new GameObject(name));
+    i->scene = SceneManager::GetActiveScene();
+
+    return TPtr<GameObject>{nullptr, i};
+}
+////////////////////////////////////////////////////////////////////////////////
+
 GameObject::GameObject() : scene([&](auto s) {
                                      SceneManager::MoveGameObjectToScene(TPtr<GameObject>{nullptr, shared_from_this()}, s);
                                  },
@@ -16,6 +32,8 @@ GameObject::GameObject() : scene([&](auto s) {
 GameObject::GameObject(std::string name) : GameObject() {
     Object::name = name;
 }
+
+GameObject::~GameObject() {}
 
 bool GameObject::activeInHierarchy() const {
     /*if (!activeSelf()) { return false; }

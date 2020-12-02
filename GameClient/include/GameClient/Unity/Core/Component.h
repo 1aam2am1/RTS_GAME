@@ -77,7 +77,7 @@ public:
 private:
     friend class GameObject;
 
-    TPtr<GameObject> m_gameObject{this};
+    GameObject *m_gameObject{nullptr};
 };
 
 

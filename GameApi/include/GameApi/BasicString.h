@@ -68,6 +68,8 @@ namespace GameApi {
 
     std::string delete_from_string_separated_by(std::string str, const char &c = ' ', const std::string &del = ".");
 
+    std::string to_string(uint64_t number);
+
     std::string to_string(uint32_t number);
 
     std::string to_string(int32_t number);

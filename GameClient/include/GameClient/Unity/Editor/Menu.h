@@ -40,6 +40,29 @@ private:
     static void addItem(std::string path, std::function<bool(MenuCommand)> f, bool validation, int priority);
 };
 
+class ContextMenu : public EditorWindow {
+public:
+    ContextMenu();
+
+    ~ContextMenu();
+
+    static void Init(std::string_view name, sf::FloatRect buttonRect =
+            {(float) sf::Mouse::getPosition().x, (float) sf::Mouse::getPosition().y, 1.f, 1.f},
+                     sf::Vector2f windowSize = {50.f, 100.f}) {
+        // Get existing open window or if none, make a new one:
+        auto window = EditorWindow::GetWindow<ContextMenu>();
+        window->setClass(name);
+        window->ShowAsDropDown(buttonRect, windowSize);
+    }
+
+    void setClass(std::string_view name);
+
+    void OnGUI() override;
+
+private:
+    std::unique_ptr<std::vector<MenuItem>> items;
+};
+
 template<typename F>
 void Menu::addItem(std::string path, const F &f, int priority) {
     if constexpr (std::is_convertible<F, void (*)()>::value) {

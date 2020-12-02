@@ -12,6 +12,7 @@
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GuidFileIdPack.h>
 #include <GameClient/MainThread.h>
+#include <GameClient/Unity/Core/Transform.h>
 #include <cinttypes>
 
 namespace fs = std::filesystem;
@@ -21,25 +22,61 @@ uint64_t SceneManager::active_scene = 0;
 decltype(SceneManager::data) SceneManager::data{{0, {0, false}}};
 
 void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::SceneP scene) {
-    if (!go || !scene || !scene->isValid()) {
-        throw std::runtime_error("Scene and game object should exists");
+    if (!go) {
+        throw std::runtime_error("Game object should exists");//#1
     }
-    auto existing_id = go->scene.get()->id;
-    auto goto_id = scene->id;
+    {
+        //check if root
+        auto t = go->transform();
+        if (t != t->root()) {
+            GameApi::log(ERR.fmt("GameObject should be root"));
+            return;
+        }
+    }
 
-    auto it = data.find(existing_id);
-    auto goto_it = data.find(goto_id);
+    if (!scene) {
+        throw std::runtime_error("Scene should exists");//#2
+    }
+    if (!scene->isValid() && scene->id != active_scene) {
+        throw std::runtime_error("Scene should exists");//#3
+    }
+    auto new_scene_id = scene->id;
+    if (!scene->isValid() && scene->id == active_scene) {
+        if (active_scene != 0 || (go->scene.get() && go->scene.get()->isValid())) {
+            GameApi::log(ERR.fmt("Active scene is not valid and ( active_scene != 0 || go->scene->isValid())"));
+            std::terminate(); //< Should never happen #4
+        } else {
+            //here all scenes should be invalid
+            new_scene_id = max_id++; //#5
+        }
+    }
 
-    if (it != data.end() && goto_it != data.end()) {
+    auto old_scene = go->scene.get();
+    if (old_scene) {
+        auto it = data.find(old_scene->id);
 
-        //if is root
-        auto data_it = std::find_if(it->second.objects.begin(), it->second.objects.end(), [&](auto i) {
-            return i == go;
-        });
+        if (it != data.end()) {
+            auto data_it = std::find_if(it->second.objects.begin(), it->second.objects.end(), [&](auto i) {
+                return i == go;
+            });
 
-        if (data_it != it->second.objects.end()) {
-            goto_it->second.objects.emplace_back(go);
-            go->m_scene = std::shared_ptr<Scene>(new Scene(goto_id));
+            it->second.objects.erase(data_it);
+        }
+    }
+
+    {
+        auto it = data.find(new_scene_id);
+
+        if (it != data.end()) {
+            it->second.objects.emplace_back(go);
+            data[new_scene_id].isValid = true;
+        } else {
+            auto &new_scene = data[new_scene_id];
+            new_scene.isValid = true;
+            new_scene.isLoaded = true;
+
+            new_scene.objects.emplace_back(go);
+            go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
         }
     }
 }
@@ -207,3 +244,6 @@ int SceneManager::sceneCount() {
     return data.size() - 1;
 }
 
+SceneManager::SceneP SceneManager::GetActiveScene() {
+    return SceneManager::SceneP{nullptr, std::shared_ptr<Scene>(new Scene(active_scene))};
+}

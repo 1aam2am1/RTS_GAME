@@ -67,6 +67,12 @@ namespace GameApi {
         return str;
     }
 
+    std::string to_string(uint64_t number) {
+        char str[12] = {0};
+        std::sprintf(str, "%" PRIu64, number);
+        return str;
+    }
+
     std::string to_string(uint32_t number) {
         char str[12] = {0};
         std::sprintf(str, "%u", number);

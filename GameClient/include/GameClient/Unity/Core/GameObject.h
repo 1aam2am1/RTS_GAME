@@ -17,29 +17,43 @@ class Component;
 
 class Transform;
 
+class GameObject;
+
+TPtr<GameObject> newGameObject();
+
+TPtr<GameObject> newGameObject(std::string);
+
+/// Creates a new game object, named \b name.
+/// \tparam Args A list of Components to add to the GameObject on creation.
+/// \param name The name that the GameObject is created with.
+template<typename... Args>
+TPtr<GameObject> newGameObject(std::string name);
+
 /// Base class for all entities in Unity Scenes.
 class GameObject : public Object {
-public:
-    /// Creates a new game object, named \b name.
+    friend TPtr<GameObject> newGameObject();
+
+    friend TPtr<GameObject> newGameObject(std::string);
+
+    template<typename... Args>
+    friend TPtr<GameObject> newGameObject(std::string);
+
     GameObject();
 
     /// Creates a new game object, named \b name.
     /// \param name The name that the GameObject is created with.
-    GameObject(std::string name);
+    explicit GameObject(std::string name);
 
-    /// Creates a new game object, named \b name.
-    /// \tparam Args A list of Components to add to the GameObject on creation.
-    /// \param name The name that the GameObject is created with.
-    template<typename... Args, std::enable_if_t<std::conjunction_v<std::is_base_of<Component, Args>...>, int> = 0>
-    GameObject(std::string name);
+public:
+    ~GameObject();
 
     /// Defines whether the GameObject is active in the Scene.
     /// \note This lets you know whether a GameObject is active in the game.
     /// That is the case if its GameObject.activeSelf property is enabled, as well as that of all its parents.
-    bool activeInHierarchy() const;
+    [[nodiscard]] bool activeInHierarchy() const;
 
     /// The local active state of this GameObject
-    bool activeSelf() const;
+    [[nodiscard]] bool activeSelf() const;
 
     /// The layer the game object is in.
     /// \note Layers can be used for selective rendering from cameras or ignoring raycasts.
@@ -137,36 +151,6 @@ private:
     TPtr<Scene> m_scene{this};
 };
 
-HAS_FIELD(Awake)
-
-template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
-TPtr<T> GameObject::AddComponent() {
-    if constexpr (std::is_base_of_v<Transform, T>) {
-        if (!components.empty() && typeid(*components[0].get()) != typeid(Transform)) {
-            GameApi::log(ERR.fmt("First component should be transform"));
-        }
-    }
-    //TODO: Check meta if there is flag only one and then check if there exists
-    auto result = components.emplace_back(this, std::make_shared<T>());
-
-    //TODO: !!! Awake of Component when game running !!!
-    result->m_gameObject = shared_from_this();
-
-    if constexpr (has_fieldAwake_v<T>) {
-        auto pointer = result.get();
-        auto f = [pointer]() {
-            static_cast<T *>(pointer)->Awake();
-        };
-
-        if (Application::isPlaying && activeInHierarchy()) {
-            f();
-        } else {
-            to_awake.emplace(result, f);
-        }
-    }
-
-    return result;
-}
-
+#include "GameObject.inl"
 
 #endif //RTS_GAME_GAMEOBJECT_H

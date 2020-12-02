@@ -159,7 +159,7 @@ protected:
         int buildIndex = 0;
         bool isValid = false;
         bool isLoaded = false;
-        std::string name{};
+        std::string name = []() { return "Scene " + GameApi::to_string(max_id); }();
         std::string path{};
         std::vector<TPtr<GameObject>> objects{};
         //TODO: root and objects/all

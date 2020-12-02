@@ -14,7 +14,10 @@ Component::Component() :
 Component::~Component() = default;
 
 TPtr<GameObject> Component::gameObject() const {
-    return m_gameObject;
+    if (!m_gameObject) { throw std::runtime_error("Wrong m_gameObject in Component"); }
+
+    return TPtr<GameObject>{nullptr, m_gameObject->shared_from_this()};
+
 }
 
 TPtr<Transform> Component::transform() {

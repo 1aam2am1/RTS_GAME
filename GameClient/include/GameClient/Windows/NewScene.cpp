@@ -6,8 +6,14 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 
-void newScene() {
+MENU_ITEM([]() {
     EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
-}
+}, "File/New Scene", 10)
 
-MENU_ITEM(newScene, "File/New Scene", 10)
+MENU_ITEM([]() {
+    newGameObject();
+}, "GameObject/New GameObject", 10)
+
+CONTEXT_MENU(GameObject, "New GameObject", []() {
+    newGameObject();
+})

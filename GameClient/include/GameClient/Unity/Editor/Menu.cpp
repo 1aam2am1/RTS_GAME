@@ -37,6 +37,7 @@ void Menu::OnGUI() {
         int priority = 0;
         if (!vector.empty()) { priority = vector.front().priority; }
         for (auto &i : vector) {
+            if (i.name == "CONTEXT") { continue; }
             if (i.priority - priority > 10) {
                 ImGui::Separator();
             }
@@ -68,6 +69,52 @@ void Menu::addItem(std::string path, std::function<bool(MenuCommand)> f, bool va
 void Menu::addPlaceHolder(std::string path, int priority) {
     get_node(global_item_vector(), std::move(path), priority, false);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+ContextMenu::ContextMenu() {
+    items = std::make_unique<std::vector<MenuItem>>();
+}
+
+ContextMenu::~ContextMenu() {
+
+}
+
+void ContextMenu::setClass(std::string_view name) {
+    *items = std::get<1>(get_node(global_item_vector(), "CONTEXT/" + std::string{name}, 0, false).sub_items_function);
+}
+
+void ContextMenu::OnGUI() {
+    std::function<void(std::vector<MenuItem> &)> display = [&](std::vector<MenuItem> &vector) {
+        int priority = 0;
+        if (!vector.empty()) { priority = vector.front().priority; }
+        for (auto &i : vector) {
+            if (i.priority - priority > 10) {
+                ImGui::Separator();
+            }
+            priority = i.priority;
+            if (i.sub_items_function.index() == 0) {
+                if (ImGui::MenuItem(i.name.c_str())) {
+                    const auto &f = std::get<0>(i.sub_items_function);
+                    f({});
+                }
+            } else if (i.sub_items_function.index() == 1) {
+                if (std::get<1>(i.sub_items_function).empty()) {
+                    ImGui::MenuItem(i.name.c_str());
+                } else if (ImGui::BeginMenu(i.name.c_str())) {
+                    display(std::get<1>(i.sub_items_function));
+                    ImGui::EndMenu();
+                }
+            }//else should throw but the implementation should be correct one and therefore this branch don't exists.
+        }
+    };
+    display(*items);
+}
+
+MENU_ITEM([]() {
+    ContextMenu::Init("GameObject");
+}, "Help/ContextMenu/GameObject")
+
 
 /// Debug display of items
 class HELP : public EditorWindow {
