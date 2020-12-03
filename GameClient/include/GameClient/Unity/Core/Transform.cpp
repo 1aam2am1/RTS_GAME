@@ -13,6 +13,11 @@ Transform::Transform() :
 
 }
 
+Transform::~Transform() {
+    for (auto &c: children)
+        DestroyImmediate(c.get());
+}
+
 TPtr<Transform> Transform::GetChild(size_t index) const {
     if (index >= children.size()) { throw std::runtime_error("GetChild index >= childCount"); }
     return children[index]->transform();

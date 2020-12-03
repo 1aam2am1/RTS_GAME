@@ -17,6 +17,8 @@ class Transform final : public Component {
 public:
     Transform();
 
+    ~Transform();
+
     /// The coordinate space in which to operate.
     enum class Space {
         World, ///< Applies transformation relative to the world coordinate system.

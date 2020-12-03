@@ -35,7 +35,10 @@ GameObject::GameObject(std::string name) : GameObject() {
     Object::name = name;
 }
 
-GameObject::~GameObject() {}
+GameObject::~GameObject() {
+    for (auto &c: components)
+        DestroyImmediate(c.get());
+}
 
 bool GameObject::activeInHierarchy() const {
     /*if (!activeSelf()) { return false; }
@@ -72,6 +75,10 @@ bool GameObject::CompareTag(std::string_view tag) const noexcept {
 }
 
 TPtr<Transform> GameObject::transform() const {
+    if (components.empty()) {
+        const_cast<GameObject *>(this)->AddComponent<Transform>();
+    }
+
     if (components.empty() || typeid(*components[0].get()) != typeid(Transform)) {
         GameApi::log(ERR.fmt("First component should be transform"));
         std::terminate();
