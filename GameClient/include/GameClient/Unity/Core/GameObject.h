@@ -57,7 +57,7 @@ public:
 
     /// The layer the game object is in.
     /// \note Layers can be used for selective rendering from cameras or ignoring raycasts.
-    int layer;
+    int layer = 0;
 
     /// Scene that the GameObject is part of.
     SetterGetter<TPtr<Scene>> scene;

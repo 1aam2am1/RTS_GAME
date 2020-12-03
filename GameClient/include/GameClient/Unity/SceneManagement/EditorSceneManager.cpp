@@ -35,6 +35,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
                 break;
             }
             case OpenSceneMode::Addictive:
+                data[new_id] = result;
                 break;
         }
 

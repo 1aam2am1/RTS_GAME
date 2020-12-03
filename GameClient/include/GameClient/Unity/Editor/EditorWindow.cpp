@@ -100,7 +100,6 @@ void EditorWindow::ShowUtility() {
 void EditorWindow::ShowAsDropDown(sf::FloatRect buttonRect, sf::Vector2f windowSize) {
     if (work == NotShown) {
         work = DropDown;
-        ImGui::OpenPopup(imGuiName.data());
         buttonRect.width = windowSize.x;
         buttonRect.height = windowSize.y;
         position = buttonRect;
@@ -143,6 +142,11 @@ void EditorWindow::drawGui() {
             break;
         case DropDown: {
             ///ImGui::OpenPopup
+
+            if (!start) {
+                start = true;
+                ImGui::OpenPopup(imGuiName.data());
+            }
 
             OnStyleChange();
             if (ImGui::BeginPopup((titleContent + imGuiName).c_str(), flags)) {

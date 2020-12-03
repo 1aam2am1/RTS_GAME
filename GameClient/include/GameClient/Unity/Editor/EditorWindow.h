@@ -145,6 +145,8 @@ protected:
 
     Type work = {};
 
+    bool start = false;
+
     const std::string imGuiName;
 };
 

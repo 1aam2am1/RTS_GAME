@@ -28,7 +28,7 @@ GameObject::GameObject() : scene([&](auto s) {
                                      SceneManager::MoveGameObjectToScene(TPtr<GameObject>{nullptr, shared_from_this()}, s);
                                  },
                                  [&]() { return m_scene; }) {
-    AddComponent<Transform>();
+    Object::name = "GameObject";
 }
 
 GameObject::GameObject(std::string name) : GameObject() {

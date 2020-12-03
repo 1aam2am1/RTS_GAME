@@ -60,7 +60,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
                                               }));
     } else {
         auto gm = gameObject();
-        auto &objects = SceneManager::data[gameObject()->scene.get()->id].objects;
+        auto &objects = SceneManager::data[gm->scene.get()->id].objects;
         objects.erase(
                 std::find_if(objects.begin(), objects.end(),
                              [&](auto &it) {

@@ -5,6 +5,8 @@
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
+#include <GameClient/Unity/Editor/Selection.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 MENU_ITEM([]() {
     EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
@@ -12,8 +14,24 @@ MENU_ITEM([]() {
 
 MENU_ITEM([]() {
     newGameObject();
-}, "GameObject/New GameObject", 10)
+}, "GameObject/Create empty", 10)
 
-CONTEXT_MENU(GameObject, "New GameObject", []() {
-    newGameObject();
+MENU_ITEM([]() {
+    auto go = newGameObject();
+    if (Selection::activeTransform) {
+        go->transform()->parent = Selection::activeTransform;
+    }
+}, "GameObject/Create empty Child", 12)
+
+CONTEXT_MENU(GameObject, "Create empty", []() {
+    auto go = newGameObject();
+    if (Selection::activeTransform) {
+        go->transform()->parent = Selection::activeTransform;
+    }
+})
+
+CONTEXT_MENU(GameObject, "Remove", []() {
+    if (Selection::activeGameObject) {
+        Object::DestroyImmediate(Selection::activeGameObject.get());
+    }
 })

@@ -36,6 +36,8 @@ bool Editor::DrawDefaultInspector() {
                 [&key, &dirty](auto &&p) {
                     using type = function_traits_arg_t<decltype(p.first), 0>;
 
+                    if (!p.second) { return; }
+
                     auto value = p.second();
 
                     if (!p.first) {
@@ -55,6 +57,7 @@ bool Editor::DrawDefaultInspector() {
                     } else {
                         ImGuiContext &g = *GImGui;
                         g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;
+                        ImGui::NewLine();
                     }
                     //TODO: !!! Next Editor default widgets
 
@@ -105,7 +108,7 @@ void Editor::DrawFoldoutInspector(TPtr<Object> target, TPtr<Editor> &editor) {
         };
     } else if (target) {
         std::string name = GameApi::demangle(typeid(*target.get()).name());
-        name += " -> no editor###" + GameApi::to_string(editor->target.get());
+        name += " -> no editor##" + GameApi::to_string(editor->target.get());
 
         bool open = ImGui::TreeNode(name.data());
         if (open) {

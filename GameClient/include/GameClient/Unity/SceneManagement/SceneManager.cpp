@@ -48,6 +48,7 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
         } else {
             //here all scenes should be invalid
             new_scene_id = max_id++; //#5
+            active_scene = new_scene_id;
         }
     }
 
@@ -69,15 +70,16 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
 
         if (it != data.end()) {
             it->second.objects.emplace_back(go);
-            data[new_scene_id].isValid = true;
+            it->second.isValid = true;
         } else {
             auto &new_scene = data[new_scene_id];
             new_scene.isValid = true;
             new_scene.isLoaded = true;
 
             new_scene.objects.emplace_back(go);
-            go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
         }
+
+        go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
     }
 }
 
