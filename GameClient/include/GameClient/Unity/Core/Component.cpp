@@ -16,7 +16,7 @@ Component::~Component() = default;
 TPtr<GameObject> Component::gameObject() const {
     if (!m_gameObject) { throw std::runtime_error("Wrong m_gameObject in Component"); }
 
-    return TPtr<GameObject>{nullptr, m_gameObject->shared_from_this()};
+    return static_pointer_cast<GameObject>(m_gameObject->shared_from_this());
 
 }
 

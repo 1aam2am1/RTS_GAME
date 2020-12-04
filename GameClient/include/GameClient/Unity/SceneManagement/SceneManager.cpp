@@ -134,7 +134,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
                 }
             }
 
-            return TPtr<>{nullptr};
+            return {};
         };
 
         for (auto &ob : serializer.bind) {
@@ -171,7 +171,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             auto ob = v.get<GUIDFileIDPack>(); ///< GUIDFileIDPack
             auto it = objects.find(ob.id);
             if (it != objects.end()) {
-                d.objects.emplace_back(it->second);
+                d.objects.emplace_back(dynamic_pointer_cast<GameObject>(it->second));
             } else {
                 GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.guid.operator std::string().data(), ob.id));
@@ -247,5 +247,5 @@ int SceneManager::sceneCount() {
 }
 
 SceneManager::SceneP SceneManager::GetActiveScene() {
-    return SceneManager::SceneP{nullptr, std::shared_ptr<Scene>(new Scene(active_scene))};
+    return std::shared_ptr<Scene>(new Scene(active_scene));
 }

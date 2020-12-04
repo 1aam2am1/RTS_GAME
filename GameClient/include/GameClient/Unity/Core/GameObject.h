@@ -148,7 +148,7 @@ private:
     //TODO: Start new component before running
     std::vector<TPtr<Component>> components;
     std::unordered_map<TPtr<Component>, std::function<void()>> to_awake;
-    TPtr<Scene> m_scene{this};
+    TPtr<Scene> m_scene{};
 };
 
 #include "GameObject.inl"

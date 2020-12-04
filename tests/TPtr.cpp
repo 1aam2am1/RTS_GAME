@@ -11,6 +11,11 @@
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/Object.h>
 
+namespace std {
+    template<class T>
+    shared_ptr(T *) ->  shared_ptr<T>;
+}
+
 TEST_CASE("TPtr") {
     class A : public Object {
     public:
@@ -23,31 +28,16 @@ TEST_CASE("TPtr") {
         std::function<void()> d;
     };
 
-    Object parent;
-
-    SECTION("CREATE nullptr parent") {
-        TPtr<A> l(nullptr, std::make_shared<A>());
+    SECTION("CREATE") {
+        TPtr<A> l(std::make_shared<A>());
 
         REQUIRE(l);
     }
 
-    SECTION("Create pointer with returned value") {
-        TPtr<A> l(&parent);
-
-        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
-
-        REQUIRE_NOTHROW(l->works());
-
-        parent.onDestroySignal(nullptr);
-
-        REQUIRE_THROWS(l->works());
-
-    }
-
     SECTION("Test deleting ptr and throw") {
-        TPtr<A> l(&parent);
+        TPtr<A> l;
 
-        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l = std::make_shared<A>();
 
         REQUIRE_NOTHROW(l->works());
 
@@ -60,19 +50,20 @@ TEST_CASE("TPtr") {
     SECTION("TPtr destructor") {
         auto p = std::make_shared<A>();
         {
-            TPtr<A> l(&parent);
+            TPtr<A> l;
 
-            l = [=]() { return TPtr<A>(nullptr, p); }();
+            l = [=]() { return p; }();
+
+            REQUIRE(p->onDestroySignal.slot_count() == 1);
         }
 
-        REQUIRE(parent.onDestroySignal.slot_count() == 0);
         REQUIRE(p->onDestroySignal.slot_count() == 0);
     }
 
     SECTION("Clear pointer") {
-        TPtr<A> l(&parent);
+        TPtr<A> l;
 
-        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l = std::make_shared<A>();
         REQUIRE_NOTHROW(l->works());
 
         l = nullptr;
@@ -82,66 +73,105 @@ TEST_CASE("TPtr") {
 
     SECTION("Check define and destructor") {
         struct B : Object {
-            TPTR_P(a);
-            TPTR_PT(A, b);
+            TPtr<> a;
+            TPtr<A> b;
         };
+        TPtr<B> m;
+        {
+            TPtr<B> b = std::make_shared<B>();
+            m = b;
 
-        B b;
+            b->a = std::make_shared<A>();
+            b->b = std::make_shared<A>();
 
-        b.a = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
-        b.b = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+            int i = 0;
+            dynamic_cast<A *>(b->a.get())->d = [&i]() { i += 1; };
+            b->b->d = [&i]() { i += 1; };
 
-        REQUIRE(b.onDestroySignal.slot_count() == 2);
+            b->onDestroySignal(nullptr);
 
-        int i = 0;
-        dynamic_cast<A *>(b.a.get())->d = [&i]() { i += 1; };
-        b.b->d = [&i]() { i += 1; };
-
-        b.onDestroySignal(nullptr);
-
-        REQUIRE(b.onDestroySignal.slot_count() == 2);
-        REQUIRE(i == 2);
+            REQUIRE(i == 2);
+        }
+        REQUIRE(m.expired());
     }
 
     SECTION("Operator == ") {
-        TPtr<A> l(&parent);
-        TPtr<A> l2(&parent);
+        TPtr<A> l;
+        TPtr<A> l2;
 
-        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l = std::make_shared<A>();
         l2 = l;
         REQUIRE(l.get() == l2.get());
     }
 
     SECTION("Operator == Base") {
-        TPtr<A> l(&parent);
-        TPtr<Object> l2(&parent);
+        TPtr<A> l;
+        TPtr<Object> l2;
 
-        l = []() { return TPtr<A>(nullptr, std::make_shared<A>()); }();
+        l = std::make_shared<A>();
         l2 = l;
         REQUIRE(l.get() == l2.get());
     }
 
-    SECTION("Operator == shared") {
-        TPtr<Object> l2(&parent);
+    SECTION("Operator = shared") {
+        TPtr<Object> l2;
 
         l2 = std::make_shared<A>();
         REQUIRE(l2.get());
     }
 
-    SECTION("Operator == nullptr") {
-        TPtr<Object> l2(&parent);
+    SECTION("Operator = nullptr") {
+        TPtr<Object> l2;
 
+        l2 = std::make_shared<A>();
         l2 = nullptr;
         REQUIRE(l2.expired());
     }
 
+    SECTION("Operator = move") {
+        TPtr<Object> l2(std::shared_ptr(new A));
+        TPtr<A> l(std::shared_ptr(new A));
+
+        REQUIRE_NOTHROW(l2->name);
+        l = dynamic_pointer_cast<A>(std::move(l2));
+        REQUIRE(l2.expired());
+        REQUIRE(l->onDestroySignal.slot_count() == 1);
+
+        l2 = static_pointer_cast<Object>(std::move(l));
+        REQUIRE(l.expired());
+        REQUIRE(l2->onDestroySignal.slot_count() == 1);
+
+        l = dynamic_pointer_cast<A>(std::move(l2));
+        l2 = std::move(l);
+        REQUIRE(l.expired());
+        REQUIRE(l2->onDestroySignal.slot_count() == 1);
+    }
+
     SECTION("Constructor with cast") {
-        TPtr<A> l(&parent);
-        TPtr<Object> l2(&parent, std::make_shared<A>());
+        TPtr<A> l;
+        TPtr<Object> l2(std::make_shared<A>());
 
         REQUIRE_NOTHROW(l2->name);
         l2 = l;
         REQUIRE(l2.expired());
+    }
+
+    SECTION("Constructor with new") {
+        TPtr<A> l;
+        TPtr<Object> l2(std::shared_ptr(new A));
+
+        REQUIRE_NOTHROW(l2->name);
+        l2 = l;
+        REQUIRE(l2.expired());
+    }
+
+    SECTION("Constructor with move") {
+        TPtr<Object> l2(std::shared_ptr(new A));
+
+        REQUIRE_NOTHROW(l2->name);
+        TPtr<A> l(std::move(l2));
+        REQUIRE(l2.expired());
+        REQUIRE(l->onDestroySignal.slot_count() == 1);
     }
 
     SECTION("Cast of types") {
@@ -149,35 +179,44 @@ TEST_CASE("TPtr") {
 
         };
 
-        TPtr<A> l(&parent);
+        TPtr<A> l;
         l = std::make_shared<A>();
 
         TPtr<Object> base = l;
         REQUIRE(!base.expired());
 
-        TPtr<B> lb = l;
+        TPtr<B> lb = dynamic_pointer_cast<B>(l);
         REQUIRE(lb.expired());
 
         lb = dynamic_pointer_cast<B>(base);
         REQUIRE(lb.expired());
 
-        TPtr<B> bb(&parent, std::make_shared<A>());
+        TPtr<B> bb(std::make_shared<A>());
         REQUIRE(bb.expired());
     }
 
     SECTION("move assignment") {
-        TPtr<A> l(&parent);
+        TPtr<A> l;
         auto copy = std::make_shared<A>();
         l = copy;
 
-        TPtr<A> m(&parent);
+        TPtr<A> m;
         m = std::make_shared<A>();
 
         l = std::move(m);
 
         REQUIRE(m.expired());
-        REQUIRE(copy.unique());
+        REQUIRE(copy.use_count() == 1);
         REQUIRE(l->onDestroySignal.slot_count() == 1);
 
+    }
+
+    SECTION("shared_from_this") {
+        TPtr<A> l;
+        l = std::make_shared<A>();
+        TPtr<A> c;
+        REQUIRE_NOTHROW((c = dynamic_pointer_cast<A>(l->shared_from_this())));
+        REQUIRE(c.get() == l.get());
+        REQUIRE(c.use_count() == 2);
     }
 }

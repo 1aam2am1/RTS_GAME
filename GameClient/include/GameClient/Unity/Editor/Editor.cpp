@@ -141,12 +141,9 @@ void Editor::CreateCachedEditor(TPtr<Object> targetObject, TPtr<Editor> &previou
         previousEditor = std::get<1>(*it);
     } else {
         auto editor = CreateEditor(targetObject, editorType);
-        TPtr<Object> t{nullptr};
-
-        t = targetObject;
         previousEditor = editor;
 
-        previous.emplace_back(t, editor, editorType);
+        previous.emplace_back(targetObject, editor, editorType);
     }
 }
 
@@ -195,9 +192,9 @@ TPtr<Editor> Editor::CreateEditor(TPtr<Object> targetObject, std::type_index edi
         GameApi::log(ERR.fmt("Didn't find editor for given type %s trying default editor",
                              GameApi::demangle(editorType.name()).data()));
 
-        return CreateEditor(TPtr<Object>{nullptr});
+        return CreateEditor(TPtr<Object>{});
     }
     GameApi::log(ERR.fmt("Didn't find default editor"));
 
-    return TPtr<Editor>(nullptr);
+    return {};
 }

@@ -22,7 +22,7 @@ public:
     ///TPtr<SerializedObject> serializedObject{this};
 
     /// The object being inspected.
-    TPtr<Object> target{this};
+    TPtr<Object> target{};
 
     /// Enables the Editor to handle an event in the Scene view.
     /// Draw on Scene
@@ -82,7 +82,7 @@ private:
 template<typename E, typename inspectedType>
 void Editor::addCustom(bool editorForChildClasses) {
     Data result;
-    result.create = []() { return TPtr<Editor>{nullptr, std::make_shared<E>()}; };
+    result.create = []() { return TPtr<Editor>{std::make_shared<E>()}; };
     result.editorForChildClasses = editorForChildClasses;
     result.check_child = [](auto &&e) { return !dynamic_pointer_cast<inspectedType>(e).expired(); };
     auto[it, b] = t_editor.emplace(typeid(inspectedType), std::move(result));
@@ -99,7 +99,7 @@ void Editor::addCustom(bool editorForChildClasses) {
 template<typename E, typename inspectedType>
 void Editor::addCustomFallback(bool editorForChildClasses) {
     Data result;
-    result.create = []() { return TPtr<Editor>{nullptr, std::make_shared<E>()}; };
+    result.create = []() { return TPtr<Editor>{std::make_shared<E>()}; };
     result.editorForChildClasses = editorForChildClasses;
     result.check_child = [](auto &&e) { return !dynamic_pointer_cast<inspectedType>(e).expired(); };
     auto[it, b] = t_fallback_editor.emplace(typeid(inspectedType), std::move(result));

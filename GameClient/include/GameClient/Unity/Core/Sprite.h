@@ -22,7 +22,7 @@ public:
     Create(TPtr<Texture2D> texture, sf::FloatRect rect, sf::Vector2f pivot = {0, 0}, float pixelsPerUnit = 32);
 
 private:
-    TPtr<Texture2D> texture{nullptr};
+    TPtr<Texture2D> texture{};
 };
 
 

@@ -133,9 +133,9 @@ auto MetaData::register_class(std::string_view str) {
         if constexpr (std::is_abstract_v<T>) {
             GameApi::log(ERR.fmt("Tried creating object of abstract type %s",
                                  GameApi::demangle(typeid(T).name()).data()));
-            return TPtr<Object>{nullptr};
+            return TPtr<T>{};
         } else {
-            return TPtr<Object>{nullptr, std::make_shared<T>()};
+            return TPtr<T>{std::make_shared<T>()};
         }
     });
 }
@@ -168,12 +168,12 @@ auto MetaData::register_class(std::string_view str, std::function<TPtr<T>()> con
 
     Data result;
     result.name = str;
-    result.create = [constructor]() {
+    result.create = [constructor]() -> TPtr<> {
         if (!constructor) {
             GameApi::log(ERR.fmt("Tried creating object with empty constructor function"));
-            return TPtr<Object>{nullptr};
+            return {};
         } else {
-            return static_pointer_cast<Object>(constructor());
+            return constructor();
         }
     };
     result.copy = [](auto f1, auto f2) {

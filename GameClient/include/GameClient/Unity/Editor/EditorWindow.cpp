@@ -52,7 +52,7 @@ TPtr<EditorWindow> EditorWindow::focusedWindow() {
         if (f != v.end()) { return *f; }
     }
 
-    return TPtr<>{nullptr};
+    return {};
 }
 
 TPtr<EditorWindow> EditorWindow::mouseOverWindow() {
@@ -65,14 +65,14 @@ TPtr<EditorWindow> EditorWindow::mouseOverWindow() {
         if (f != v.end()) { return *f; }
     }
 
-    return TPtr<>{nullptr};
+    return {};
 }
 
 void EditorWindow::Close() {
     work = NotShown;
     ///? Destroy ?
     MainThread::Invoke([this]() {
-        Object::DestroyImmediate(this);
+        Object::DestroyImmediate(shared_from_this());
     });
 }
 

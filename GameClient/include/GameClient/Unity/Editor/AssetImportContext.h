@@ -25,7 +25,7 @@ public:
 
     /// Adds an object to the result of the import operation.
     void
-    AddObjectToAsset(Unity::fileID identifier, TPtr<Object> obj, TPtr<Texture2D> thumbnail = TPtr<Texture2D>{nullptr});
+    AddObjectToAsset(Unity::fileID identifier, TPtr<Object> obj, TPtr<Texture2D> thumbnail = TPtr<Texture2D>{});
 
     /// Creates dependency between the asset and a source asset.
     void DependsOnSourceAsset(std::string path);

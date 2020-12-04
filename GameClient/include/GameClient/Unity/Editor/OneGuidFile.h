@@ -19,9 +19,9 @@ struct OneGUIDFile {
 
     std::map<Unity::fileID, TPtr<Object>> object{}; //fileID -> objects in this file
 
-    TPtr<Object> main{nullptr}; //main object of this file
+    TPtr<Object> main{}; //main object of this file
 
-    TPtr<AssetImporter> importer{nullptr};
+    TPtr<AssetImporter> importer{};
 
     //root->have many dependency assets
     std::unordered_set<std::string> dependency{}; ///this object depends on...

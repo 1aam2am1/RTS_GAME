@@ -13,19 +13,19 @@ TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());
     i->scene = SceneManager::GetActiveScene();
 
-    return TPtr<GameObject>{nullptr, i};
+    return i;
 }
 
 TPtr<GameObject> newGameObject(std::string name) {
     auto i = std::shared_ptr<GameObject>(new GameObject(name));
     i->scene = SceneManager::GetActiveScene();
 
-    return TPtr<GameObject>{nullptr, i};
+    return i;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
 GameObject::GameObject() : scene([&](auto s) {
-                                     SceneManager::MoveGameObjectToScene(TPtr<GameObject>{nullptr, shared_from_this()}, s);
+                                     SceneManager::MoveGameObjectToScene(TPtr<GameObject>(shared_from_this()), s);
                                  },
                                  [&]() { return m_scene; }) {
     Object::name = "GameObject";
@@ -37,7 +37,7 @@ GameObject::GameObject(std::string name) : GameObject() {
 
 GameObject::~GameObject() {
     for (auto &c: components)
-        DestroyImmediate(c.get());
+        DestroyImmediate(c);
 }
 
 bool GameObject::activeInHierarchy() const {
@@ -79,10 +79,12 @@ TPtr<Transform> GameObject::transform() const {
         const_cast<GameObject *>(this)->AddComponent<Transform>();
     }
 
-    if (components.empty() || typeid(*components[0].get()) != typeid(Transform)) {
+    auto result = static_pointer_cast<Transform>(components[0]);
+
+    if (components.empty() || result.expired()) {
         GameApi::log(ERR.fmt("First component should be transform"));
         std::terminate();
     }
 
-    return components[0];
+    return result;
 }

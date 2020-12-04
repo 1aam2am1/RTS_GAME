@@ -10,7 +10,7 @@ class TextScriptImporter : public AssetImporter {
     void OnImportAsset(AssetImportContext &ctx) override {
         auto txt = GameApi::readFullFile(ctx.assetPath);
 
-        TPtr<Object> main(nullptr, std::make_shared<TextAsset>(txt));
+        TPtr<Object> main = std::make_shared<TextAsset>(txt);
 
         ctx.AddObjectToAsset(0, main);
     }

@@ -160,7 +160,7 @@ TPtr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
             return dynamic_pointer_cast<T>(it);
         }
     }
-    auto s = TPtr<T>(nullptr, std::make_shared<T>());
+    auto s = TPtr<T>(std::make_shared<T>());
     if (title.empty()) {
         s->titleContent = GameApi::demangle(typeid(T).name());
     } else {
@@ -178,7 +178,7 @@ TPtr<T> EditorWindow::GetWindow(std::string_view title, bool focus) {
     }
 
     if (get_open_windows().capacity() <= 16) { get_open_windows().reserve(16); }
-    get_open_windows().push_back(s);
+    get_open_windows().emplace_back(s);
 
     return s;
 }

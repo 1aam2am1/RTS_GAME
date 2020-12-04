@@ -78,7 +78,7 @@ namespace {
         for (auto iterator: d.objects) {
             std::for_each(std::execution::par_unseq, iterator.second.object.begin(), iterator.second.object.end(),
                           [](auto &&f) {
-                              Object::DestroyImmediate(f.second.get(), true);
+                              Object::DestroyImmediate(f.second, true);
                           });
         }
     });
@@ -439,7 +439,7 @@ void AssetDatabase::ImportAsset(std::string assetPath, ImportAssetOptions option
 
 TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, std::type_info type) {
     auto one = ImportAssetGlobal(assetPath, ImportAssetOptions::Default);
-    if (one.first.empty()) { return TPtr<Object>(nullptr); }
+    if (one.first.empty()) { return {}; }
 
     auto it = std::find_if(one.second.object.begin(), one.second.object.end(), [&](auto &&it) {
         return typeid(*it.second.get()) == type;
@@ -448,13 +448,13 @@ TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, std::type_inf
     if (it != one.second.object.end()) {
         return it->second;
     } else {
-        return TPtr<Object>(nullptr);
+        return {};
     }
 }
 
 TPtr<Object> AssetDatabase::LoadMainAssetAtPath(std::string assetPath) {
     auto one = ImportAssetGlobal(assetPath, ImportAssetOptions::Default);
-    if (one.first.empty()) { return TPtr<Object>(nullptr); }
+    if (one.first.empty()) { return {}; }
 
     return one.second.main;
 }
@@ -682,7 +682,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
 
                 std::for_each(std::execution::par_unseq, iterator->second.object.begin(), iterator->second.object.end(),
                               [](auto &&f) {
-                                  Object::DestroyImmediate(f.second.get(), true);
+                                  Object::DestroyImmediate(f.second, true);
                               });
             } else {
                 //Resets old TPtr to new values
@@ -715,8 +715,8 @@ void AssetDatabase::CreateAsset(TPtr<Object> asset, std::string path) {
     it->second.main = Object::Instantiate(asset.get());
     it->second.object.emplace(0, it->second.main);
 
-    it->second.importer = MetaData::getReflection(
-            Importers::get_importer(p.extension().generic_string()).first).CreateInstance();
+    it->second.importer = dynamic_pointer_cast<AssetImporter>(MetaData::getReflection(
+            Importers::get_importer(p.extension().generic_string()).first).CreateInstance());
 
     SaveAsset(g, &it->second);
 }
@@ -740,7 +740,7 @@ bool AssetDatabase::DeleteAsset(std::string path) {
     if (iterator != d.objects.end()) {
         std::for_each(std::execution::par_unseq, iterator->second.object.begin(), iterator->second.object.end(),
                       [](auto &&f) {
-                          Object::DestroyImmediate(f.second.get(), true);
+                          Object::DestroyImmediate(f.second, true);
                       });
 
         d.objects.erase(iterator);

@@ -4,10 +4,10 @@
 
 #include "Selection.h"
 
-TPtr<GameObject> Selection::activeGameObject{nullptr};
+TPtr<GameObject> Selection::activeGameObject{};
 
-TPtr<Object> Selection::activeObject{nullptr};
+TPtr<Object> Selection::activeObject{};
 
-TPtr<Transform> Selection::activeTransform{nullptr};
+TPtr<Transform> Selection::activeTransform{};
 
-std::vector<Unity::GUID> Selection::assetGUIDs;
+std::vector<Unity::GUID> Selection::assetGUIDs{};

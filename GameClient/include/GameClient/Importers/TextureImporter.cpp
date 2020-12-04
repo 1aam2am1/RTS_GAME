@@ -13,7 +13,7 @@ public:
     nlohmann::json sprites{};
 
     void OnImportAsset(AssetImportContext &ctx) override {
-        TPtr<Texture2D> texture{nullptr, std::make_shared<Texture2D>()};
+        TPtr<Texture2D> texture = std::make_shared<Texture2D>();
         texture->t0.loadFromFile(ctx.assetPath);
         ctx.AddObjectToAsset(0, texture, texture);
         ctx.SetMainObject(texture);

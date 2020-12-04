@@ -77,7 +77,7 @@ public:
 private:
     friend class GameObject;
 
-    TPtr<GameObject> m_gameObject{this};
+    TPtr<GameObject> m_gameObject{};
 };
 
 #include "Component.inl"

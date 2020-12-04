@@ -15,7 +15,7 @@ Transform::Transform() :
 
 Transform::~Transform() {
     for (auto &c: children)
-        DestroyImmediate(c.get());
+        DestroyImmediate(c);
 }
 
 TPtr<Transform> Transform::GetChild(size_t index) const {
@@ -34,13 +34,13 @@ TPtr<Transform> Transform::Find(std::string_view n) {
         }
     }
 
-    return TPtr<Transform>{nullptr};
+    return {};
 }
 
 TPtr<Transform> Transform::root() {
     TPtr<Transform> result = m_parent;
 
-    if (result.expired()) { return TPtr<Transform>{nullptr, shared_from_this()}; }
+    if (result.expired()) { return TPtr<Transform>(shared_from_this()); }
 
     while (result->m_parent) {
         result = result->m_parent;
@@ -69,7 +69,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
     }
 
     if (new_parent) {
-        new_parent->children.emplace_back(new_parent.get(), shared_from_this());
+        new_parent->children.emplace_back(shared_from_this());
     } else {
         // add object to root
         SceneManager::data[gameObject()->scene.get()->id].objects.emplace_back(gameObject());

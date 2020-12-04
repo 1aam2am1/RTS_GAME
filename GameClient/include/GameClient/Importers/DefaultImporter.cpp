@@ -8,7 +8,7 @@
 
 class DefaultImporter : public AssetImporter {
     void OnImportAsset(AssetImportContext &ctx) override {
-        ctx.AddObjectToAsset(0, TPtr<Object>{nullptr, std::make_shared<SceneAsset>()});
+        ctx.AddObjectToAsset(0, std::make_shared<SceneAsset>());
     }
 };
 

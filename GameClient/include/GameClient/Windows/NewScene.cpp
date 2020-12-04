@@ -32,6 +32,6 @@ CONTEXT_MENU(GameObject, "Create empty", []() {
 
 CONTEXT_MENU(GameObject, "Remove", []() {
     if (Selection::activeGameObject) {
-        Object::DestroyImmediate(Selection::activeGameObject.get());
+        Object::DestroyImmediate(Selection::activeGameObject);
     }
 })

@@ -24,10 +24,10 @@ TPtr<T> GameObject::AddComponent() {
         }
     }
     //TODO: Check meta if there is flag only one and then check if there exists
-    auto result = components.emplace_back(this, std::make_shared<T>());
+    auto result = components.emplace_back(std::make_shared<T>());
 
     //TODO: !!! Awake of Component when game running !!!
-    result->m_gameObject = shared_from_this();
+    result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
 
     if constexpr (has_fieldAwake_v<T>) {
         auto pointer = result.get();
@@ -42,5 +42,5 @@ TPtr<T> GameObject::AddComponent() {
         }
     }
 
-    return result;
+    return static_pointer_cast<T>(result);
 }

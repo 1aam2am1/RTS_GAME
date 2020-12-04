@@ -133,7 +133,7 @@ void AssetWindow::display_files() {
             Selection::assetGUIDs.clear();
             Selection::assetGUIDs.emplace_back(guid);
 
-            Selection::activeGameObject = main;
+            Selection::activeGameObject = dynamic_pointer_cast<GameObject>(main);
             if (Selection::activeGameObject) {
                 Selection::activeTransform = Selection::activeGameObject->transform();
             } else {

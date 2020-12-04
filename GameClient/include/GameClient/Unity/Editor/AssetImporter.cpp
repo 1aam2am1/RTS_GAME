@@ -25,7 +25,7 @@ TPtr<AssetImporter> AssetImporter::GetAtPath(std::string path) {
         return dynamic_pointer_cast<AssetImporter>(MetaData::getReflection(type.first).CreateInstance());
     } EXCEPTION_PRINT
 
-    return TPtr<AssetImporter>{nullptr};
+    return {};
 }
 
 void AssetImporter::OnExportAsset(AssetImportContext &ctx) {}

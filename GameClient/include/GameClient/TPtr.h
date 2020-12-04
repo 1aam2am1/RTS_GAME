@@ -6,63 +6,61 @@
 #define RTS_GAME_TPTR_H
 
 #include <memory>
-#include <Core/Object.h>
 #include <GameApi/IsInstance.h>
+#include <GameApi/Signal.h>
 
+class Object;
 
 template<typename T = Object>
 class TPtr {
 public:
     using element_type = std::remove_extent_t<T>;
 
-    /// Don't create default pointer without parent
-    TPtr() = delete;
+    constexpr TPtr() noexcept = default;
 
-    /// Create copy but, when return from function but watch out for parent as it could be destroyed.
+    constexpr TPtr(std::nullptr_t) noexcept {}
+
     TPtr(const TPtr &r) {
         *this = r;
     }
 
-    template<typename Y = T>
+    template<typename Y>
     TPtr(const TPtr<Y> &r) {
-        *this = r;
+        *this = dynamic_pointer_cast<T>(r);
     }
 
-    /// Don't move when parent can't be moved
     TPtr(TPtr &&r) noexcept {
         *this = std::move(r);
     }
 
-    /// Create new object
-    /// \tparam Y type of object
-    /// \param parent parent of this object that is Object as we need to reset shared when our object is destroyed
-    /// \param ptr object
-    template<typename Y = T>
-    constexpr explicit TPtr(Object *parent, const std::shared_ptr<Y> &ptr = nullptr) noexcept
-            : ptr(std::dynamic_pointer_cast<T>(ptr)) {
-        if (parent) { parentConnection = parent->onDestroySignal.connect_scoped(&TPtr::destroy, this); }
+    template<typename Y>
+    TPtr(TPtr<Y> &&r) noexcept {
+        *this = dynamic_pointer_cast<T>(std::move(r));
+    }
+
+    template<typename Y>
+    TPtr(const std::shared_ptr<Y> &r) noexcept: ptr(std::dynamic_pointer_cast<T>(r)) {
+        if (ptr) { objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this); }
+    }
+
+    template<typename Y>
+    TPtr(std::shared_ptr<Y> &&r) noexcept: ptr(std::dynamic_pointer_cast<T>(std::move(r))) {
+        if (ptr) { objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this); }
     }
 
     ~TPtr() {
         static_assert(std::is_base_of_v<Object, T>, "only subclasses, please");
-
-        if (ptr) { ptr->onDestroySignal.disconnect(&TPtr::destroy, this); }
-        parentConnection.disconnect();
+        objectConnection.disconnect();
     }
 
-    /// Copy shared_ptr of object
-    /// \param r To copy
-    /// \return *this
     template<class U>
     TPtr &operator=(U &&r) noexcept {
-        if (ptr) {
-            ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
-        }
+        objectConnection.disconnect();
 
         if constexpr (is_instance_v<U, TPtr>) {
-            ptr = std::dynamic_pointer_cast<T>(std::forward<U>(r).ptr);
+            ptr = std::forward<U>(r).ptr;
         } else if constexpr (is_instance_v<U, std::shared_ptr>) {
-            ptr = std::dynamic_pointer_cast<T>(std::forward<U>(r));
+            ptr = std::forward<U>(r);
         } else if constexpr (std::is_same_v<U, std::nullptr_t>) {
             ptr = nullptr;
             return *this;
@@ -73,31 +71,41 @@ public:
         //if moved r.ptr == nullptr, therefore delete moved ptr
         if constexpr(std::is_rvalue_reference_v<U &&>) {
             if constexpr (is_instance_v<U, TPtr>) {
-                if (ptr) {
-                    r.ptr = nullptr;
-                    ptr->onDestroySignal.disconnect(&U::destroy, &r);
-                }
+                r.objectConnection.disconnect();
+                r.ptr = nullptr;
             } else if constexpr (is_instance_v<U, std::shared_ptr>) {
                 r = nullptr;
             }
         }
 
         if (ptr) {
-            ptr->onDestroySignal.connect(&TPtr::destroy, this);
+            objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
 
         return *this;
     }
 
     TPtr &operator=(const TPtr &r) noexcept {
-        if (ptr) {
-            ptr->onDestroySignal.disconnect(&TPtr::destroy, this);
-        }
+        objectConnection.disconnect();
 
         ptr = r.ptr;
 
         if (ptr) {
-            ptr->onDestroySignal.connect(&TPtr::destroy, this);
+            objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
+        }
+
+        return *this;
+    }
+
+    TPtr &operator=(TPtr &&r) noexcept {
+        objectConnection.disconnect();
+
+        ptr = std::move(r.ptr);
+        r.objectConnection.disconnect();
+        r.ptr = nullptr;
+
+        if (ptr) {
+            objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
 
         return *this;
@@ -125,7 +133,7 @@ public:
         }
     }
 
-    T *get() const noexcept {
+    [[nodiscard]] T *get() const noexcept {
         return ptr.get();
     }
 
@@ -138,17 +146,21 @@ public:
         }
     }
 
+    [[nodiscard]] long use_count() const noexcept {
+        return ptr.use_count();
+    }
+
     ///TODO: Signal when object ptr change
 private:
     std::shared_ptr<T> ptr;
-    sigslot::scoped_connection parentConnection;
+    sigslot::scoped_connection objectConnection;
 
     void destroy(Object *o) noexcept {
         T *t = dynamic_cast<T *>(o);
         if (t) {
-            ptr = std::static_pointer_cast<T>(t->shared_from_this());
+            *this = static_pointer_cast<T>(t->shared_from_this());
         } else {
-            ptr = nullptr;
+            *this = nullptr;
         }
     }
 
@@ -160,7 +172,13 @@ private:
     friend TPtr<X> dynamic_pointer_cast(const TPtr<U> &) noexcept;
 
     template<class X, class U>
+    friend TPtr<X> dynamic_pointer_cast(TPtr<U> &&) noexcept;
+
+    template<class X, class U>
     friend TPtr<X> static_pointer_cast(const TPtr<U> &) noexcept;
+
+    template<class X, class U>
+    friend TPtr<X> static_pointer_cast(TPtr<U> &&) noexcept;
 
     template<typename>
     friend
@@ -168,32 +186,30 @@ private:
 };
 
 template<typename T, typename Y>
-constexpr bool operator==(const TPtr<T> &l, const TPtr<Y> &r) {
-    return static_cast<Object *>(l.get()) == static_cast<Object *>(r.get());
-}
-
-template<typename T, typename Y>
-constexpr bool operator!=(const TPtr<T> &l, const TPtr<Y> &r) {
-    return !(l == r);
-}
+constexpr bool operator==(const TPtr<T> &l, const TPtr<Y> &r) noexcept;
 
 template<class T, class U>
-TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept {
-    TPtr<T> result{nullptr};
+std::strong_ordering operator<=>(const TPtr<T> &lhs, const TPtr<U> &rhs) noexcept;
 
-    result = std::dynamic_pointer_cast<T>(r.ptr);
+template<class T>
+bool operator==(const TPtr<T> &lhs, std::nullptr_t) noexcept;
 
-    return result;
-}
+template<class T>
+std::strong_ordering operator<=>(const TPtr<T> &lhs, std::nullptr_t) noexcept;
 
 template<class T, class U>
-TPtr<T> static_pointer_cast(const TPtr<U> &r) noexcept {
-    TPtr<T> result{nullptr};
+TPtr<T> dynamic_pointer_cast(const TPtr<U> &r) noexcept;
 
-    result = std::static_pointer_cast<T>(r.ptr);
+template<class T, class U>
+TPtr<T> dynamic_pointer_cast(TPtr<U> &&r) noexcept;
 
-    return result;
-}
+template<class T, class U>
+TPtr<T> static_pointer_cast(const TPtr<U> &r) noexcept;
+
+template<class T, class U>
+TPtr<T> static_pointer_cast(TPtr<U> &&r) noexcept;
+
+#include "TPtr.inl"
 
 namespace std {
     template<typename T>
@@ -203,8 +219,5 @@ namespace std {
         }
     };
 }
-
-#define TPTR_P(NAME) TPtr<Object> NAME{this}
-#define TPTR_PT(TYPE, NAME) TPtr<TYPE> NAME{this}
 
 #endif //RTS_GAME_TPTR_H

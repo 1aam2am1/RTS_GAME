@@ -10,6 +10,14 @@
 
 EXPORT_CLASS(Object, ("m_Name", name));
 
+TPtr<Object> Object::shared_from_this() {
+    return TPtr<Object>{std::enable_shared_from_this<Object>::shared_from_this()};
+}
+
+TPtr<Object const> Object::shared_from_this() const {
+    return TPtr<Object const>{std::enable_shared_from_this<Object>::shared_from_this()};
+}
+
 Object::Object() {
 
 }
@@ -30,19 +38,20 @@ TPtr<Object> Object::Instantiate(Object *original) {
 
         reflection.CopyInstance(result.get(), original);
 
+        return result;
     } EXCEPTION_PRINT
 
     //TODO: Add to scene if game object, call Awake and so on...
-    return TPtr<Object>(nullptr);
+    return {};
 }
 
 
-void Object::DestroyImmediate(Object *obj, bool allowDestroyingAssets) {
+void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
     //TODO: Thread save
     if (obj) {
-        if (auto t = dynamic_cast<Transform *>(obj)) {
+        if (auto t = dynamic_cast<Transform *>(obj.get())) {
             if (auto g = t->gameObject()) {
-                DestroyImmediate(g.get(), allowDestroyingAssets);
+                DestroyImmediate(g, allowDestroyingAssets);
             }
         } else {
             obj->onDestroySignal(nullptr);

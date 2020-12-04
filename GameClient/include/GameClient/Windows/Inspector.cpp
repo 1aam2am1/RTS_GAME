@@ -18,8 +18,8 @@ public:
         window->Show();
     }
 
-    TPtr<Object> activeObject{this};
-    TPtr<Editor> editor{this};
+    TPtr<Object> activeObject;
+    TPtr<Editor> editor;
 
     void Update() override {
         if (Selection::activeObject != activeObject) {

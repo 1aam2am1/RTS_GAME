@@ -13,7 +13,7 @@ TPtr<Object> SerializerBase::Deserialize(std::string_view str, const nlohmann::j
 TPtr<Object> SerializerBase::Deserialize(std::type_index type, const nlohmann::json &j) {
     auto reflection = MetaData::getReflection(type);
 
-    TPtr<Object> result{nullptr};
+    TPtr<Object> result;
     result = reflection.CreateInstance();
 
     Deserialize(result, j);

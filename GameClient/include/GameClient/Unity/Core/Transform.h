@@ -142,7 +142,7 @@ public:
 
 private:
     std::vector<TPtr<Transform>> children{};
-    TPtr<Transform> m_parent{this};
+    TPtr<Transform> m_parent{};
 };
 
 

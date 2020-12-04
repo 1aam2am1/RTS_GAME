@@ -6,7 +6,7 @@
 
 TPtr<Sprite>
 Sprite::Create(TPtr<Texture2D> texture, sf::FloatRect rect, sf::Vector2f pivot, float pixelsPerUnit) {
-    TPtr<Sprite> result{nullptr, std::make_shared<Sprite>()};
+    TPtr<Sprite> result{std::make_shared<Sprite>()};
 
     result->texture = texture;
     if (result->texture) { result->s0.setTexture(result->texture->t0); }

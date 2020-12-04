@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <GameClient/TPtr.h>
+#include <GameClient/Unity/Core/Object.h>
 #include <GameApi/SetterGetter.h>
 
 class GameObject;

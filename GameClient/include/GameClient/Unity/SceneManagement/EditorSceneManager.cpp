@@ -15,7 +15,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
     //TODO: Check if only filename and load path from data
     if (!meta.is_regular_file()) {
         GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
-        return SceneManager::SceneP{nullptr, std::shared_ptr<Scene>(new Scene(0))};
+        return std::shared_ptr<Scene>{new Scene(0)};
     }
 
     auto new_id = max_id++;
@@ -44,7 +44,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         result.isLoaded = true;
     }
 
-    return SceneManager::SceneP{nullptr, std::shared_ptr<Scene>(new Scene(new_id))};
+    return std::shared_ptr<Scene>{new Scene(new_id)};
 }
 
 SceneManager::SceneP
@@ -75,7 +75,7 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
             break;
     }
 
-    return SceneManager::SceneP{nullptr, std::shared_ptr<Scene>(new Scene(new_id))};
+    return std::shared_ptr<Scene>{new Scene(new_id)};
 }
 
 bool EditorSceneManager::MarkSceneDirty(SceneManager::SceneP scene) {

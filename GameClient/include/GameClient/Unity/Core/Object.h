@@ -11,9 +11,7 @@
 #include <GameApi/GlobalLogSource.h>
 #include <GameApi/Compiler.h>
 #include "Quaternion.h"
-
-template<typename>
-class TPtr;
+#include <GameClient/TPtr.h>
 
 class Transform;
 
@@ -55,7 +53,7 @@ public:
     /// This will cause serious problems (as a general programming practice, not just in Unity).
     /// \param obj Object to be destroyed.
     /// \param allowDestroyingAssets Set to true to allow assets to be destroyed.
-    static void DestroyImmediate(Object *obj, bool allowDestroyingAssets = false);
+    static void DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets = false);
 
     /// Do not destroy the target Object when loading a new Scene.
     /// \details The load of a new Scene destroys all current Scene objects.
@@ -99,12 +97,16 @@ public:
     static Object
     Instantiate(Object original, sf::Vector3f position, Quaternion rotation, std::shared_ptr<Transform> parent);
 
+    TPtr<Object> shared_from_this();
+
+    TPtr<Object const> shared_from_this() const;
+
 #ifndef TEST
 private:
 #endif
 
     // Used in copying Object* when serializing
-    sigslot::signal<Object *> onDestroySignal{};
+    mutable sigslot::signal<Object *> onDestroySignal{};
 
     template<typename>
     friend
