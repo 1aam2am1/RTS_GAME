@@ -144,10 +144,10 @@ ImportAssetGlobal(std::string assetPath, ImportAssetOptions options) {
     std::string extension;
     if (status.is_regular_file()) {
         fs::path path = assetPath;
-        extension = path.extension().generic_string();
+        extension = path.extension().string();
     } else if (status.is_directory()) {
         fs::path path = assetPath;
-        auto parent = path.parent_path().relative_path().string();
+        auto parent = path.parent_path().relative_path().generic_string();
 
         d.dir_tree[parent].emplace(path.filename().string());
         extension = "_UNITY/D";
@@ -358,10 +358,10 @@ bool AssetDatabase::IsValidFolder(std::string path) {
 std::string AssetDatabase::GenerateUniqueAssetPath(std::string path) {
     fs::path p(path);
     p = p.lexically_normal();
-    if (p.string().substr(0, 7) != "Assets/") {
+    if (p.generic_string().substr(0, 7) != "Assets/") {
         p = fs::path("Assets") / p.string();
     }
-    if (p.string().substr(0, 7) != "Assets/") { return {}; }
+    if (p.generic_string().substr(0, 7) != "Assets/") { return {}; }
 
     auto status = fs::status(p);
     if (!fs::exists(status)) { return path; }
@@ -585,7 +585,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
 
         /// Check all files and mark as have meta or not.
         for (auto &p :fs::recursive_directory_iterator("Assets", fs::directory_options::skip_permission_denied)) {
-            auto name = p.path().relative_path().string();
+            auto name = p.path().relative_path().generic_string();
             auto extension = p.path().extension().string();
 
             if (p.is_regular_file()) {
@@ -608,7 +608,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
 
                 files[name].extension = "_UNITY/D";
 
-                auto parent = p.path().parent_path().relative_path().string();
+                auto parent = p.path().parent_path().relative_path().generic_string();
 
                 d.dir_tree[parent].emplace(p.path().filename().string());
             }
@@ -749,7 +749,7 @@ bool AssetDatabase::DeleteAsset(std::string path) {
     d.path_files.erase(path);
     {
         fs::path p = path;
-        auto parent = p.parent_path().relative_path().string();
+        auto parent = p.parent_path().relative_path().generic_string();
 
         auto f = d.dir_tree.find(parent);
         if (f != d.dir_tree.end()) {
