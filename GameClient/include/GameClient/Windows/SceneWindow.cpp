@@ -113,8 +113,7 @@ public:
             }
         }
 
-        if (clear_selection && ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) &&
-            !ImGui::IsMouseDoubleClicked(0)) {
+        if (clear_selection && ImGui::IsWindowHovered() && ImGui::IsMouseDoubleClicked(0)) {
             Selection::activeGameObject = nullptr;
             Selection::activeObject = nullptr;
             Selection::activeTransform = nullptr;
