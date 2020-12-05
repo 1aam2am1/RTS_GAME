@@ -11,6 +11,7 @@ set(SRC
         imstb_truetype.h
         imgui_stdlib.cpp
         imgui_stdlib.h
+        imgui_tables.cpp
         imgui-SFML.cpp
         imgui-SFML.h
         )
