@@ -14,6 +14,7 @@ struct GUIDFileIDPack {
 };
 
 inline void to_json(nlohmann::json &j, const GUIDFileIDPack &p) {
+    j.clear();
     j["guid"] = p.guid;
     j["fileID"] = p.id;
 }

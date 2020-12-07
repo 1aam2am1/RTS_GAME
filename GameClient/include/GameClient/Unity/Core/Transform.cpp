@@ -5,8 +5,29 @@
 #include "Transform.h"
 #include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
+#include <GameClient/Unity/Macro.h>
+
+namespace sf {
+    inline void to_json(nlohmann::json &j, const Vector3f &p) {
+        j.clear();
+        j["x"] = p.x;
+        j["y"] = p.y;
+        j["z"] = p.z;
+    }
+
+    inline void from_json(const nlohmann::json &j, Vector3f &p) {
+        j.at("x").get_to(p.x);
+        j.at("y").get_to(p.y);
+        j.at("z").get_to(p.z);
+    }
+}
+
+EXPORT_CLASS(Transform, m_localPosition, m_localRotation, m_localScale, m_parent, children);
 
 Transform::Transform() :
+        localPosition([&](auto p) { m_localPosition = p; }, [&]() { return m_localPosition; }),
+        localRotation([&](auto r) { m_localRotation = r; }, [&]() { return m_localRotation; }),
+        localScale([&](auto s) { m_localScale = s; }, [&]() { return m_localScale; }),
         parent([&](auto t) {
             SetParent(t, true);
         }, [&]() { return m_parent; }) {

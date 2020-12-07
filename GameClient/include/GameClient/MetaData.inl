@@ -88,10 +88,42 @@ struct MetaData::Register {
                     };
 
                 } else {
-                    return def();
+                    if constexpr(std::is_assignable<TU, decltype(def())>::value) {
+                        return def();
+                    } else {
+                        std::function<void(nlohmann::json)> set;
+                        std::function<nlohmann::json()> get;
+
+                        if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                            set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
+                        }
+
+                        get = [=]() -> nlohmann::json { return t->*ptr; };
+
+                        return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                                set,
+                                get
+                        };
+                    }
                 }
             } else {
-                return def();
+                if constexpr(std::is_assignable<TU, decltype(def())>::value) {
+                    return def();
+                } else {
+                    std::function<void(nlohmann::json)> set;
+                    std::function<nlohmann::json()> get;
+
+                    if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                        set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
+                    }
+
+                    get = [=]() -> nlohmann::json { return t->*ptr; };
+
+                    return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                            set,
+                            get
+                    };
+                }
             }
         };
 

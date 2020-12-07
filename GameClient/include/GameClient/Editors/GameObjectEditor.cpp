@@ -6,6 +6,7 @@
 #include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/Component.h>
+#include <Editor/EditorUtility.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
@@ -20,21 +21,24 @@ public:
     void OnInspectorGUI() override {
         auto d = dynamic_pointer_cast<GameObject>(target);
         if (!d) { return; }
+        bool dirty = false;
 
         ImGui::Checkbox("##active", &((*d.get()).*break_in(m_active())));
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(-1.0f);
-        ImGui::InputText("##name", &d->name);
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        dirty |= ImGui::InputText("##name", &d->name);
 
         //tag
         auto width = ImGui::GetWindowContentRegionWidth();
         width = width - ImGui::CalcTextSize("Tag").x - ImGui::CalcTextSize("Layer").x -
                 3.f * ImGui::GetStyle().ItemSpacing.x;
+
+        ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = ImGui::GetStyle().FramePadding.y;
         ImGui::Text("Tag");
         ImGui::SameLine();
 
         ImGui::SetNextItemWidth(width / 2.f);
-        ImGui::InputText("##tag", &d->tag);
+        dirty |= ImGui::InputText("##tag", &d->tag);
         ImGui::SameLine();
 
         //layer
@@ -42,7 +46,9 @@ public:
         ImGui::SameLine();
 
         ImGui::SetNextItemWidth(width / 2.f);
-        ImGui::InputScalar("##layer", ImGuiDataType_S64, &d->layer, nullptr, nullptr);
+        dirty |= ImGui::InputScalar("##layer", ImGuiDataType_S64, &d->layer, nullptr, nullptr);
+
+        if (dirty) { EditorUtility::SetDirty(d); }
 
         auto components = d->GetComponents<Component>();
         for (auto &c : components) {

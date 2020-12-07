@@ -14,14 +14,15 @@ Component::Component() :
 Component::~Component() = default;
 
 TPtr<GameObject> Component::gameObject() const {
-    if (!m_gameObject) { throw std::runtime_error("Wrong m_gameObject in Component"); }
-
-    return static_pointer_cast<GameObject>(m_gameObject->shared_from_this());
+    return m_gameObject;
 
 }
 
 TPtr<Transform> Component::transform() {
-    return m_gameObject->transform();
+    if (m_gameObject)
+        return m_gameObject->transform();
+
+    return {};
 }
 
 bool Component::CompareTag(std::string_view t) const noexcept {

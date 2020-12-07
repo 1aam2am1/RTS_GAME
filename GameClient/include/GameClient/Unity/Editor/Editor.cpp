@@ -45,7 +45,7 @@ bool Editor::DrawDefaultInspector() {
                         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
                     }
 
-                    ImGui::SetNextItemWidth(-1.0f);
+                    ImGui::SetNextItemWidth(-FLT_MIN);
                     if constexpr (std::is_same_v<type, int>) {
                         dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, double>) {

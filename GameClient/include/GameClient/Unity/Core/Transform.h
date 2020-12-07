@@ -38,13 +38,14 @@ public:
     //sf::Vector3f localEulerAngles;
 
     /// Position of the transform relative to the parent transform.
-    //sf::Vector3f localPosition;
+    SetterGetter<sf::Vector3f> localPosition;
 
     /// The rotation of the transform relative to the transform rotation of the parent.
+    SetterGetter<float> localRotation;
     //Quaternion localRotation;
 
     /// The scale of the transform relative to the GameObjects parent.
-    //sf::Vector3f localScale;
+    SetterGetter<sf::Vector3f> localScale;
 
     /// A Quaternion that stores the rotation of the Transform in world space.
     //Quaternion rotation;
@@ -143,6 +144,10 @@ public:
 private:
     std::vector<TPtr<Transform>> children{};
     TPtr<Transform> m_parent{};
+
+    sf::Vector3f m_localPosition;
+    sf::Vector3f m_localScale;
+    float m_localRotation;
 };
 
 
