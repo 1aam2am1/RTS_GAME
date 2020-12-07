@@ -106,7 +106,7 @@ set(SRC
         include/GameClient/Editors/ObjectEditor.cpp
         include/GameClient/Editors/TextEditor.cpp
         include/GameClient/Editors/TextureEditor.cpp
-        include/GameClient/Windows/SceneWindow.cpp
+        include/GameClient/Windows/HierarchyWindow.cpp
         include/GameClient/Unity/Editor/Application.cpp
         include/GameClient/Unity/Editor/Application.h
         include/GameClient/Unity/Serialization/SceneSerializer.cpp

@@ -149,7 +149,7 @@ public:
     static sigslot::signal<SceneP> sceneUnloaded;
 
 protected:
-    friend class SceneWindow;
+    friend class HierarchyWindow;
 
     friend class Scene;
 

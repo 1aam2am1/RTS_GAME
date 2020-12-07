@@ -8,18 +8,20 @@
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/WindowLayout.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
-#include <GameClient/Unity/SceneManagement/Scene.h>
 #include <imgui.h>
-#include <GameClient/TPtr.h>
 
-class SceneWindow : public EditorWindow {
+class HierarchyWindow : public EditorWindow {
 public:
 
     static void Init() {
         // Get existing open window or if none, make a new one:
-        auto window = EditorWindow::GetWindow<SceneWindow>();
+        auto window = EditorWindow::GetWindow<HierarchyWindow>();
         WindowLayout::dockWindow(WindowLayout::Left, window);
         window->Show();
+    }
+
+    void Awake() override {
+        titleContent = "Hierarchy";
     }
 
     void OnGUI() override {
@@ -122,8 +124,8 @@ public:
     }
 };
 
-MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 3);
+MENU_ITEM(HierarchyWindow::Init, "Window/General/Scene", 3);
 
 #if UNITY_EDITOR
-INITIALIZE_FUNC(SceneWindow::Init());
+INITIALIZE_FUNC(HierarchyWindow::Init());
 #endif
