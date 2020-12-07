@@ -25,9 +25,9 @@ int main(int argc, char **argv) {
                                   static_cast<int>(sizeof(void *) * 8)));
         }
 
-        Initializer::initialize();
         MainWindow window(options);
         FontLoader{options};
+        Initializer::initialize();
 
 #if UNITY_EDITOR
         fs::create_directory("Assets");

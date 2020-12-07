@@ -9,21 +9,21 @@
 
 #include <vector>
 
-#if __cplusplus <= 201703L
+//#if __cplusplus <= 201703L
 
 template<typename T>
 class reverse {
 private:
-    T &iterable;
+    const T &iterable;
 public:
-    explicit reverse(T &iterable) : iterable{iterable} {}
+    constexpr explicit reverse(T &iterable) noexcept: iterable{iterable} {}
 
-    auto begin() const { return std::rbegin(iterable); }
+    constexpr auto begin() const noexcept { return std::rbegin(iterable); }
 
-    auto end() const { return std::rend(iterable); }
+    constexpr auto end() const noexcept { return std::rend(iterable); }
 };
 
-#endif
+//#endif
 
 #endif //RTS_GAME_REVERSE_H
 

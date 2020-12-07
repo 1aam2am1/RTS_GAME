@@ -5,32 +5,236 @@
 #include "WindowLayout.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imconfig.h>
+#include <GameApi/reverse.h>
 
 constexpr std::string_view dock_name = "###GLOBAL_DOCK";
-ImU32 globalDockId = ImHashStr(dock_name.data(), dock_name.length(), 0);
-
-/// = {dock_id_left, dock_id_right, dock_id_center, dock_id_up, dock_id_bottom};
-ImGuiID dock[5] = {globalDockId, globalDockId, globalDockId, globalDockId, globalDockId};
+ImGuiID globalDockId = ImHashStr(dock_name.data(), dock_name.length(), 0);
+static std::vector<std::string> place[5];
 
 void WindowLayout::dockWindow(WindowLayout::Align align, TPtr<EditorWindow> ptr) {
     if (align > 5) { align = Align::Center; }
-    return;
-    //TODO: Docking not working repair this.
-    if (ImGuiWindow *window = ImGui::FindWindowByName(ptr->imGuiName.c_str())) {
-        auto node = ImGui::DockBuilderGetNode(dock[align]);
-        //TODO: if window->DockNode then dock node to main_node
-        //TODO: if node == nullptr create node and then dock node
-        if (window->DockId != dock[align] && node != nullptr && !node->IsFloatingNode())
-            ImGui::DockContextQueueDock(ImGui::GetCurrentContext(), nullptr, node,
-                                        window,
-                                        ImGuiDir_None, 0.f, false);
-    } else {
-        auto node = ImGui::DockBuilderGetNode(dock[align]);
-        if (node)
-            ImGui::DockBuilderDockWindow(ptr->imGuiName.c_str(), dock[align]);
+    if (!ptr) { return; }
+
+    auto globalNode = ImGui::DockBuilderGetNode(globalDockId);
+    if (!globalNode) {
+        place[align].emplace_back(ptr->imGuiName);
+        return;
     }
-    //TODO: DockBuilderDockWindow don't work on existing windows therefore it is not possible to dock
-    // existing window to node that could be in unusable state.
+
+    std::list<WindowLayout::Align> old; //i'm from * site
+    std::function<ImGuiID(ImGuiDockNode *, WindowLayout::Align)> get_node =
+            [&get_node, &old](ImGuiDockNode *globalNode, WindowLayout::Align align) -> ImGuiID {
+                IM_ASSERT(globalNode != nullptr);
+
+                if (globalNode->IsSplitNode()) {
+                    IM_ASSERT(globalNode->ChildNodes[0]);
+                    IM_ASSERT(globalNode->ChildNodes[1]);
+
+                    if (globalNode->SplitAxis == ImGuiAxis_X) {
+                        auto split_0 = globalNode->ChildNodes[0]->IsSplitNode();
+                        auto split_1 = globalNode->ChildNodes[1]->IsSplitNode();
+                        switch (align) {
+                            case Left: {
+                                if (!split_0) { return globalNode->ChildNodes[0]->ID; }
+
+                                old.emplace_back(Right);
+                                return get_node(globalNode->ChildNodes[0], Left);
+                            }
+                            case Right: {
+                                if (!split_1) { return globalNode->ChildNodes[1]->ID; }
+
+                                old.emplace_back(Left);
+                                return get_node(globalNode->ChildNodes[1], Right);
+                            }
+                            case Up: {
+                                if (split_0) {
+                                    old.emplace_back(Right);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Left);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ID, ImGuiDir_Up, 0.25f, nullptr,
+                                                                       nullptr);
+                                } else {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                            }
+                            case Down: {
+                                if (split_0) {
+                                    old.emplace_back(Right);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Left);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ID, ImGuiDir_Down, 0.25f, nullptr,
+                                                                       nullptr);
+                                } else {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                            }
+                            case Center: {
+                                if (split_0) {
+                                    old.emplace_back(Right);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Left);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Right,
+                                                                       0.25f,
+                                                                       nullptr,
+                                                                       nullptr);
+                                }
+                                if (old.back() == Left) {
+                                    return globalNode->ChildNodes[1]->ID;
+                                }
+                                if (old.back() == Right) {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                                for (auto c : reverse(old)) {
+                                    if (c == Left) {
+                                        return globalNode->ChildNodes[0]->ID;
+                                    }
+                                    if (c == Right) {
+                                        return globalNode->ChildNodes[1]->ID;
+                                    }
+                                }
+                                return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Right,
+                                                                   0.25f,
+                                                                   nullptr,
+                                                                   nullptr);
+                            }
+                        }
+                    } else { //y
+                        auto split_0 = globalNode->ChildNodes[0]->IsSplitNode();
+                        auto split_1 = globalNode->ChildNodes[1]->IsSplitNode();
+                        switch (align) {
+                            case Up: {
+                                if (!split_0) { return globalNode->ChildNodes[0]->ID; }
+
+                                old.emplace_back(Down);
+                                return get_node(globalNode->ChildNodes[0], Up);
+                            }
+                            case Down: {
+                                if (!split_1) { return globalNode->ChildNodes[1]->ID; }
+
+                                old.emplace_back(Up);
+                                return get_node(globalNode->ChildNodes[1], Down);
+                            }
+                            case Left: {
+                                if (split_0) {
+                                    old.emplace_back(Down);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Up);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ID, ImGuiDir_Left, 0.25f, nullptr,
+                                                                       nullptr);
+                                } else {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                            }
+                            case Right: {
+                                if (split_0) {
+                                    old.emplace_back(Down);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Up);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ID, ImGuiDir_Right, 0.25f, nullptr,
+                                                                       nullptr);
+                                } else {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                            }
+                            case Center: {
+                                if (split_0) {
+                                    old.emplace_back(Down);
+                                    return get_node(globalNode->ChildNodes[0], align);
+                                }
+                                if (split_1) {
+                                    old.emplace_back(Up);
+                                    return get_node(globalNode->ChildNodes[1], align);
+                                }
+                                if (old.empty()) {
+                                    return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Down,
+                                                                       0.25f,
+                                                                       nullptr,
+                                                                       nullptr);
+                                }
+                                if (old.back() == Up) {
+                                    return globalNode->ChildNodes[1]->ID;
+                                }
+                                if (old.back() == Down) {
+                                    return globalNode->ChildNodes[0]->ID;
+                                }
+                                for (auto c : reverse(old)) {
+                                    if (c == Up) {
+                                        return globalNode->ChildNodes[0]->ID;
+                                    }
+                                    if (c == Down) {
+                                        return globalNode->ChildNodes[1]->ID;
+                                    }
+                                }
+                                return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Down,
+                                                                   0.25f,
+                                                                   nullptr,
+                                                                   nullptr);
+                            }
+                        }
+                    }
+                } else if (!old.empty()) {
+                    return globalNode->ID;
+                } else {
+                    switch (align) {
+                        case Left:
+                            return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Left,
+                                                               0.25f,
+                                                               nullptr,
+                                                               nullptr);
+                        case Right:
+                            return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Right,
+                                                               0.25f,
+                                                               nullptr,
+                                                               nullptr);
+                        case Up:
+                            return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Up,
+                                                               0.25f,
+                                                               nullptr,
+                                                               nullptr);
+                        case Down:
+                            return ImGui::DockBuilderSplitNode(globalNode->ChildNodes[0]->ID, ImGuiDir_Down,
+                                                               0.25f,
+                                                               nullptr,
+                                                               nullptr);
+                        case Center:
+                            return globalNode->ID;
+                    }
+                }
+
+                IM_ASSERT(false);//< It won't happen
+                return 0;
+            };
+
+    auto node = get_node(globalNode, align);
+
+    ImGui::DockBuilderDockWindow(ptr->imGuiName.data(), node);
+    ImGui::DockBuilderFinish(0);
 }
 
 
@@ -68,17 +272,34 @@ void WindowLayout::drawLayout() {
 
         ImGuiID dock_main_id = globalDockId; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
         // Inspector space
-        dock[1] = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, nullptr,
-                                              &dock_main_id);
-        // Assets, Console space
-        dock[4] = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.35f, nullptr,
-                                              &dock_main_id);
-        // Hierarchy space
-        dock[0] = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.35f, nullptr,
-                                              &dock_main_id);
+        auto right = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Right, 0.25f, nullptr,
+                                                 &dock_main_id);
+        for (auto &window : place[Right]) {
+            ImGui::DockBuilderDockWindow(window.data(), right);
+        }
 
-        dock[2] = dock_main_id;
-        dock[3] = dock_main_id;
+        // Assets, Console space
+        auto down = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.35f, nullptr,
+                                                &dock_main_id);
+
+        for (auto &window : place[Down]) {
+            ImGui::DockBuilderDockWindow(window.data(), down);
+        }
+
+        // Hierarchy space
+        auto left = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.35f, nullptr,
+                                                &dock_main_id);
+
+        for (auto &window : place[Left]) {
+            ImGui::DockBuilderDockWindow(window.data(), left);
+        }
+
+        for (auto &window : place[Up]) {
+            ImGui::DockBuilderDockWindow(window.data(), dock_main_id);
+        }
+        for (auto &window : place[Center]) {
+            ImGui::DockBuilderDockWindow(window.data(), dock_main_id);
+        }
 
         ImGui::DockBuilderFinish(globalDockId);
     }
