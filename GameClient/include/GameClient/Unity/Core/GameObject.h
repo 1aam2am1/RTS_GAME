@@ -35,9 +35,6 @@ class GameObject : public Object {
 
     friend TPtr<GameObject> newGameObject(std::string);
 
-    template<typename... Args>
-    friend TPtr<GameObject> newGameObject(std::string);
-
     GameObject();
 
     /// Creates a new game object, named \b name.

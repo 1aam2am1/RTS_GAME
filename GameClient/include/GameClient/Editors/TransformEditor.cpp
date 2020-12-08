@@ -31,7 +31,7 @@ public:
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = ImGui::GetStyle().FramePadding.y;
+            ImGui::AlignTextToFramePadding();
             ///row1
             ImGui::Text("Position");
             ImGui::TableNextColumn();
@@ -55,7 +55,7 @@ public:
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = ImGui::GetStyle().FramePadding.y;
+            ImGui::AlignTextToFramePadding();
             ///row2
             ImGui::Text("Rotation");
             ImGui::TableNextColumn();
@@ -69,7 +69,7 @@ public:
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = ImGui::GetStyle().FramePadding.y;
+            ImGui::AlignTextToFramePadding();
             //row3
             ImGui::Text("Scale");
             ImGui::TableNextColumn();

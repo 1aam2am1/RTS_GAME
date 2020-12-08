@@ -10,10 +10,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
+#include <Core/Behaviour.h>
 
-DEFINE_BREAK_IN_CLASS()
-
-DEFINE_BREAK_IN(, m_active, &GameObject::m_active)
 
 class GameObjectEditor : public Editor {
 public:
@@ -23,7 +21,12 @@ public:
         if (!d) { return; }
         bool dirty = false;
 
-        ImGui::Checkbox("##active", &((*d.get()).*break_in(m_active())));
+        {
+            bool b = d->activeSelf();
+            dirty |= ImGui::Checkbox("##active", &b);
+            if (dirty) { d->SetActive(b); }
+        }
+
         ImGui::SameLine();
         ImGui::SetNextItemWidth(-FLT_MIN);
         dirty |= ImGui::InputText("##name", &d->name);
@@ -33,7 +36,7 @@ public:
         width = width - ImGui::CalcTextSize("Tag").x - ImGui::CalcTextSize("Layer").x -
                 3.f * ImGui::GetStyle().ItemSpacing.x;
 
-        ImGui::GetCurrentWindow()->DC.CurrLineTextBaseOffset = ImGui::GetStyle().FramePadding.y;
+        ImGui::AlignTextToFramePadding();
         ImGui::Text("Tag");
         ImGui::SameLine();
 
@@ -55,9 +58,24 @@ public:
             std::type_index type = typeid(*c.get());
             auto reflection = MetaData::getReflection(type);
 
-            std::string key{reflection.name};
-            key += "##" + GameApi::to_string(c.get());
-            if (ImGui::CollapsingHeader(key.data())) {
+            bool open = ImGui::CollapsingHeader(("##" + GameApi::to_string(c.get())).data(),
+                                                ImGuiTreeNodeFlags_DefaultOpen); //ImGuiTreeNodeFlags_OpenOnArrow
+            ImGui::SameLine();
+
+            auto behaviour = dynamic_pointer_cast<Behaviour>(c);
+            if (behaviour) {
+                ImGui::Checkbox("##behaviour", &behaviour->enabled);
+            } else {
+                auto total_bb = ImVec2(ImGui::GetFrameHeight(),
+                                       ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f);
+
+                ImGui::InvisibleButton("##behaviour", total_bb);
+            }
+
+            ImGui::SameLine();
+            ImGui::Text("%s", reflection.name.data());
+
+            if (open) {
                 TPtr<Editor> editor;
                 Editor::CreateCachedEditor(c, editor, type);
 

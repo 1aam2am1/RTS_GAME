@@ -120,6 +120,12 @@ set(SRC
         include/GameClient/GuidFileIdPack.h
         include/GameClient/Editors/GameObjectEditor.cpp
         include/GameClient/Editors/TransformEditor.cpp
+        include/GameClient/Unity/Editor/DragAndDrop.cpp
+        include/GameClient/Unity/Editor/DragAndDrop.h
+        include/GameClient/Windows/DragDropWindow.cpp
+        include/GameClient/Windows/DragDropWindow.h
+        include/GameClient/imgui_custom.cpp
+        include/GameClient/imgui_custom.h
         )
 
 add_executable(GameClient ${SRC})

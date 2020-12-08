@@ -180,3 +180,12 @@ void EditorWindow::drawGui() {
             break;
     }
 }
+
+bool EditorWindow::HasOpenInstances(std::type_index t) {
+    for (auto &it : get_open_windows()) {
+        if (it && t == typeid(*it)) {
+            return true;
+        }
+    }
+    return false;
+}

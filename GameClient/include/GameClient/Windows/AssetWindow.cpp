@@ -11,6 +11,7 @@
 #include "GameClient/IconsFontAwesome5_c.h"
 #include <filesystem>
 #include <GameClient/Unity/Editor/Selection.h>
+#include <Editor/DragAndDrop.h>
 
 MENU_ITEM(AssetWindow::Init, "Window/General/Project", 5)
 
@@ -122,9 +123,20 @@ void AssetWindow::display_files() {
 
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
     for (size_t n = 0; n < objects.size(); n++) {
-        ImGui::Button(objects[n].data(), button_sz);
-        bool clicked = ImGui::IsItemClicked();
+
+        bool clicked = ImGui::Button(objects[n].data(), button_sz);
         bool double_clicked = ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered();
+
+
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) {
+            DragAndDrop::PrepareStartDrag();
+
+            auto main = AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]);
+            if (main) { DragAndDrop::SetGenericData("OBJECT", main); }
+            DragAndDrop::paths.emplace_back(root + "/" + objects[n]);
+
+            DragAndDrop::StartDrag(objects[n]);
+        }
 
         if (clicked) {
             auto guid = AssetDatabase::AssetPathToGUID(root + "/" + objects[n]);

@@ -3,3 +3,10 @@
 //
 
 #include "Behaviour.h"
+#include <GameClient/Unity/Macro.h>
+
+EXPORT_CLASS(Behaviour, enabled)
+
+bool Behaviour::isActiveAndEnabled() const {
+    return enabled && gameObject()->activeInHierarchy();
+}

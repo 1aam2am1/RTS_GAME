@@ -19,7 +19,7 @@ public:
     /// \note A GameObject can be active or not active. Similarly, a script can be enabled or disabled.
     /// If a GameObject is active and has an enabled script then isActiveAndEnabled will return true.
     /// Otherwise false is returned.
-    bool isActiveAndEnabled;
+    [[nodiscard]] bool isActiveAndEnabled() const;
 };
 
 
