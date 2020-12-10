@@ -107,8 +107,8 @@ set(SRC
         include/GameClient/Editors/TextEditor.cpp
         include/GameClient/Editors/TextureEditor.cpp
         include/GameClient/Windows/HierarchyWindow.cpp
-        include/GameClient/Unity/Editor/Application.cpp
-        include/GameClient/Unity/Editor/Application.h
+        include/GameClient/Unity/Core/Application.cpp
+        include/GameClient/Unity/Core/Application.h
         include/GameClient/Unity/Serialization/SceneSerializer.cpp
         include/GameClient/Unity/Serialization/SceneSerializer.h
         include/GameClient/Unity/SceneManagement/EditorSceneManager.cpp
@@ -126,6 +126,14 @@ set(SRC
         include/GameClient/Windows/DragDropWindow.h
         include/GameClient/imgui_custom.cpp
         include/GameClient/imgui_custom.h
+        include/GameClient/Windows/SceneWindow.cpp
+        include/GameClient/Windows/GameWindow.cpp
+        include/GameClient/Unity/Editor/EditorApplication.cpp
+        include/GameClient/Unity/Editor/EditorApplication.h
+        include/GameClient/GameLoop.cpp
+        include/GameClient/GameLoop.h
+        include/GameClient/Unity/Core/Time.cpp
+        include/GameClient/Unity/Core/Time.h
         )
 
 add_executable(GameClient ${SRC})

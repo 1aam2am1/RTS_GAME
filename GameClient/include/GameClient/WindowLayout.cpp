@@ -7,6 +7,8 @@
 #include <imgui_internal.h>
 #include <imconfig.h>
 #include <GameApi/reverse.h>
+#include <GameClient/IconsFontAwesome5_c.h>
+#include <Editor/EditorApplication.h>
 
 constexpr std::string_view dock_name = "###GLOBAL_DOCK";
 ImGuiID globalDockId = ImHashStr(dock_name.data(), dock_name.length(), 0);
@@ -256,6 +258,9 @@ void WindowLayout::drawLayout() {
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     window_flags |= ImGuiWindowFlags_NoBackground;
 
+#if UNITY_EDITOR
+    window_flags |= ImGuiWindowFlags_MenuBar;
+#endif
     // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
     // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
     // all active windows docked into it will lose their parent and become undocked.
@@ -264,6 +269,72 @@ void WindowLayout::drawLayout() {
     ImGui::Begin("GLOBAL_DOCK_SPACE", nullptr, window_flags);
 
     ImGui::PopStyleVar(3);
+
+#if UNITY_EDITOR
+    if (ImGui::BeginMenuBar()) {
+        auto pos = ImGui::GetWindowWidth() - 3 * 35;
+        pos /= 2.0f;
+
+        ImVec2 LocalButtonSize = {35, 19};
+        if (pos < ImGui::GetCursorPosX()) {
+            pos = ImGui::GetCursorPosX();
+            LocalButtonSize = {0, 0};
+        }
+
+        ImGui::SetCursorPosX(pos);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0, 0});
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+
+        auto disabled_push = []() {
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+        };
+
+        auto disabled_pop = []() {
+            ImGui::PopItemFlag();
+            ImGui::PopStyleVar();
+        };
+
+        auto enabled_push = []() {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImGui::GetStyle().Colors[ImGuiCol_ButtonActive]);
+        };
+
+        auto enabled_pop = []() {
+            ImGui::PopStyleColor();
+        };
+
+        {
+            bool playing = EditorApplication::isPlaying;
+            if (playing) { enabled_push(); }
+
+            if (ImGui::Button(ICON_FA_PLAY "##play", LocalButtonSize)) {
+                EditorApplication::isPlaying = !EditorApplication::isPlaying;
+            }
+
+            if (playing) { enabled_pop(); }
+        }
+        {
+            bool paused = EditorApplication::isPaused;
+            if (paused) { enabled_push(); }
+
+            if (ImGui::Button(ICON_FA_PAUSE "##pause", LocalButtonSize)) {
+                EditorApplication::isPaused = !EditorApplication::isPaused;
+            }
+
+
+            if (paused) { enabled_pop(); }
+        }
+        {
+            disabled_push();
+            ImGui::Button(ICON_FA_STEP_FORWARD "##step", LocalButtonSize);
+            disabled_pop();
+        }
+
+        ImGui::PopStyleVar(2);
+
+        ImGui::EndMenuBar();
+    }
+#endif
 
     if (ImGui::DockBuilderGetNode(globalDockId) == nullptr) {
         ImGui::DockBuilderRemoveNode(globalDockId); // Clear out existing layout

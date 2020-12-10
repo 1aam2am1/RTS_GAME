@@ -146,7 +146,7 @@ private:
     TPtr<Transform> m_parent{};
 
     sf::Vector3f m_localPosition;
-    sf::Vector3f m_localScale;
+    sf::Vector3f m_localScale{1.f, 1.f, 1.f};
     float m_localRotation;
 };
 

@@ -23,6 +23,8 @@ private:
 
     friend class Transform;
 
+    friend class GameObject;
+
     const uint64_t id;
 
     explicit Scene(uint64_t id);

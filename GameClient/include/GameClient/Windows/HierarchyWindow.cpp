@@ -102,7 +102,7 @@ public:
                     if (open) { ImGui::TreePop(); }
                 };
                 //for all child game objects
-                for (auto &it2 : it.second.objects) {
+                for (auto &it2 : it.second.root) {
                     printAll(it2);
                 }
 

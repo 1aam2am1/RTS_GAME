@@ -81,9 +81,9 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
                                               }));
     } else {
         auto gm = gameObject();
-        auto &objects = SceneManager::data[gm->scene.get()->id].objects;
-        objects.erase(
-                std::find_if(objects.begin(), objects.end(),
+        auto &root = SceneManager::data[gm->scene.get()->id].root;
+        root.erase(
+                std::find_if(root.begin(), root.end(),
                              [&](auto &it) {
                                  return gm == it;
                              }));
@@ -93,7 +93,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
         new_parent->children.emplace_back(shared_from_this());
     } else {
         // add object to root
-        SceneManager::data[gameObject()->scene.get()->id].objects.emplace_back(gameObject());
+        SceneManager::data[gameObject()->scene.get()->id].root.emplace_back(gameObject());
     }
 
     m_parent = new_parent;
@@ -103,11 +103,11 @@ void Transform::DetachChildren() {
     auto old_children = children;
     children.clear();
 
-    auto &objects = SceneManager::data[gameObject()->scene.get()->id].objects;
+    auto &root = SceneManager::data[gameObject()->scene.get()->id].root;
     for (auto it : old_children) {
         if (!it->m_parent) { continue; }
 
         it->m_parent = nullptr;
-        objects.emplace_back(it->gameObject());
+        root.emplace_back(it->gameObject());
     }
 }

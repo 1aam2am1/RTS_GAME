@@ -34,19 +34,10 @@ MainWindow::~MainWindow() {
     ImGui::SFML::Shutdown();
 }
 
-//ImGui::ShowDemoWindow();
 void MainWindow::run() {
     sf::Clock deltaClock;
 
     while (window.isOpen()) {
-        /**
-         * Phisics
-         *
-         */
-
-        /**
-         * Events
-         */
         sf::Event event{};
         lastEvents.clear();
         while (window.pollEvent(event)) {
@@ -56,15 +47,18 @@ void MainWindow::run() {
                 window.close();
             }
 
-            lastEvents.push_back(event);
+            lastEvents.emplace_back(event);
         }
 
         ImGui::SFML::Update(window, deltaClock.restart()); /// ImGui Io events eating
 
         WindowLayout::drawLayout(); /// Set basic layout and global dock window
 
+        game.run(); /// Before editors because this changes Time.deltaTime
+
         ///No for each as windows can change
         ///TODO: Change this as adding to different list and adding it on end after drawing all.
+        ///TODO: Current implementation has iterator leak when get_open_windows resizing.
         {
             auto &windows = EditorWindow::get_open_windows();
 
@@ -86,18 +80,6 @@ void MainWindow::run() {
                 }
             }
         }
-
-        /**
-         * Game logic
-         */
-
-        /**
-         * Render game scene to render texture
-         */
-
-        /**
-         * Future onGui
-         */
 
         window.clear();
         ImGui::SFML::Render(window);

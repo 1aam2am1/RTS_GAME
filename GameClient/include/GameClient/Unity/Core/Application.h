@@ -9,11 +9,13 @@
 class Application {
 public:
 
-    /// Returns true when called in any kind of built Player, or when called in the Editor in Play Mode
+    /// Returns true when called in any kind of built Player, or when called in the Editor in Play Mode (Read Only)
 #if UNITY_EDITOR
-    static bool isPlaying;
+
+    static bool isPlaying();
+
 #else
-    static constexpr bool isPlaying = true;
+    static constexpr bool isPlaying() { return true; }
 #endif
 
     /// Are we running inside the Unity editor? (Read Only)

@@ -15,7 +15,7 @@ bool Scene::isDirty() {
 }
 
 const std::vector<TPtr<GameObject>> &Scene::getRootGameObjects() const noexcept {
-    return SceneManager::data[id].objects;
+    return SceneManager::data[id].root;
 }
 
 int Scene::buildIndex() {

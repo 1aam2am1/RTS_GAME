@@ -12,6 +12,7 @@ EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active,
 TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());
     i->scene = SceneManager::GetActiveScene();
+    auto _ = i->transform(); ///< Create transform
 
     return i;
 }
@@ -19,6 +20,7 @@ TPtr<GameObject> newGameObject() {
 TPtr<GameObject> newGameObject(std::string name) {
     auto i = std::shared_ptr<GameObject>(new GameObject(name));
     i->scene = SceneManager::GetActiveScene();
+    auto _ = i->transform(); ///< Create transform
 
     return i;
 }
@@ -67,11 +69,12 @@ bool GameObject::activeSelf() const {
 }
 
 void GameObject::SetActive(bool value) noexcept {
+    ///TODO: Activate unactivated scripts if there are some
     m_active = value;
 }
 
-bool GameObject::CompareTag(std::string_view tag) const noexcept {
-    return this->tag == tag;
+bool GameObject::CompareTag(std::string_view t) const noexcept {
+    return this->tag == t;
 }
 
 TPtr<Transform> GameObject::transform() const {
@@ -79,7 +82,7 @@ TPtr<Transform> GameObject::transform() const {
         const_cast<GameObject *>(this)->AddComponent<Transform>();
     }
 
-    auto result = static_pointer_cast<Transform>(components[0]);
+    auto result = dynamic_pointer_cast<Transform>(components[0]); //Can be static_pointer_cast
 
     if (components.empty() || result.expired()) {
         GameApi::log(ERR.fmt("First component should be transform"));

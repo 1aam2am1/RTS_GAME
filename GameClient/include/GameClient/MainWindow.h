@@ -10,9 +10,8 @@
 #include <vector>
 #include <list>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include "GameLoop.h"
 
-
-class GameWindow;
 
 class MainWindow {
 public:
@@ -27,8 +26,7 @@ private:
 
 private:
     std::vector<sf::Event> lastEvents;
-
-    friend GameWindow;
+    GameLoop game;
 };
 
 

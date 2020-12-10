@@ -47,13 +47,16 @@ TPtr<T> GameObject::AddComponent() {
     //TODO: !!! Awake of Component when game running !!!
     result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
 
+    SceneManager::data[scene()->id].new_components.emplace_back(
+            static_pointer_cast<Component>(shared_from_this()));
+
     if constexpr (has_fieldAwake_v<T>) {
         auto pointer = result.get();
         auto f = [pointer]() {
             static_cast<T *>(pointer)->Awake();
         };
 
-        if (Application::isPlaying && activeInHierarchy()) {
+        if (Application::isPlaying() && activeInHierarchy()) {
             f();
         } else {
             to_awake.emplace(result, f);

@@ -6,13 +6,13 @@
 #define RTS_GAME_SCENEMANAGER_H
 
 #include <SceneManagement/Scene.h>
-#include <GameClient/Unity/Core/GameObject.h>
 #include <string_view>
 #include <memory>
 #include <GameClient/Unity/Yield/AsyncOperation.h>
 #include <map>
 #include "GameClient/TPtr.h"
 
+class GameObject;
 
 /// Scene management at run-time.
 class SceneManager {
@@ -155,16 +155,24 @@ protected:
 
     friend class Transform;
 
+    friend class GameObject;
+
+    friend class GameLoop;
+
     struct Data {
         int buildIndex = 0;
         bool isValid = false;
         bool isLoaded = false;
         std::string name = []() { return "Scene " + GameApi::to_string(max_id); }();
         std::string path{};
+        std::vector<TPtr<GameObject>> root{};
         std::vector<TPtr<GameObject>> objects{};
+        std::vector<TPtr<Component>> components{};
+        std::vector<TPtr<Component>> new_components{};
         //TODO: root and objects/all
         //TODO: New objects => start
         //TODO: New components start?
+        //TODO: !!! Think about it and reformat
     };
 
     static bool LoadSceneFull(Data &, std::string_view);

@@ -11,6 +11,7 @@
 #include <GameClient/Unity/Serialization/SceneSerializer.h>
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GuidFileIdPack.h>
+#include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/MainThread.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <cinttypes>
@@ -28,7 +29,7 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     {
         //check if root
         auto t = go->transform();
-        if (t != t->root()) {
+        if (t->parent().get() != nullptr) {
             GameApi::log(ERR.fmt("GameObject should be root"));
             return;
         }
@@ -37,47 +38,34 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     if (!scene) {
         throw std::runtime_error("Scene should exists");//#2
     }
-    if (!scene->isValid() && scene->id != active_scene) {
-        throw std::runtime_error("Scene should exists");//#3
+    if (!scene->isValid()) {
+        throw std::runtime_error("Scene should be valid");//#3
+    }
+    if (!scene->isLoaded()) {
+        throw std::runtime_error("Scene should be loaded");
     }
     auto new_scene_id = scene->id;
-    if (!scene->isValid() && scene->id == active_scene) {
-        if (active_scene != 0 || (go->scene.get() && go->scene.get()->isValid())) {
-            GameApi::log(ERR.fmt("Active scene is not valid and ( active_scene != 0 || go->scene->isValid())"));
-            std::terminate(); //< Should never happen #4
-        } else {
-            //here all scenes should be invalid
-            new_scene_id = max_id++; //#5
-            active_scene = new_scene_id;
-        }
+
+    if (go->scene.get() && go->scene.get()->isValid()) {
+        GameApi::log(ERR.fmt("Game object scene is invalid. It should not happen"));
+        std::terminate(); //< Should never happen #4
     }
 
     auto old_scene = go->scene.get();
     if (old_scene) {
-        auto it = data.find(old_scene->id);
-
-        if (it != data.end()) {
-            auto data_it = std::find_if(it->second.objects.begin(), it->second.objects.end(), [&](auto i) {
-                return i == go;
-            });
-
-            it->second.objects.erase(data_it);
-        }
+        auto &root = data[old_scene->id].root;
+        root.erase(std::find_if(root.begin(), root.end(), [&](auto i) {
+            return i == go;
+        }));
     }
 
     {
-        auto it = data.find(new_scene_id);
-
-        if (it != data.end()) {
-            it->second.objects.emplace_back(go);
-            it->second.isValid = true;
-        } else {
-            auto &new_scene = data[new_scene_id];
-            new_scene.isValid = true;
-            new_scene.isLoaded = true;
-
-            new_scene.objects.emplace_back(go);
-        }
+        //Scene should exists
+        //auto it = data.find(new_scene_id);
+        auto &root = data[new_scene_id].root;
+        root.emplace_back(go);
+        //it->second.isValid = true;
+        //it->second.isLoaded = true;
 
         go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
     }
@@ -111,6 +99,7 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             if (object_type == "Prefab") {
                 //TODO: Load prefab
             } else {
+                //TODO: If gameobject then new GameObject, becouse new(...), adds to active scene
                 auto obj = serializer.Deserialize(object_type, object_value);
                 objects.emplace(id, obj);
             }
@@ -171,7 +160,17 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             auto ob = v.get<GUIDFileIDPack>(); ///< GUIDFileIDPack
             auto it = objects.find(ob.id);
             if (it != objects.end()) {
-                d.objects.emplace_back(dynamic_pointer_cast<GameObject>(it->second));
+                auto gm = dynamic_pointer_cast<GameObject>(it->second);
+                if (gm) {
+                    if (gm->transform()->parent().get() != nullptr) {
+                        d.root.emplace_back(gm);
+                    } else {
+                        //It should not have parent, but we check
+                        GameApi::log(ERR.fmt("Game object {guid: %s, fileID: %" PRIu64 "} "
+                                             "have parent, but is root", ob.guid.operator std::string().data(),
+                                             ob.id));
+                    }
+                }
             } else {
                 GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.guid.operator std::string().data(), ob.id));
@@ -247,5 +246,11 @@ int SceneManager::sceneCount() {
 }
 
 SceneManager::SceneP SceneManager::GetActiveScene() {
+    if (!(data[active_scene].isValid)) {
+        //Should only happen when there isn't any scene
+        active_scene = max_id++;
+        data[active_scene].isValid = true;
+        data[active_scene].isLoaded = true;
+    }
     return std::shared_ptr<Scene>(new Scene(active_scene));
 }
