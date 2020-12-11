@@ -6,6 +6,7 @@
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
+#include <GameClient/Unity/Core/MonoBehaviour.h>
 
 EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components, m_scene)
 
@@ -69,8 +70,21 @@ bool GameObject::activeSelf() const {
 }
 
 void GameObject::SetActive(bool value) noexcept {
-    ///TODO: Activate unactivated scripts if there are some
-    m_active = value;
+    if (m_active != value) {
+        m_active = value;
+
+        for (auto &c : components) {
+            auto mono = dynamic_cast<MonoBehaviour *>(c.get());
+            if (mono) {
+                if (value) {
+                    mono->internalAwake();
+                    mono->OnEnable();
+                } else {
+                    mono->OnDisable();
+                }
+            }
+        }
+    }
 }
 
 bool GameObject::CompareTag(std::string_view t) const noexcept {
@@ -87,6 +101,42 @@ TPtr<Transform> GameObject::transform() const {
     if (components.empty() || result.expired()) {
         GameApi::log(ERR.fmt("First component should be transform"));
         std::terminate();
+    }
+
+    return result;
+}
+
+TPtr<Component> GameObject::AddComponent(std::type_index type) {
+    auto reflection = MetaData::getReflection(type);
+    auto result = reflection.CreateInstance();
+    return AddComponent(result);
+}
+
+TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
+    if (result.expired()) { return {}; }
+    {
+        auto t = dynamic_pointer_cast<Transform>(result);
+        if (t && !components.empty()) {
+            GameApi::log(ERR.fmt("Transform should be one for game object"));
+            return transform();
+        }
+        if (!t && components.empty()) {
+            auto discard = transform(); //< Adds transform to game object
+        }
+    }
+
+    //TODO: Check meta if there is flag only one and then check if there exists
+    components.emplace_back(result);
+
+    //TODO: !!! Awake of Component when game running !!!
+    IM_ASSERT(result->m_gameObject == nullptr);
+    result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
+
+    SceneManager::data[scene()->id].new_components.emplace_back(result);
+
+    if (Application::isPlaying() && activeInHierarchy()) {
+        auto mono = dynamic_cast<MonoBehaviour *>(result.get());
+        if (mono) { mono->internalAwake(); }
     }
 
     return result;

@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 decltype(EditorSceneManager::dirty) EditorSceneManager::dirty;
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {
-    auto meta = fs::directory_entry(scenePath);
+   /* auto meta = fs::directory_entry(scenePath);
     //TODO: Check if only filename and load path from data
     if (!meta.is_regular_file()) {
         GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
@@ -24,7 +24,6 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
     result.path = scenePath;
 
     if (LoadSceneFull(result, scenePath)) {
-        result.isValid = true;
         result.isLoaded = true;
 
         switch (mode) {
@@ -43,8 +42,8 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         result.isValid = false;
         result.isLoaded = true;
     }
-
-    return std::shared_ptr<Scene>{new Scene(new_id)};
+*/
+    return std::shared_ptr<Scene>{new Scene(0)};
 }
 
 SceneManager::SceneP
@@ -53,8 +52,6 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
     Data result;
 
     result.isLoaded = true;
-    result.isValid = true;
-    result.name = "Scene";
 
     switch (setup) {
         case NewSceneSetup::DefaultGameObjects:

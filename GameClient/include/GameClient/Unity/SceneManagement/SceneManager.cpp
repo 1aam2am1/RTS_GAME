@@ -19,19 +19,22 @@
 namespace fs = std::filesystem;
 
 uint64_t SceneManager::max_id = 1;
-uint64_t SceneManager::active_scene = 0;
-decltype(SceneManager::data) SceneManager::data{{0, {0, false}}};
+uint64_t SceneManager::active_scene = 1;
+decltype(SceneManager::data) SceneManager::data{{1, {0, true}}};
+decltype(SceneManager::index_to_id) SceneManager::index_to_id{1};
 
 void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::SceneP scene) {
     if (!go) {
         throw std::runtime_error("Game object should exists");//#1
     }
     {
-        //check if root
-        auto t = go->transform();
-        if (t->parent().get() != nullptr) {
-            GameApi::log(ERR.fmt("GameObject should be root"));
-            return;
+        if (go->scene.get()) {
+            //check if root
+            auto t = go->transform();
+            if (t->parent().get() != nullptr) {
+                GameApi::log(ERR.fmt("GameObject should be root"));
+                return;
+            }
         }
     }
 
@@ -60,26 +63,21 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     }
 
     {
-        //Scene should exists
-        //auto it = data.find(new_scene_id);
         auto &root = data[new_scene_id].root;
         root.emplace_back(go);
-        //it->second.isValid = true;
-        //it->second.isLoaded = true;
 
         go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
     }
 }
-
+/*
 bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
     auto str = GameApi::readFullFile(path);
     auto asset_guid = AssetDatabase::AssetPathToGUID(path);
 
     try {
-
         auto json = nlohmann::json::parse(str.empty() ? "{}" : str);
 
-        d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
+        //d.name = (!json["settings"]["name"].empty()) ? json["settings"]["name"].get<std::string>() : "";
         d.buildIndex = -1; //TODO: Make build index
 
         std::unordered_map<AssetDatabase::fileID, TPtr<Object>> objects;
@@ -98,8 +96,13 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
             auto &object_value = ob.value().begin().value();
             if (object_type == "Prefab") {
                 //TODO: Load prefab
+            } else if (object_type == "GameObject") {
+                TPtr<GameObject> gm = std::shared_ptr<GameObject>(new GameObject);
+                //gm->SetActive(false); //in activation set m_active false and then SetActive(v)
+                ///TODO: gm->scene = SceneManager::GetActiveScene();
+                serializer.Deserialize(gm, object_value);
+                objects.emplace(id, gm);
             } else {
-                //TODO: If gameobject then new GameObject, becouse new(...), adds to active scene
                 auto obj = serializer.Deserialize(object_type, object_value);
                 objects.emplace(id, obj);
             }
@@ -175,8 +178,11 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
                 GameApi::log(ERR.fmt("Root: {guid: %s, fileID: %" PRIu64 "} not found.",
                                      ob.guid.operator std::string().data(), ob.id));
             }
-
         }
+
+        std::function<void(const std::vector<TPtr<Component>> &)> traverse_tree = [&](auto &vec) {
+
+        };
 
         return true;
     }
@@ -184,7 +190,8 @@ bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {
 
     return false;
 }
-
+*/
+/*
 void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadSceneMode mode) {
     auto meta = fs::directory_entry(sceneName);
     //TODO: Check if only filename and load path from data
@@ -207,7 +214,6 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
         result.path = s;
 
         if (LoadSceneFull(result, result.path)) {
-            result.isValid = true;
             result.isLoaded = true;
 
             switch (mode) {
@@ -235,21 +241,19 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
         }
     });
 }
-
+*/
 int SceneManager::sceneCount() {
-    if (data.size() == 0) {
-        GameApi::log(ERR.fmt("sceneCount wrong count"));
-        std::terminate();
-    }
-
-    return data.size() - 1;
+    return data.size();
 }
 
 SceneManager::SceneP SceneManager::GetActiveScene() {
-    if (!(data[active_scene].isValid)) {
+    auto it = data.find(active_scene);
+    if (it == data.end()) {
+        if (!data.empty()) {
+            GameApi::log(ERR.fmt("ERR active_scene isn't one of created"));
+        }
         //Should only happen when there isn't any scene
         active_scene = max_id++;
-        data[active_scene].isValid = true;
         data[active_scene].isLoaded = true;
     }
     return std::shared_ptr<Scene>(new Scene(active_scene));

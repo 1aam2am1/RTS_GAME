@@ -11,8 +11,8 @@
 #include <GameApi/SetterGetter.h>
 #include <GameClient/Unity/SceneManagement/Scene.h>
 #include <GameClient/Unity/Core/Application.h>
-#include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameApi/has_field.h>
+#include <typeindex>
 
 class Component;
 
@@ -72,6 +72,12 @@ public:
     /// \return Component
     template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int> = 0>
     TPtr<T> AddComponent();
+
+    /// Adds a component class of type componentType to the game object.
+    /// \note Note that there is no RemoveComponent(), to remove a component, use Object.Destroy.
+    /// \param T The type of Component to create.
+    /// \return Component
+    TPtr<Component> AddComponent(std::type_index T);
 
     /// Is this game object tagged with tag ?
     /// \param tag The tag to compare.
@@ -141,12 +147,14 @@ public:
 private:
     friend class SceneManager;
 
-    bool m_active = true;
+    TPtr<Scene> m_scene{};
 
     //TODO: Start new component before running
     std::vector<TPtr<Component>> components;
-    std::unordered_map<TPtr<Component>, std::function<void()>> to_awake;
-    TPtr<Scene> m_scene{};
+private:
+    bool m_active = true;
+
+    TPtr<Component> AddComponent(TPtr<Component>);
 };
 
 #include "GameObject.inl"

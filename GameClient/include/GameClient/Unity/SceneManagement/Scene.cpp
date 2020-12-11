@@ -14,18 +14,33 @@ bool Scene::isDirty() {
     return false;
 }
 
+static const std::vector<TPtr<GameObject>> empty{};
+
 const std::vector<TPtr<GameObject>> &Scene::getRootGameObjects() const noexcept {
-    return SceneManager::data[id].root;
+    auto it = SceneManager::data.find(id);
+    if (it != SceneManager::data.end()) {
+        return it->second.root;
+    }
+
+    return empty;
 }
 
 int Scene::buildIndex() {
-    return SceneManager::data[id].buildIndex;
+    auto it = SceneManager::data.find(id);
+    if (it != SceneManager::data.end()) {
+        return it->second.buildIndex;
+    }
+    return -1;
 }
 
 bool Scene::isLoaded() {
-    return SceneManager::data[id].isLoaded;
+    auto it = SceneManager::data.find(id);
+    if (it != SceneManager::data.end()) {
+        return it->second.isLoaded;
+    }
+    return false;
 }
 
 bool Scene::isValid() {
-    return SceneManager::data[id].isValid;
+    return SceneManager::data.find(id) != SceneManager::data.end();
 }

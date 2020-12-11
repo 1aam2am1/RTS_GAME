@@ -175,6 +175,9 @@ catch (const std::exception &e) {           \
     GameApi::log(ERR.fmt("%s", e.what()));  \
 }
 
+#undef IM_ASSERT
+#define IM_ASSERT(_EXPR)  do{ if(!(_EXPR)){ GameApi::log( ERR.fmt("%s", "Expression: " #_EXPR)); std::terminate();}}while(0)
+
 #include <GameClient/Initializer.h>
 #include <GameClient/MetaData.h>
 #include <GameApi/Config.h>

@@ -9,10 +9,11 @@
 #include <string_view>
 #include <memory>
 #include <GameClient/Unity/Yield/AsyncOperation.h>
+#include <GameClient/Unity/Core/GameObject.h>
+#include <GameClient/Unity/Core/Component.h>
 #include <map>
-#include "GameClient/TPtr.h"
+#include <GameClient/TPtr.h>
 
-class GameObject;
 
 /// Scene management at run-time.
 class SceneManager {
@@ -63,6 +64,10 @@ public:
     /// \param name Name of Scene to find.
     /// \return A reference to the Scene, if valid. If not, an invalid Scene is returned.
     static SceneP GetSceneByName(std::string_view name);
+
+    /// Get the Scene at index in the SceneManager's list of loaded Scenes.
+    /// \param Index of the Scene to get. Index must be greater than or equal to 0 and less than SceneManager.sceneCount.
+    static SceneP GetSceneAt(int index);
 
     /// Loads the Scene by its name or index in Build Settings.
     /// \note  In most cases, to avoid pauses or performance hiccups while loading,
@@ -161,24 +166,19 @@ protected:
 
     struct Data {
         int buildIndex = 0;
-        bool isValid = false;
         bool isLoaded = false;
-        std::string name = []() { return "Scene " + GameApi::to_string(max_id); }();
+        std::string name = "Scene";
         std::string path{};
         std::vector<TPtr<GameObject>> root{};
-        std::vector<TPtr<GameObject>> objects{};
         std::vector<TPtr<Component>> components{};
         std::vector<TPtr<Component>> new_components{};
-        //TODO: root and objects/all
-        //TODO: New objects => start
-        //TODO: New components start?
-        //TODO: !!! Think about it and reformat
     };
 
-    static bool LoadSceneFull(Data &, std::string_view);
+    static bool LoadSceneFull(Data &data, std::string_view path);
 
     static uint64_t max_id; ///< Max used id
     static std::map<uint64_t, Data> data; ///< Loaded scenes
+    static std::vector<uint64_t> index_to_id; ///< data_id[]
     static uint64_t active_scene; ///< Now active scene
 };
 

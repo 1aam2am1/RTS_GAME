@@ -137,6 +137,17 @@ public:
     /// Update is called every frame, if the MonoBehaviour is enabled.
     virtual void Update();
 
+private:
+    friend class GameObject;
+
+    bool was_awakened = false;
+
+    void internalAwake() {
+        if (!was_awakened) {
+            was_awakened = true;
+            Awake();
+        }
+    }
 };
 
 

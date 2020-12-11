@@ -7,6 +7,7 @@
 #include <Core/Time.h>
 #include <SceneManagement/SceneManager.h>
 #include <Macro.h>
+#include <Core/MonoBehaviour.h>
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();
@@ -42,6 +43,28 @@ void GameLoop::run() {
 
         m_physics_time += Time::m_deltaTime;
     }
+    ///Start
+    {
+        for (auto &scene: SceneManager::data) {
+            if (!scene.second.isLoaded) { continue; };
+
+            for (auto &object : scene.second.new_components) {
+                if (object) {
+                    auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+                    if (mono) {
+                        if (mono->gameObject()->activeInHierarchy()) {
+                            mono->Start();
+                        } else { continue; }
+                    }
+
+                    scene.second.components.emplace_back(object);
+                    object = nullptr;
+                }
+            }
+            //TODO: Garbage collect new_components nullptr objects
+        }
+    }
+
     /// Physics
     while (true) {
         if (m_physics_time <= Time::fixedDeltaTime) { break; } //should run
@@ -62,21 +85,21 @@ void GameLoop::run() {
         }
     }
 
-    for (auto &scene: SceneManager::data) {
-        if (scene.second.isValid && scene.second.isLoaded) {
-            for (auto &object : scene.second.objects) {
-                //update
-            }
-        }
-    }
-
     /**
      * Events
      */
 
-    /**
-         * Game logic
-         */
+    ///Update
+    for (auto &scene: SceneManager::data) {
+        if (!scene.second.isLoaded) { continue; };
+
+        for (auto &object : scene.second.components) {
+            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+            if (mono && mono->isActiveAndEnabled()) {
+                mono->Update();
+            }
+        }
+    }
 
     /**
      * Render game scene to render texture

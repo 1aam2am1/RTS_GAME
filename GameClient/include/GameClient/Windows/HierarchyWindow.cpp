@@ -28,7 +28,6 @@ public:
         bool clear_selection = true;
 
         for (auto &it : SceneManager::data) {
-            if (!it.second.isValid) { continue; }
             bool isLoaded = it.second.isLoaded;
             if (!isLoaded) {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
