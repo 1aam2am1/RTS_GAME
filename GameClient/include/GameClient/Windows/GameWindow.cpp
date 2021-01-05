@@ -6,6 +6,10 @@
 #include <GameClient/WindowLayout.h>
 #include "Macro.h"
 #include <imgui.h>
+#include <GameClient/GlobalStaticVariables.h>
+#include <imgui-SFML.h>
+#include <imgui_internal.h>
+#include <GameClient/MainThread.h>
 
 class GameWindow : public EditorWindow {
 public:
@@ -17,8 +21,29 @@ public:
         window->Show();
     }
 
-    void OnGUI() override {
+    void Update() override {
+#if UNITY_EDITOR
+        auto name = imGuiName;
+        MainThread::Invoke([name]() {
+            ImVec2 s{};
+            if (ImGuiWindow *window = ImGui::FindWindowByName(name.c_str())) {
+                s.x = window->ContentRegionRect.GetWidth();
+                s.y = window->ContentRegionRect.GetHeight();
+            }
 
+            if (s.x > 0 && s.y > 0)
+                global.m_target.create(s.x, s.y);
+        });
+#endif
+    }
+
+    void OnGUI() override {
+#if UNITY_EDITOR
+        global.m_target.display();
+        ImGui::Image(global.m_target.getTexture());
+#else
+        //Target is RenderTexture therefore it is drown on main screen
+#endif
     }
 
 protected:

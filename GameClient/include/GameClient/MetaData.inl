@@ -106,6 +106,21 @@ struct MetaData::Register {
                         };
                     }
                 }
+            } else if constexpr (is_instance_v<Y, SetterGetter>) {
+                using type = typename Y::type;
+                std::function<void(type)> set;
+                std::function<type()> get;
+
+                if constexpr (std::is_assignable<decltype(t->*ptr), type>::value) {
+                    set = [=](type arg) { t->*ptr = arg; };
+                }
+
+                get = [=]() -> nlohmann::json { return (t->*ptr).get(); };
+
+                return std::pair<std::function<void(type)>, std::function<type(void)>>{
+                        set,
+                        get
+                };
             } else {
                 if constexpr(std::is_assignable<TU, decltype(def())>::value) {
                     return def();

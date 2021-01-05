@@ -50,6 +50,8 @@ void MainWindow::run() {
             lastEvents.emplace_back(event);
         }
 
+        window.clear();
+
         ImGui::SFML::Update(window, deltaClock.restart()); /// ImGui Io events eating
 
         WindowLayout::drawLayout(); /// Set basic layout and global dock window
@@ -81,7 +83,6 @@ void MainWindow::run() {
             }
         }
 
-        window.clear();
         ImGui::SFML::Render(window);
         window.display();
 

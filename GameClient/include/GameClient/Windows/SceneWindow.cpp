@@ -6,6 +6,8 @@
 #include <GameClient/WindowLayout.h>
 #include "Macro.h"
 #include <imgui.h>
+#include <GameClient/GlobalStaticVariables.h>
+#include <imgui-SFML.h>
 
 class SceneWindow : public EditorWindow {
 public:
@@ -18,7 +20,9 @@ public:
     }
 
     void OnGUI() override {
-
+#if UNITY_EDITOR
+        ImGui::Image(global.m_target.getTexture());
+#endif
     }
 
 };

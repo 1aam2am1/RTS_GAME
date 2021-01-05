@@ -7,6 +7,8 @@
 
 EXPORT_CLASS(Behaviour, enabled)
 
+Behaviour::Behaviour() : enabled(true) {}
+
 bool Behaviour::isActiveAndEnabled() const {
     return enabled && gameObject()->activeInHierarchy();
 }

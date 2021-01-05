@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <string_view>
 #include <GameClient/TPtr.h>
+#include <GameApi/SetterGetter.h>
 
 class MetaData {
     struct Reflect;

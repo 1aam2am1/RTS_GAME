@@ -78,6 +78,10 @@ private:
     friend class GameObject;
 
     TPtr<GameObject> m_gameObject{};
+
+protected:
+    //TODO: Make it private in MonoBehaviour
+    virtual void internalAwake() {}
 };
 
 #include "Component.inl"

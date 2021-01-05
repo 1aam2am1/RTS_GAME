@@ -11,6 +11,7 @@
 /// Behaviours are Components that can be enabled or disabled.
 class Behaviour : public Component {
 public:
+    Behaviour();
 
     /// Enabled Behaviours are Updated, disabled Behaviours are not.
     bool enabled;

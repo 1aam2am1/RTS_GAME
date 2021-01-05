@@ -10,7 +10,7 @@
 
 class Texture2D : public Object {
 public:
-    //TODO: Delete texture before ending main function as deleting main can be affter deleting render target context.
+    //TODO: Delete texture before ending main function as deleting main can be after deleting render target context.
     sf::Texture t0;
 };
 

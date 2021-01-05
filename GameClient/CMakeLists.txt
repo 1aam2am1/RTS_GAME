@@ -134,6 +134,10 @@ set(SRC
         include/GameClient/GameLoop.h
         include/GameClient/Unity/Core/Time.cpp
         include/GameClient/Unity/Core/Time.h
+        include/GameClient/Unity/Core/Camera.cpp
+        include/GameClient/Unity/Core/Camera.h
+        include/GameClient/GlobalStaticVariables.cpp
+        include/GameClient/GlobalStaticVariables.h
         )
 
 add_executable(GameClient ${SRC})

@@ -142,10 +142,12 @@ private:
 
     bool was_awakened = false;
 
-    void internalAwake() {
+    void internalAwake() override {
         if (!was_awakened) {
             was_awakened = true;
             Awake();
+        } else {
+            GameApi::log(ERR << "It should not happen fix");
         }
     }
 };

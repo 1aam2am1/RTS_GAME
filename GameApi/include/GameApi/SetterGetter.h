@@ -10,6 +10,8 @@
 template<typename T>
 class SetterGetter {
 public:
+    typedef T type;
+
     SetterGetter() = delete;
 
     constexpr SetterGetter(const std::function<void(const T &)> &set, const std::function<T()> &get) noexcept: s(set),

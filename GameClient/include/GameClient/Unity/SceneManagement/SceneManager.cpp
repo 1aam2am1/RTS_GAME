@@ -234,7 +234,7 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
                 for (auto &c : g->components) {
                     //As Component, Behaviour don't Awake we only call if MonoBehaviour
                     ///TODO: Remember that some other class should be Awakened and so on...
-                    if (auto m = dynamic_cast<MonoBehaviour *>(c.get())) { m->Awake(); }
+                    m->internalAwake();
                 }
             }
 

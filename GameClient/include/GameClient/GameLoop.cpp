@@ -3,11 +3,13 @@
 //
 
 #include "GameLoop.h"
+#include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Editor/EditorApplication.h>
 #include <Core/Time.h>
 #include <SceneManagement/SceneManager.h>
 #include <Macro.h>
 #include <Core/MonoBehaviour.h>
+#include <Core/Camera.h>
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();
@@ -18,6 +20,8 @@ void GameLoop::run() {
         isPlaying = EditorApplication::isPlaying;
 
         if (isPlaying) {
+            //TODO: !!! Load first scene
+
             //TODO: From global settings
             Time::timeScale = 1;
             Time::maximumDeltaTime = 1.f / 5.f;
@@ -79,7 +83,7 @@ void GameLoop::run() {
         /**fixed update*/
 
         //If my elapsed frame time is bigger than should break.
-        if (deltaClock.getElapsedTime().asSeconds() > Time::maximumDeltaTime) {
+        if ((Time::m_unscaled_deltaTime + deltaClock.getElapsedTime().asSeconds()) > Time::maximumDeltaTime) {
             m_physics_time = 0;
             break;
         }
@@ -101,11 +105,26 @@ void GameLoop::run() {
         }
     }
 
-    /**
-     * Render game scene to render texture
-     */
+    ///Late Update
+    for (auto &scene: SceneManager::data) {
+        if (!scene.second.isLoaded) { continue; };
 
-    /**
-     * Future onGui
-     */
+        for (auto &object : scene.second.components) {
+            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+            if (mono && mono->isActiveAndEnabled()) {
+                mono->LateUpdate();
+            }
+        }
+    }
+
+    ///Scene rendering
+    for (auto &camera : global.m_draw_order) {
+        if (camera.second->isActiveAndEnabled()) {
+            camera.second->Render();
+        }
+    }
+
+    ///On Gui
+
+    ///Wait for end of frame
 }

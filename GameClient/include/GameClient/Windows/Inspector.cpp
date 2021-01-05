@@ -21,6 +21,10 @@ public:
     TPtr<Object> activeObject;
     TPtr<Editor> editor;
 
+    void Awake() override {
+        minSize.x = 250.f;
+    }
+
     void Update() override {
         if (Selection::activeObject != activeObject) {
             activeObject = Selection::activeObject;

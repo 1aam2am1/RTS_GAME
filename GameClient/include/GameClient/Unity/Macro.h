@@ -90,7 +90,13 @@ namespace {                             \
 /// \param TYPE class type
 /// \param PATH PATH and name of where to place component
 /// \param ... priority
-#define ADD_COMPONENT_MENU(TYPE, PATH, ...)
+#define ADD_COMPONENT_MENU(TYPE, ...)                       \
+EXPORT_CLASS(TYPE, __VA_ARGS__)                             \
+CONTEXT_MENU(Component, #TYPE, [](){                        \
+    if (Selection::activeGameObject) {                      \
+        Selection::activeGameObject->AddComponent<TYPE>();  \
+    }                                                       \
+})
 
 
 /// Mark a ScriptableObject-derived type to be automatically listed in the Assets/Create submenu,
@@ -111,7 +117,7 @@ namespace {                                         \
 #define MENU_ITEM(FUNC, PATH, ...) \
 namespace {                        \
     static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){ \
-        Menu::addItem(PATH, FUNC __VA_OPT__(,) __VA_ARGS__); \
+        Menu::addItem(PATH, UNPAREN(FUNC) __VA_OPT__(,) __VA_ARGS__); \
         return 0;                 \
     });                          \
 }

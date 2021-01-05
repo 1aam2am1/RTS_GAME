@@ -11,6 +11,7 @@
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
 #include <Core/Behaviour.h>
+#include <Editor/Menu.h>
 
 
 class GameObjectEditor : public Editor {
@@ -55,16 +56,23 @@ public:
 
         auto components = d->GetComponents<Component>();
         for (auto &c : components) {
+            ImGui::PushID(c.get());
+
             std::type_index type = typeid(*c.get());
             auto reflection = MetaData::getReflection(type);
 
             bool open = ImGui::CollapsingHeader(("##" + GameApi::to_string(c.get())).data(),
-                                                ImGuiTreeNodeFlags_DefaultOpen); //ImGuiTreeNodeFlags_OpenOnArrow
+                                                ImGuiTreeNodeFlags_DefaultOpen |
+                                                ImGuiTreeNodeFlags_AllowItemOverlap); //ImGuiTreeNodeFlags_OpenOnArrow
             ImGui::SameLine();
 
             auto behaviour = dynamic_pointer_cast<Behaviour>(c);
             if (behaviour) {
-                ImGui::Checkbox("##behaviour", &behaviour->enabled);
+                dirty = ImGui::Checkbox("##behaviour", &behaviour->enabled);
+
+                if (dirty) {
+                    EditorUtility::SetDirty(behaviour);
+                }
             } else {
                 auto total_bb = ImVec2(ImGui::GetFrameHeight(),
                                        ImGui::GetFontSize() + ImGui::GetStyle().FramePadding.y * 2.0f);
@@ -81,6 +89,27 @@ public:
 
                 editor->OnInspectorGUI();
             }
+
+            ImGui::PopID();
+        }
+
+        ImGui::Separator();
+        {
+            ImVec2 LocalButtonSize = {100, 40};
+            auto pos = ImGui::GetWindowWidth() - LocalButtonSize.x;
+            pos /= 2.0f;
+
+            if (pos < ImGui::GetCursorPosX()) {
+                pos = ImGui::GetCursorPosX();
+            }
+
+            ImGui::SetCursorPosX(pos);
+
+            auto clicked = ImGui::Button("Components", LocalButtonSize);
+            if (clicked) {
+                ContextMenu::Init("Component");
+            }
+
         }
     }
 };
