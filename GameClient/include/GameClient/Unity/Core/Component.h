@@ -80,8 +80,9 @@ private:
     TPtr<GameObject> m_gameObject{};
 
 protected:
-    //TODO: Make it private in MonoBehaviour
-    virtual void internalAwake() {}
+    //TODO:: Make it private in MonoBehaviour
+    //Call after scene loading or AddComponent relationship
+    virtual void UnityAwake() {}
 };
 
 #include "Component.inl"

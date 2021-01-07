@@ -14,6 +14,12 @@ public:
 
     /// The Sprite to render.
     TPtr<Sprite> sprite;
+
+
+protected:
+    void UnityAwake() override;
+
+    void draw() override;
 };
 
 

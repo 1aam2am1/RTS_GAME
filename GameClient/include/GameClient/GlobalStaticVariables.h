@@ -9,11 +9,14 @@
 #include <map>
 #include <GameClient/Unity/Core/Camera.h>
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <Core/Renderer.h>
 
 struct GlobalStaticVariables {
     ///Camera
-    std::vector<Camera *> m_cameras{};
-    std::multimap<float, Camera *> m_draw_order{};
+    std::vector<TPtr<Camera>> m_cameras{};
+    std::multimap<float, TPtr<Camera>> m_draw_order{};
+
+    std::vector<TPtr<Renderer>> m_render;
 #if UNITY_EDITOR
     sf::RenderTexture m_target;
 #else

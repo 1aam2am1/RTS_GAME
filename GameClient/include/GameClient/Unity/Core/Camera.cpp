@@ -8,29 +8,29 @@
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Editor/Selection.h>
+#include <SFML/OpenGL.hpp>
+#include <execution>
 
-ADD_COMPONENT_MENU(Camera)
+ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize)
 
 Camera::Camera() : depth(
         [&](auto d) {
+            global.m_draw_order.erase(
+                    std::find_if(std::execution::par_unseq, global.m_draw_order.begin(), global.m_draw_order.end(),
+                                 [this](auto it) { return it.second.get() == this; }));
             m_depth = d;
-            if (m_draw_order_it != global.m_draw_order.end()) { global.m_draw_order.erase(m_draw_order_it); }
-            m_draw_order_it = global.m_draw_order.emplace(m_depth, this);
+            global.m_draw_order.emplace(m_depth, shared_from_this());
 
         }, [&]() { return m_depth; }) {
-
-    m_draw_order_it = global.m_draw_order.end();
-}
-
-void Camera::internalAwake() {
-    global.m_cameras.emplace_back(this);
-    m_draw_order_it = global.m_draw_order.emplace(m_depth, this);
 }
 
 Camera::~Camera() {
-    global.m_cameras.erase(
-            std::find_if(global.m_cameras.begin(), global.m_cameras.end(), [&](auto it) { return it == this; }));
-    if (m_draw_order_it != global.m_draw_order.end()) { global.m_draw_order.erase(m_draw_order_it); }
+
+}
+
+void Camera::UnityAwake() {
+    global.m_cameras.emplace_back(shared_from_this());
+    global.m_draw_order.emplace(m_depth, shared_from_this());
 }
 
 TPtr<Camera> Camera::main() {
@@ -54,14 +54,35 @@ std::vector<TPtr<Camera>> Camera::allCameras() {
 }
 
 void Camera::Render() {
-    if (pixelRect == sf::FloatRect{0.f, 0.f, 0.f, 0.f}) {
-        global.m_target.setView(sf::View({0.f, 0.f,
-                                          static_cast<float>(global.m_target.getSize().x),
-                                          static_cast<float>(global.m_target.getSize().y)}));
-    } else {
-        global.m_target.setView(sf::View(pixelRect));
+    auto position = transform()->localPosition.get();
+    //TODO: !!! Change to global position and rotation
+    //TODO: !!! Check order of zoom/move/rotate
+    /* view.zoom(transform()->localScale.get().z);
+     view.move(position.x, position.y);
+     view.setRotation(transform()->localRotation);
+
+     global.m_target.setView(view);
+     global.m_target.setActive();*/
+/*
+    glEnable(GL_SCISSOR_TEST);
+
+    //TODO: !!! Check glScissor
+    glScissor((int) pixelRect.left * global.m_target.getSize().x,
+              (int) pixelRect.top * global.m_target.getSize().y,
+              (int) pixelRect.width * global.m_target.getSize().x,
+              (int) pixelRect.height * global.m_target.getSize().y);
+*/
+    ///global.m_target.draw()
+//TODO: Pixel per unit
+    global.m_target.clear(backgroundColor);
+
+    for (auto &it : global.m_render) {
+        if (it && it->enabled && !it->forceRenderingOff && it->gameObject()->activeInHierarchy())
+            it->draw();
     }
 
-    ///global.m_target.draw()
 
+    ///glDisable(GL_SCISSOR_TEST);
+
+    global.m_target.display();
 }

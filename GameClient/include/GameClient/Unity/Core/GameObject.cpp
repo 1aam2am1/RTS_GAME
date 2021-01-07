@@ -73,8 +73,15 @@ void GameObject::SetActive(bool value) noexcept {
     if (m_active != value) {
         m_active = value;
 
+        if (!Application::isPlaying()) { return; }
+
+        for (auto &c: to_awake) {
+            c->UnityAwake();
+        }
+        to_awake.clear();
+
         for (auto &c : components) {
-            c->internalAwake();
+//TODO: !!! OnEnable is checking if it is enabled -> parent/child
             auto mono = dynamic_cast<MonoBehaviour *>(c.get());
             if (mono) {
                 if (value) {
@@ -134,8 +141,14 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
 
     SceneManager::data[scene()->id].new_components.emplace_back(result);
 
-    if (Application::isPlaying() && activeInHierarchy()) {
-        result->internalAwake();
+    if (dynamic_cast<MonoBehaviour *>(result.get())) {
+        if (Application::isPlaying() && activeInHierarchy()) {
+            result->UnityAwake();
+        } else {
+            to_awake.emplace_back(result);
+        }
+    } else {
+        result->UnityAwake();
     }
 
     return result;

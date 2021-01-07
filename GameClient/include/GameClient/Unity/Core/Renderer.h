@@ -22,7 +22,12 @@ public:
     SetterGetter<int64_t> sortingOrder;
 
 private:
+    friend class Camera;
+
     int64_t m_sortingOrder;
+
+protected:
+    virtual void draw() = 0;
 };
 
 

@@ -149,8 +149,8 @@ private:
 
     TPtr<Scene> m_scene{};
 
-    //TODO: Start new component before running
     std::vector<TPtr<Component>> components;
+    std::vector<TPtr<Component>> to_awake;
 private:
     bool m_active = true;
 
