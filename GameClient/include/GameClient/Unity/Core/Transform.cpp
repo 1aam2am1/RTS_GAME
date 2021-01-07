@@ -30,7 +30,8 @@ Transform::Transform() :
         localScale([&](auto s) { m_localScale = s; }, [&]() { return m_localScale; }),
         parent([&](auto t) {
             SetParent(t, true);
-        }, [&]() { return m_parent; }) {
+        }, [&]() { return m_parent; }),
+        m_localRotation(0) {
 
 }
 

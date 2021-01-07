@@ -76,6 +76,7 @@ private:
 
         std::vector<std::pair<std::string_view, std::function<TU(Object *)>>> members{};
         std::vector<std::pair<std::string_view, std::function<TU(const Object *)>>> c_members{};
+        std::vector<std::pair<std::string_view, const std::type_index>> TPtr_type{};
     };
 
     static std::map<std::type_index, Data> reflection; ///< type->Data

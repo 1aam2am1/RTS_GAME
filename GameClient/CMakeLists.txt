@@ -138,6 +138,12 @@ set(SRC
         include/GameClient/Unity/Core/Camera.h
         include/GameClient/GlobalStaticVariables.cpp
         include/GameClient/GlobalStaticVariables.h
+        include/GameClient/Unity/Core/Renderer.cpp
+        include/GameClient/Unity/Core/Renderer.h
+        include/GameClient/Unity/Core/SpriteRenderer.cpp
+        include/GameClient/Unity/Core/SpriteRenderer.h
+        include/GameClient/Unity/Editor/EditorGuiLayout.cpp
+        include/GameClient/Unity/Editor/EditorGuiLayout.h
         )
 
 add_executable(GameClient ${SRC})

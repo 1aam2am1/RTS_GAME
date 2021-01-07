@@ -39,7 +39,7 @@ TPtr<> DragAndDrop::GetGenericData(std::string_view type) {
 
 static TPtr<EditorWindow> window;
 
-bool IsDragging() {
+bool DragAndDrop::IsDragging() {
     return !window.expired();
 }
 

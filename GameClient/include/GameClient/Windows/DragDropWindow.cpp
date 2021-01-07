@@ -9,9 +9,18 @@
 #include <GameClient/MainThread.h>
 #include <GameClient/IconsFontAwesome5_c.h>
 
+void DragDropWindow::Update() {
+    TPtr<DragDropWindow> ob = shared_from_this();
+    MainThread::Invoke([ob]() {
+        if (ob) ob->m_visualMode = DragAndDrop::visualMode;
+
+        DragAndDrop::visualMode = DragAndDrop::Rejected;
+    });
+}
+
 void DragDropWindow::OnGUI() {
 
-    switch (DragAndDrop::visualMode) {
+    switch (m_visualMode) {
         case DragAndDrop::None:
             break;
         case DragAndDrop::Copy:
@@ -31,10 +40,6 @@ void DragDropWindow::OnGUI() {
     }
     ImGui::SameLine();
     ImGui::Text("%s", titleContent.data());
-
-    MainThread::Invoke([this]() {
-        DragAndDrop::visualMode = DragAndDrop::Rejected;
-    });
 }
 
 void DragDropWindow::drawGui() {

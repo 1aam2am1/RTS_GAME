@@ -16,15 +16,80 @@ struct MetaData::Reflect {
 
 struct MetaData::ReflectFull : Reflect {
     const std::vector<std::pair<std::string_view, MetaData::TU>> getFields;
+    const std::map<std::string_view, std::type_index> getTPtrType; //TODO: Remove if unnecessary
 
     ReflectFull(const std::string_view name, const std::type_index type,
                 const std::function<TPtr<Object>()> &createInstance,
                 const std::function<bool(Object *, Object *)> &copyInstance,
-                const std::vector<std::pair<std::string_view, MetaData::TU>> &getFields);
+                const std::vector<std::pair<std::string_view, MetaData::TU>> &getFields,
+                const std::map<std::string_view, std::type_index> &getTPtrType);
 };
 
 template<typename T>
 struct MetaData::Register {
+
+    template<typename Y>
+    void registerMemberForSerialize(std::string_view str, SetterGetter<Y> T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            using type = Y;
+            std::function<void(type)> set;
+            std::function<type()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), type>::value) {
+                set = [=](type arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> type { return (t->*ptr).get(); };
+
+            return std::pair<std::function<void(type)>, std::function<type(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        d.members.emplace_back(str, [=](Object *ob) -> TU {
+            auto t = static_cast<T *>(ob);
+            return func(t);
+        });
+
+        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
+            auto t = static_cast<const T *>(ob);
+            return func(t);
+        });
+    }
+
+    template<typename Y>
+    void registerMemberForSerialize(std::string_view str, TPtr<Y> T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            using type = TPtr<Y>;
+            std::function<void(type)> set;
+            std::function<type()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), type>::value) {
+                set = [=](type arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> type { return t->*ptr; };
+
+            return std::pair<std::function<void(type)>, std::function<type(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        d.members.emplace_back(str, [=](Object *ob) -> TU {
+            auto t = static_cast<T *>(ob);
+            return func(t);
+        });
+
+        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
+            auto t = static_cast<const T *>(ob);
+            return func(t);
+        });
+
+        d.TPtr_type.emplace_back(str, typeid(Y));
+    }
+
     template<typename Y>
     void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
         auto func = [=](auto t) -> TU {
@@ -106,21 +171,6 @@ struct MetaData::Register {
                         };
                     }
                 }
-            } else if constexpr (is_instance_v<Y, SetterGetter>) {
-                using type = typename Y::type;
-                std::function<void(type)> set;
-                std::function<type()> get;
-
-                if constexpr (std::is_assignable<decltype(t->*ptr), type>::value) {
-                    set = [=](type arg) { t->*ptr = arg; };
-                }
-
-                get = [=]() -> nlohmann::json { return (t->*ptr).get(); };
-
-                return std::pair<std::function<void(type)>, std::function<type(void)>>{
-                        set,
-                        get
-                };
             } else {
                 if constexpr(std::is_assignable<TU, decltype(def())>::value) {
                     return def();
@@ -177,7 +227,7 @@ struct MetaData::Register {
 template<typename T>
 auto MetaData::register_class(std::string_view str) {
     return register_class<T>(str, []() {
-        if constexpr (std::is_abstract_v<T>) {
+        if constexpr (!std::is_constructible_v<T>) {
             GameApi::log(ERR.fmt("Tried creating object of abstract type %s",
                                  GameApi::demangle(typeid(T).name()).data()));
             return TPtr<T>{};

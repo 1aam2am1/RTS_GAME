@@ -128,7 +128,7 @@ void AssetWindow::display_files() {
         bool double_clicked = ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered();
 
 
-        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) {
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0) && !DragAndDrop::IsDragging()) {
             DragAndDrop::PrepareStartDrag();
 
             auto main = AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]);

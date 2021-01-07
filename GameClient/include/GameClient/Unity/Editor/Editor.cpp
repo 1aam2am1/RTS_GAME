@@ -4,6 +4,8 @@
 
 #include "Editor.h"
 #include "EditorUtility.h"
+#include "DragAndDrop.h"
+#include "EditorGuiLayout.h"
 #include <GameClient/MetaData.h>
 #include <GameApi/overload.h>
 #include <imgui.h>
@@ -23,6 +25,7 @@ bool Editor::DrawDefaultInspector() {
         return false;
 
     auto reflection = MetaData::getReflection(target.get());
+    auto &types = reflection.getTPtrType;
 
     for (auto &it: reflection.getFields) {
         auto name = it.first;
@@ -33,7 +36,7 @@ bool Editor::DrawDefaultInspector() {
 
         bool dirty = false;
         auto visitor = overload{
-                [&key, &dirty](auto &&p) {
+                [&name, &key, &dirty, &types](auto &&p) {
                     using type = function_traits_arg_t<decltype(p.first), 0>;
 
                     if (!p.second) { return; }
@@ -46,7 +49,7 @@ bool Editor::DrawDefaultInspector() {
                     }
 
                     ImGui::SetNextItemWidth(-FLT_MIN);
-                    if constexpr (std::is_same_v<type, int>) {
+                    if constexpr (std::is_same_v<type, int64_t>) {
                         dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, double>) {
                         dirty = ImGui::InputDouble(key.data(), &value);
@@ -54,6 +57,18 @@ bool Editor::DrawDefaultInspector() {
                         dirty = ImGui::InputText(key.data(), &value);
                     } else if constexpr (std::is_same_v<type, bool>) {
                         dirty = ImGui::Checkbox(key.data(), &value);
+                    } else if constexpr (std::is_same_v<type, TPtr<Object>>) {
+                        std::type_index type = typeid(Object);
+                        auto it = types.find(name);
+                        if (it != types.end()) {
+                            type = it->second;
+                        }
+
+                        auto v2 = EditorGUILayout::ObjectField(value, type, true);
+                        if (v2) {
+                            dirty = true;
+                            value = v2;
+                        }
                     } else {
                         ImGuiContext &g = *GImGui;
                         g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;

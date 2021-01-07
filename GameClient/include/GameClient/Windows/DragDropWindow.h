@@ -6,7 +6,9 @@
 #define RTS_GAME_DRAGDROPWINDOW_H
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
+#include <GameClient/Unity/Editor/DragAndDrop.h>
 #include "Macro.h"
+#include <imgui.h>
 
 class DragDropWindow : public EditorWindow {
 public:
@@ -19,10 +21,14 @@ public:
         return window;
     }
 
+    void Update() override;
+
     void OnGUI() override;
 
 private:
     void drawGui() override;
+
+    DragAndDrop::DragAndDropVisualMode m_visualMode;
 };
 
 

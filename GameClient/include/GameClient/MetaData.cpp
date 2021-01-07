@@ -18,24 +18,29 @@ MetaData::Reflect::Reflect(const std::string_view n, const std::type_index t,
 MetaData::ReflectFull::ReflectFull(const std::string_view name, const std::type_index type,
                                    const std::function<TPtr<Object>()> &createInstance,
                                    const std::function<bool(Object *, Object *)> &copyInstance,
-                                   const std::vector<std::pair<std::string_view, TU>> &f) :
-        Reflect(name, type, createInstance, copyInstance), getFields(f) {}
+                                   const std::vector<std::pair<std::string_view, TU>> &f,
+                                   const std::map<std::string_view, std::type_index> &t) :
+        Reflect(name, type, createInstance, copyInstance), getFields(f), getTPtrType(t) {}
 
 MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     auto object_reflection = getReflection(typeid(*ob));
 
     std::vector<std::pair<std::string_view, MetaData::TU>> fields;
+    std::map<std::string_view, std::type_index> types;
 
     for (auto it : reflection) {
         if (it.second.check(ob)) {
             for (auto mem: it.second.members) {
                 fields.emplace_back(mem.first, mem.second(ob));
             }
+            for (auto mem: it.second.TPtr_type) {
+                types.emplace(mem.first, mem.second);
+            }
         }
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, fields};
+                                 object_reflection.CopyInstance, fields, types};
 
     return result;
 }
@@ -44,17 +49,21 @@ MetaData::ReflectFull MetaData::getReflection(const Object *ob) {
     auto object_reflection = getReflection(typeid(*ob));
 
     std::vector<std::pair<std::string_view, MetaData::TU>> fields;
+    std::map<std::string_view, std::type_index> types;
 
     for (auto it : reflection) {
         if (it.second.check(ob)) {
             for (auto mem: it.second.c_members) {
                 fields.emplace_back(mem.first, mem.second(ob));
             }
+            for (auto mem: it.second.TPtr_type) {
+                types.emplace(mem.first, mem.second);
+            }
         }
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, fields};
+                                 object_reflection.CopyInstance, fields, types};
 
     return result;
 }

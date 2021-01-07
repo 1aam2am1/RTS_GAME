@@ -71,8 +71,9 @@ TPtr<EditorWindow> EditorWindow::mouseOverWindow() {
 void EditorWindow::Close() {
     work = NotShown;
     ///? Destroy ?
-    MainThread::Invoke([this]() {
-        Object::DestroyImmediate(shared_from_this());
+    auto ob = shared_from_this();
+    MainThread::Invoke([ob]() {
+        Object::DestroyImmediate(ob);
     });
 }
 
