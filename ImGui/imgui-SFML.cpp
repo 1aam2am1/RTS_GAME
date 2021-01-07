@@ -194,6 +194,21 @@ namespace {
 
 }  // namespace
 
+
+template<typename Tag, auto Member>
+struct break_in_ {
+    friend constexpr auto break_in(Tag) {
+        return Member;
+    }
+};
+
+struct pixelsFlipped {
+    friend constexpr auto break_in(pixelsFlipped);
+};
+
+template
+struct break_in_<pixelsFlipped, &sf::Texture::m_pixelsFlipped>;
+
 namespace ImGui {
     namespace SFML {
 
@@ -208,9 +223,9 @@ namespace ImGui {
         void Init(sf::Window &window, const sf::Vector2f &displaySize, bool loadDefaultFont) {
 #if __cplusplus < 201103L  // runtime assert when using earlier than C++11 as no
             // static_assert support
-assert(
-sizeof(GLuint) <=
-sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
+    assert(
+    sizeof(GLuint) <=
+    sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
 #endif
 
             ImGui::CreateContext();
@@ -567,8 +582,14 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
         ImTextureID textureID =
                 convertGLTextureHandleToImTextureID(texture.getNativeHandle());
 
-        ImGui::Image(textureID, ImVec2(size.x, size.y), ImVec2(0, 0), ImVec2(1, 1), toImColor(tintColor),
-                     toImColor(borderColor));
+        if (texture.*break_in(pixelsFlipped())) {
+            ImGui::Image(textureID, ImVec2(size.x, size.y), ImVec2(0, 1), ImVec2(1, 0), toImColor(tintColor),
+                         toImColor(borderColor));
+        } else {
+
+            ImGui::Image(textureID, ImVec2(size.x, size.y), ImVec2(0, 0), ImVec2(1, 1), toImColor(tintColor),
+                         toImColor(borderColor));
+        }
     }
 
     void Image(const sf::Texture &texture, const sf::FloatRect &textureRect,
@@ -590,6 +611,11 @@ sizeof(ImTextureID));  // ImTextureID is not large enough to fit GLuint.
 
         ImTextureID textureID =
                 convertGLTextureHandleToImTextureID(texture.getNativeHandle());
+
+        if (texture.*break_in(pixelsFlipped())) {
+            std::swap(uv0.y, uv1.y);
+        }
+
         ImGui::Image(textureID, ImVec2(size.x, size.y), uv0, uv1, toImColor(tintColor),
                      toImColor(borderColor));
     }
@@ -818,6 +844,11 @@ namespace {
 
         ImTextureID textureID =
                 convertGLTextureHandleToImTextureID(texture.getNativeHandle());
+
+        if (texture.*break_in(pixelsFlipped())) {
+            std::swap(uv0.y, uv1.y);
+        }
+
         return ImGui::ImageButton(textureID, ImVec2(size.x, size.y), uv0, uv1, framePadding, toImColor(bgColor),
                                   toImColor(tintColor));
     }
