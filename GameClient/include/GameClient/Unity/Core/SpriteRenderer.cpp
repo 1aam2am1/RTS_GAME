@@ -30,7 +30,5 @@ void SpriteRenderer::draw() {
     states.transform.scale(transform()->localScale.get().x * pixelsPerUnit,
                            transform()->localScale.get().y * pixelsPerUnit);
 
-    states.transform.translate(-sprite->s0.getTextureRect().width / 2.0f, -sprite->s0.getTextureRect().height / 2.0f);
-
     global.m_target.draw(sprite->s0, states);
 }

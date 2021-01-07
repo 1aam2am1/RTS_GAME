@@ -15,7 +15,7 @@
 //region REGISTER_MEMBER_FOR_SERIALIZE
 #define RMFS_SERIALIZE_1(type, arg) STRINGIZE(arg), break_in(type##_##arg())
 #define RMFS_SERIALIZE_2(type, name, arg) name, break_in(type##_##arg())
-#define RMFS_SERIALIZE_3(type, name, set, get) name, set, get
+#define RMFS_SERIALIZE_3(type, name, set, get) name, UNPAREN(set), UNPAREN(get)
 
 #define RMFS_SERIALIZE_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_, N)(type, __VA_ARGS__)
 #define RMFS_SERIALIZE(type, ...) RMFS_SERIALIZE_(FOR_EACH_NARG(__VA_ARGS__), type, __VA_ARGS__)
@@ -26,8 +26,8 @@
 //endregion
 
 //region REGISTER_MEMBER_FOR_PRIVATE_BREAK
-#define RMFS_SERIALIZE_PRIVATE_BREAK_1(type, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg);
-#define RMFS_SERIALIZE_PRIVATE_BREAK_2(type, name, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg);
+#define RMFS_SERIALIZE_PRIVATE_BREAK_1(type, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg)
+#define RMFS_SERIALIZE_PRIVATE_BREAK_2(type, name, arg) DEFINE_BREAK_IN(type, type##_##arg, &type::arg)
 #define RMFS_SERIALIZE_PRIVATE_BREAK_3(type, name, set, get)
 
 #define RMFS_SERIALIZE_PRIVATE_BREAK_(N, type, ...) CONCATENATE(RMFS_SERIALIZE_PRIVATE_BREAK_, N)(type, __VA_ARGS__)

@@ -221,6 +221,31 @@ struct MetaData::Register {
 
     }
 
+    template<typename R>
+    void registerMemberForSerialize(std::string_view str, std::function<void(T *, R)> set, std::function<R(T *)> get) {
+        d.members.emplace_back(str, [=](Object *ob) -> TU {
+            auto t = static_cast<T *>(ob);
+            std::function<void(R)> s;
+            std::function<R(void)> g;
+
+            if (set) {
+                s = [=](R arg) { set(t, arg); };
+            }
+            if (get) {
+                g = [=]() -> R { return get(t); };
+            }
+            return std::pair<std::function<void(R)>, std::function<R(void)>>{s, g};
+        });
+
+    }
+
+    template<typename Fun, typename Fun2>
+    requires requires(Fun2 get){ get(std::declval<T>()); }
+    void registerMemberForSerialize(std::string_view str, Fun set, Fun2 get) {
+        using ResultType = decltype(get(std::declval<T>()));
+        registerMemberForSerialize<ResultType>(str, set, get);
+    }
+
     MetaData::Data &d;
 };
 

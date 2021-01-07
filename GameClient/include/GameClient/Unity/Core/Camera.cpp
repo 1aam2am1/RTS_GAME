@@ -76,6 +76,8 @@ void Camera::Render() {
 //TODO: Pixel per unit
     global.m_target.clear(backgroundColor);
 
+    global.m_target.setView(sf::View({0.f, 0.f}, sf::Vector2f{global.m_target.getSize()}));
+
     for (auto &it : global.m_render) {
         if (it && it->enabled && !it->forceRenderingOff && it->gameObject()->activeInHierarchy())
             it->draw();

@@ -133,6 +133,10 @@ void AssetWindow::display_files() {
 
             auto main = AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]);
             if (main) { DragAndDrop::SetGenericData("OBJECT", main); }
+
+            auto all = AssetDatabase::LoadAllAssetRepresentationsAtPath(root + "/" + objects[n]);
+            std::copy(all.begin(), all.end(), back_inserter(DragAndDrop::objectReferences));
+
             DragAndDrop::paths.emplace_back(root + "/" + objects[n]);
 
             DragAndDrop::StartDrag(objects[n]);

@@ -58,15 +58,23 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
         }
     }
     if (dirty) {
-        if (objType == typeid(Sprite) && typeid(*value.get()) == typeid(Texture2D)) {
+        /*if (objType == typeid(Sprite) && typeid(*value.get()) == typeid(Texture2D)) {
             auto t = static_pointer_cast<Texture2D>(value);
 
             return Sprite::Create(t, sf::FloatRect{0, 0,
                                                    static_cast<float>(t->t0.getSize().x),
                                                    static_cast<float>(t->t0.getSize().y)});
+        }*/
+
+        if (objType == typeid(*value)) {
+            return value;
         }
 
-        return value;
+        for (auto &it: DragAndDrop::objectReferences) {
+            if (objType == typeid(*it)) {
+                return it;
+            }
+        }
     }
     return TPtr<>();
 }

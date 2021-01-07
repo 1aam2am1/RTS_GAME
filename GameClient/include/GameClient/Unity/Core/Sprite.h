@@ -19,7 +19,7 @@ public:
     uint32_t pixelsPerUnit = 32;
 
     static TPtr<Sprite>
-    Create(TPtr<Texture2D> texture, sf::FloatRect rect, sf::Vector2f pivot = {0, 0}, float pixelsPerUnit = 32);
+    Create(TPtr<Texture2D> texture, sf::FloatRect rect, sf::Vector2f pivot = {0.5, 0.5}, float pixelsPerUnit = 32);
 
 private:
     TPtr<Texture2D> texture{};
