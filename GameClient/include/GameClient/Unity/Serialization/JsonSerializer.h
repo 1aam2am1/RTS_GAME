@@ -28,6 +28,8 @@ protected:
 
     nlohmann::json operator()(bool) final;
 
+    nlohmann::json operator()(sf::Color) final;
+
     nlohmann::json operator()(const TPtr<Object> &) override;
 
     using SerializerBase::operator();
@@ -41,6 +43,8 @@ protected:
     void operator()(const std::function<void(std::string)> &, const nlohmann::json &) final;
 
     void operator()(const std::function<void(bool)> &, const nlohmann::json &) final;
+
+    void operator()(const std::function<void(sf::Color)> &, const nlohmann::json &) final;
 
     void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) override;
 

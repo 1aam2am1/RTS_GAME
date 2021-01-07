@@ -28,7 +28,7 @@ MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     std::vector<std::pair<std::string_view, MetaData::TU>> fields;
     std::map<std::string_view, std::type_index> types;
 
-    for (auto it : reflection) {
+    for (auto it: reflection) {
         if (it.second.check(ob)) {
             for (auto mem: it.second.members) {
                 fields.emplace_back(mem.first, mem.second(ob));

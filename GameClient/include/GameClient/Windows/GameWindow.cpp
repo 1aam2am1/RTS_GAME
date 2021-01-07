@@ -39,7 +39,6 @@ public:
 
     void OnGUI() override {
 #if UNITY_EDITOR
-        global.m_target.display();
         ImGui::Image(global.m_target.getTexture());
 #else
         //Target is RenderTexture therefore it is drown on main screen

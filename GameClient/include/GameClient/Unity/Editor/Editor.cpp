@@ -57,6 +57,24 @@ bool Editor::DrawDefaultInspector() {
                         dirty = ImGui::InputText(key.data(), &value);
                     } else if constexpr (std::is_same_v<type, bool>) {
                         dirty = ImGui::Checkbox(key.data(), &value);
+                    } else if constexpr (std::is_same_v<type, sf::Color>) {
+                        float color[4];
+                        color[0] = value.r / 255.f;
+                        color[1] = value.g / 255.f;
+                        color[2] = value.b / 255.f;
+                        color[3] = value.a / 255.f;
+
+                        dirty = ImGui::ColorEdit4(key.data(), color,
+                                                  ImGuiColorEditFlags_NoInputs |
+                                                  ImGuiColorEditFlags_NoTooltip |
+                                                  ImGuiColorEditFlags_AlphaPreviewHalf);
+                        if (dirty) {
+                            value.r = color[0] * 255.f;
+                            value.g = color[1] * 255.f;
+                            value.b = color[2] * 255.f;
+                            value.a = color[3] * 255.f;
+                        }
+
                     } else if constexpr (std::is_same_v<type, TPtr<Object>>) {
                         std::type_index type = typeid(Object);
                         auto it = types.find(name);

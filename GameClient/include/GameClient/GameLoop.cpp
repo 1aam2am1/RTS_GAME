@@ -35,8 +35,8 @@ void GameLoop::run() {
         m_physics_time = 0;
     }
 
-    if (!isPlaying) { return; }
-    if (EditorApplication::isPaused) { return; }
+    if (!isPlaying) { goto render; }
+    if (EditorApplication::isPaused) { goto render; }
 
     ///Timers
     {
@@ -117,12 +117,15 @@ void GameLoop::run() {
         }
     }
 
+    render:
     ///Scene rendering
     for (auto &camera : global.m_draw_order) {
         if (camera.second->isActiveAndEnabled()) {
             camera.second->Render();
         }
     }
+    if (!isPlaying) { return; }
+    if (EditorApplication::isPaused) { return; }
 
     ///On Gui
 

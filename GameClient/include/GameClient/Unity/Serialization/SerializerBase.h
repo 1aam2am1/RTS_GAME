@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <string>
 #include <GameClient/TPtr.h>
+#include <SFML/Graphics/Color.hpp>
 
 template<typename>
 class TPtr;
@@ -45,6 +46,8 @@ protected:
 
     virtual nlohmann::json operator()(bool) = 0;
 
+    virtual nlohmann::json operator()(sf::Color) = 0;
+
     virtual nlohmann::json operator()(const TPtr<Object> &) = 0;
 
     virtual nlohmann::json operator()(const nlohmann::json &);
@@ -58,6 +61,8 @@ protected:
     virtual void operator()(const std::function<void(std::string)> &, const nlohmann::json &) = 0;
 
     virtual void operator()(const std::function<void(bool)> &, const nlohmann::json &) = 0;
+
+    virtual void operator()(const std::function<void(sf::Color)> &, const nlohmann::json &) = 0;
 
     virtual void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) = 0;
 

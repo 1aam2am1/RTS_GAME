@@ -120,6 +120,17 @@ nlohmann::json JsonSerializer::operator()(bool b) {
     return nlohmann::json(b);
 }
 
+nlohmann::json JsonSerializer::operator()(sf::Color c) {
+    nlohmann::json result;
+
+    result["red"] = c.r;
+    result["green"] = c.g;
+    result["blue"] = c.b;
+    result["alpha"] = c.a;
+
+    return result;
+}
+
 nlohmann::json JsonSerializer::operator()(const TPtr<Object> &object) {
     if (object) {
         return Serialize(object.get());
@@ -158,6 +169,21 @@ void JsonSerializer::operator()(const std::function<void(bool)> &b, const nlohma
         b(j.get<bool>());
     } else {
         b(false);
+    }
+}
+
+void JsonSerializer::operator()(const std::function<void(sf::Color)> &c, const nlohmann::json &j) {
+    if (j.is_object() && !j.empty()) {
+        sf::Color col;
+
+        col.r = j["red"].get<int>();
+        col.g = j["green"].get<int>();
+        col.b = j["blue"].get<int>();
+        col.a = j["alpha"].get<int>();
+
+        c(col);
+    } else {
+        c({});
     }
 }
 

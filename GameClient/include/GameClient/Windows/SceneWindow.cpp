@@ -20,6 +20,7 @@ public:
     }
 
     void OnGUI() override {
+        ///TODO: Has it own camera implementation
 #if UNITY_EDITOR
         ImGui::Image(global.m_target.getTexture());
 #endif
