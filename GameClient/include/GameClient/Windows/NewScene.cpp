@@ -13,6 +13,10 @@ MENU_ITEM([]() {
 }, "File/New Scene", 10)
 
 MENU_ITEM([]() {
+    EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), "Assets/Scene/Basic.unity");
+}, "File/Save Scene", 11)
+
+MENU_ITEM([]() {
     newGameObject();
 }, "GameObject/Create empty", 10)
 

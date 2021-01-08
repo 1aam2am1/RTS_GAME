@@ -6,6 +6,7 @@
 #include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
+#include <GameClient/GlobalStaticVariables.h>
 
 namespace sf {
     inline void to_json(nlohmann::json &j, const Vector3f &p) {
@@ -82,7 +83,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
                                               }));
     } else {
         auto gm = gameObject();
-        auto &root = SceneManager::data[gm->scene.get()->id].root;
+        auto &root = global.scene.data[gm->scene.get()->id].root;
         root.erase(
                 std::find_if(root.begin(), root.end(),
                              [&](auto &it) {
@@ -94,7 +95,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
         new_parent->children.emplace_back(shared_from_this());
     } else {
         // add object to root
-        SceneManager::data[gameObject()->scene.get()->id].root.emplace_back(gameObject());
+        global.scene.data[gameObject()->scene.get()->id].root.emplace_back(gameObject());
     }
 
     m_parent = new_parent;
@@ -104,7 +105,7 @@ void Transform::DetachChildren() {
     auto old_children = children;
     children.clear();
 
-    auto &root = SceneManager::data[gameObject()->scene.get()->id].root;
+    auto &root = global.scene.data[gameObject()->scene.get()->id].root;
     for (auto it : old_children) {
         if (!it->m_parent) { continue; }
 

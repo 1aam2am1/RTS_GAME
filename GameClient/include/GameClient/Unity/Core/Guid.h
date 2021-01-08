@@ -57,7 +57,7 @@ namespace Unity {
             return this->second > l.second;
         }
 
-        bool empty() const {
+        [[nodiscard]] bool empty() const {
             return first == 0 && second == 0;
         }
 

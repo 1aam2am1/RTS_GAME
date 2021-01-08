@@ -49,7 +49,7 @@ void GameLoop::run() {
     }
     ///Start
     {
-        for (auto &scene: SceneManager::data) {
+        for (auto &scene: global.scene.data) {
             if (!scene.second.isLoaded) { continue; };
 
             for (auto &object : scene.second.new_components) {
@@ -94,7 +94,7 @@ void GameLoop::run() {
      */
 
     ///Update
-    for (auto &scene: SceneManager::data) {
+    for (auto &scene: global.scene.data) {
         if (!scene.second.isLoaded) { continue; };
 
         for (auto &object : scene.second.components) {
@@ -106,7 +106,7 @@ void GameLoop::run() {
     }
 
     ///Late Update
-    for (auto &scene: SceneManager::data) {
+    for (auto &scene: global.scene.data) {
         if (!scene.second.isLoaded) { continue; };
 
         for (auto &object : scene.second.components) {

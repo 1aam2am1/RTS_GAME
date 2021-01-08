@@ -12,18 +12,18 @@ SceneSerializer::SceneSerializer() {
 nlohmann::json SceneSerializer::operator()(const TPtr<Object> &ptr) {
     auto it = serialize_map.find(ptr);
     if (it != serialize_map.end()) {
+        return it->second;
+    } else {
         GUIDFileIDPack pack;
 
         //TODO: Prefab contains...
         if (!AssetDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
-            pack.guid = 0;
+            pack.guid = "";
             pack.id = ++max_id; //TODO: Change how we set id
 
             serialize_map.emplace(ptr, pack);
         }
         return pack;
-    } else {
-        return it->second;
     }
 }
 

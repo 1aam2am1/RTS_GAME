@@ -9,6 +9,7 @@
 #include <GameClient/WindowLayout.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <imgui.h>
+#include <GameClient/GlobalStaticVariables.h>
 
 class HierarchyWindow : public EditorWindow {
 public:
@@ -27,7 +28,7 @@ public:
     void OnGUI() override {
         bool clear_selection = true;
 
-        for (auto &it : SceneManager::data) {
+        for (auto &it : global.scene.data) {
             bool isLoaded = it.second.isLoaded;
             if (!isLoaded) {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
@@ -36,7 +37,7 @@ public:
             ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth |
                                             ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-            if (it.first == SceneManager::active_scene) {
+            if (it.first == global.scene.active_scene) {
                 node_flags |= ImGuiTreeNodeFlags_Selected;
             }
 
@@ -44,7 +45,7 @@ public:
             //print scene name
             bool open = ImGui::TreeNodeEx(it.second.name.data(), node_flags);
             if (ImGui::IsItemClicked() && !ImGui::IsMouseDoubleClicked(0)) {
-                SceneManager::active_scene = it.first;
+                global.scene.active_scene = it.first;
                 clear_selection = false;
             } else if (ImGui::IsItemClicked(1)) {
                 Selection::activeGameObject = nullptr;

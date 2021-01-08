@@ -7,8 +7,9 @@
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/MonoBehaviour.h>
+#include <GameClient/GlobalStaticVariables.h>
 
-EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components, m_scene)
+EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components)
 
 TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());
@@ -139,7 +140,7 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
     IM_ASSERT(result->m_gameObject == nullptr);
     result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
 
-    SceneManager::data[scene()->id].new_components.emplace_back(result);
+    global.scene.data[scene()->id].new_components.emplace_back(result);
 
     if (dynamic_cast<MonoBehaviour *>(result.get())) {
         if (Application::isPlaying() && activeInHierarchy()) {

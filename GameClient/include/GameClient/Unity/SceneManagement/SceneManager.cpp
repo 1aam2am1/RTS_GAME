@@ -15,13 +15,9 @@
 #include <GameClient/MainThread.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <cinttypes>
+#include <GameClient/GlobalStaticVariables.h>
 
 namespace fs = std::filesystem;
-
-uint64_t SceneManager::max_id = 1;
-uint64_t SceneManager::active_scene = 1;
-decltype(SceneManager::data) SceneManager::data{{1, {0, true}}};
-decltype(SceneManager::index_to_id) SceneManager::index_to_id{1};
 
 void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::SceneP scene) {
     if (!go) {
@@ -56,14 +52,14 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
 
     auto old_scene = go->scene.get();
     if (old_scene) {
-        auto &root = data[old_scene->id].root;
+        auto &root = global.scene.data[old_scene->id].root;
         root.erase(std::find_if(root.begin(), root.end(), [&](auto i) {
             return i == go;
         }));
     }
 
     {
-        auto &root = data[new_scene_id].root;
+        auto &root = global.scene.data[new_scene_id].root;
         root.emplace_back(go);
 
         go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
@@ -243,18 +239,18 @@ void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadScene
 }
 */
 int SceneManager::sceneCount() {
-    return data.size();
+    return global.scene.data.size();
 }
 
 SceneManager::SceneP SceneManager::GetActiveScene() {
-    auto it = data.find(active_scene);
-    if (it == data.end()) {
-        if (!data.empty()) {
+    auto it = global.scene.data.find(global.scene.active_scene);
+    if (it == global.scene.data.end()) {
+        if (!global.scene.data.empty()) {
             GameApi::log(ERR.fmt("ERR active_scene isn't one of created"));
         }
         //Should only happen when there isn't any scene
-        active_scene = max_id++;
-        data[active_scene].isLoaded = true;
+        global.scene.active_scene = global.scene.max_id++;
+        global.scene.data[global.scene.active_scene].isLoaded = true;
     }
-    return std::shared_ptr<Scene>(new Scene(active_scene));
+    return std::shared_ptr<Scene>(new Scene(global.scene.active_scene));
 }

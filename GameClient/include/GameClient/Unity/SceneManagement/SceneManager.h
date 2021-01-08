@@ -154,32 +154,7 @@ public:
     static sigslot::signal<SceneP> sceneUnloaded;
 
 protected:
-    friend class HierarchyWindow;
-
-    friend class Scene;
-
-    friend class Transform;
-
-    friend class GameObject;
-
-    friend class GameLoop;
-
-    struct Data {
-        int buildIndex = 0;
-        bool isLoaded = false;
-        std::string name = "Scene";
-        std::string path{};
-        std::vector<TPtr<GameObject>> root{};
-        std::vector<TPtr<Component>> components{};
-        std::vector<TPtr<Component>> new_components{};
-    };
-
-    static bool LoadSceneFull(Data &data, std::string_view path);
-
-    static uint64_t max_id; ///< Max used id
-    static std::map<uint64_t, Data> data; ///< Loaded scenes
-    static std::vector<uint64_t> index_to_id; ///< data_id[]
-    static uint64_t active_scene; ///< Now active scene
+    //static bool LoadSceneFull(Data &data, std::string_view path);
 };
 
 
