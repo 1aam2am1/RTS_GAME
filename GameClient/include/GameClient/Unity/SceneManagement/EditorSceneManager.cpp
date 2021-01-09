@@ -8,6 +8,8 @@
 #include <GameClient/GlobalStaticVariables.h>
 #include <Serialization/SceneSerializer.h>
 #include <Macro.h>
+#include <Editor/AssetDatabase.h>
+#include <GameClient/MainThread.h>
 
 namespace fs = std::filesystem;
 
@@ -97,20 +99,37 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
 
     try {
         SceneSerializer serializer;
+        uint64_t max_id = 0;
+
+        serializer.callback_id = [&max_id](auto ptr) -> std::pair<GUIDFileIDPack, bool> {
+            GUIDFileIDPack pack;
+
+            if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
+                return {pack, false};
+            }
+            pack.guid = "";
+            pack.id = ++max_id;
+
+            return {pack, true};
+        };
+
         nlohmann::json result;
 
         for (auto &ob : global.scene.data[scene->id].root) {
             if (!ob) { continue; }
-            nlohmann::json j;
-            auto id = ++serializer.max_id;
-            j[id] = serializer.Serialize(ob.get());
 
-            result["objects"].emplace_back(j);
+            result["objects"].emplace_back(serializer.Serialize(ob.get()));
         }
 
-        GameApi::log(INFO << result.dump(2, ' ', true));
+        bool ret = GameApi::saveFullFile(dstScenePath, result.dump(2, ' ', true));
 
-        return true;
+        if (ret) {
+            MainThread::Invoke([]() {
+                AssetDatabase::Refresh(); //TODO: Delete when implemented auto refresh
+            });
+        }
+
+        return ret;
     } EXCEPTION_PRINT
     return false;
 }

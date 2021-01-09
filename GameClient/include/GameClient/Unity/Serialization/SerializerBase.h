@@ -18,12 +18,11 @@ class TPtr;
 
 class SerializerBase {
 public:
-    /// json -> {'key: TYPE NAME', value: Serialization}
+    /// json -> {'TYPE NAME': Serialization}
     virtual nlohmann::json Serialize(const Object *) = 0;
 
-    /**template<typename T>
-    TPtr<T> Deserialize(const nlohmann::json&);
-     */
+    /// json -> {'TYPE NAME': Serialization}
+    TPtr<> Deserialize(const nlohmann::json &);
 
     /// json -> {value: Serialization from Serialize}
     TPtr<Object> Deserialize(std::type_index type, const nlohmann::json &);

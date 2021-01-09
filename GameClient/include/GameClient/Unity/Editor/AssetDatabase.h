@@ -37,7 +37,7 @@ public:
 
     /// Get the GUID and local file id from an object instance id.
     /// \return true if found
-    static bool TryGetGUIDAndLocalFileIdentifier(TPtr<Object> obj, Unity::GUID &guid, Unity::fileID &localId);
+    static bool TryGetGUIDAndLocalFileIdentifier(TPtr<const Object> obj, Unity::GUID &guid, Unity::fileID &localId);
 
     /// Returns an array of all Assets at assetPath.
     /// Some Asset files may contain multiple sub Assets

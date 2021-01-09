@@ -11,21 +11,23 @@
 
 class SceneSerializer final : public JsonSerializer {
 public:
-    explicit SceneSerializer();
+    SceneSerializer();
+
+    nlohmann::json Serialize(const Object *object) override;
+
+    void Deserialize(TPtr<Object>, const nlohmann::json &) override;
+
+    /// Callback that will be called when we need id for our object
+    std::function<std::pair<GUIDFileIDPack, bool>(TPtr<const Object>)> callback_id{};
+
+    /// Callback that will be called when we need object from this json id
+    std::function<TPtr<>(GUIDFileIDPack)> ret_callback_id{};
 
 protected:
-    nlohmann::json operator()(const TPtr<Object> &ptr) override;
+    void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) final;
 
-    void operator()(const std::function<void(TPtr<Object>)> &ptr, const nlohmann::json &json) override;
-
-    void operator()(const std::function<void(std::vector<TPtr<Object>>)> &, const nlohmann::json &) override;
-
-public:
-    std::vector<std::pair<std::function<void(TPtr<Object>)>, GUIDFileIDPack>> bind;
-    std::vector<std::pair<std::function<void(std::vector<TPtr<Object>>)>, nlohmann::json>> bind_vector;
-
-    std::unordered_map<TPtr<Object>, GUIDFileIDPack> serialize_map;
-    Unity::fileID max_id = 0;
+private:
+    std::unordered_map<TPtr<const Object>, GUIDFileIDPack> serialize_map{};
 };
 
 

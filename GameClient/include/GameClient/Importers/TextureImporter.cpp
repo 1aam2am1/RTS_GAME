@@ -36,7 +36,7 @@ public:
             r["width"].get_to(rect.width);
             r["height"].get_to(rect.height);
 
-            auto id = s["id"].get<int>();
+            auto id = s["id"].get<Unity::fileID>();
             auto pixelsPerUnit = s["pixelsPerUnit"].get<float>();
 
             ctx.AddObjectToAsset(id, Sprite::Create(texture, rect, pivot, pixelsPerUnit));

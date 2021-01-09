@@ -12,6 +12,8 @@
 namespace Unity {
 
     GUID::operator std::string() const {
+        if (first == 0 && second == 0) { return "0"; }
+
         return GameApi::to_hex(first) + GameApi::to_hex(second);
     }
 
@@ -21,7 +23,11 @@ namespace Unity {
             second = 0;
         } else {
             first = strtoull(str.substr(0, 16).data(), nullptr, 16);
-            if (str.length() > 16) second = strtoull(str.substr(16, 16).data(), nullptr, 16);
+            if (str.length() > 16) {
+                second = strtoull(str.substr(16, 16).data(), nullptr, 16);
+            } else {
+                second = 0;
+            }
         }
 
         return *this;

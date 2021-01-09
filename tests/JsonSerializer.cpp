@@ -58,4 +58,22 @@ TEST_CASE("JSON Serialization / Deserialization") {
         REQUIRE((999 < t->d && t->d < 1000));
         REQUIRE(t->str == "\"It should work!@#$%^&*(");
     }
+
+    SECTION("From string2") {
+
+        JsonSerializer j;
+        auto o = j.Deserialize(
+                "{\"JSONTestObject\":{\"d\":999.99,\"m_Name\":\"Name\",\"str\":\"\\\"It should work!@#$%^&*(\",\"x\":6,\"y\":15}}"_json);
+
+        TPtr<JSONTestObject> t{nullptr};
+
+        t = dynamic_pointer_cast<JSONTestObject>(o);
+
+        REQUIRE(t.get());
+        REQUIRE(t->name == "Name");
+        REQUIRE(t->x == 6);
+        REQUIRE(t->y == 15);
+        REQUIRE((999 < t->d && t->d < 1000));
+        REQUIRE(t->str == "\"It should work!@#$%^&*(");
+    }
 }

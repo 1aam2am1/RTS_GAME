@@ -6,15 +6,17 @@
 #define RTS_GAME_JSONSERIALIZER_H
 
 #include "SerializerBase.h"
+#include <GameClient/GuidFileIdPack.h>
 
 class JsonSerializer : public SerializerBase {
 public:
     nlohmann::json Serialize(const Object *) override;
 
+    /// json -> {value: Serialization from Serialize}
     template<typename T>
     TPtr<T> DeserializeT(const nlohmann::json &);
 
-    void Deserialize(TPtr<Object>, const nlohmann::json &) final;
+    void Deserialize(TPtr<Object>, const nlohmann::json &) override;
 
     using SerializerBase::Deserialize;
 

@@ -6,6 +6,9 @@
 #include <memory>
 #include <cstdio>
 #include <cinttypes>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace GameApi {
 
@@ -156,6 +159,12 @@ namespace GameApi {
     }
 
     bool saveFullFile(std::string_view path, std::string_view data) {
+        {
+            fs::path p = path;
+            p = p.parent_path();
+            fs::create_directory(p);
+        }
+
         FILE *file = fopen(path.data(), "wb");
         if (!file) { return false; }
         std::shared_ptr<FILE> guard{file, [](FILE *f) { fclose(f); }};

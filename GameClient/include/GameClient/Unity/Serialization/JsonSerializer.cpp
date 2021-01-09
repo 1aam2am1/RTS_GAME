@@ -18,8 +18,10 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
     }
     auto reflection = MetaData::getReflection(object);
     if (reflection.name.empty()) {
-        throw std::runtime_error(
-                "Object don't have valid type reflection: " + GameApi::demangle(typeid(*object).name()));
+        GameApi::log(
+                ERR.fmt("Object don't have valid type reflection:  %s",
+                        GameApi::demangle(typeid(*object).name()).data()));
+        return {};
     }
 
     auto &serialized = result[reflection.name.data()];
@@ -67,7 +69,6 @@ void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &seri
             } else {
                 std::visit([this, &c = check.value()](auto &&p) {
                     if constexpr (is_instance_v<function_traits_arg_t<decltype(p.first), 0>, std::vector>) {
-                        //TODO: vector specialization
                         if (p.first) {
                             using vector_type = function_traits_arg_t<decltype(p.first), 0>;
                             using object_type = typename vector_type::value_type;
@@ -75,19 +76,23 @@ void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &seri
                             if constexpr (std::is_same_v<object_type, TPtr<Object>>) {
                                 this->operator()(p.first, c);
                             } else {
-                                vector_type value;
-
+                                auto f = p.first;
+                                std::shared_ptr<vector_type> value(new vector_type,
+                                                                   [f](auto ptr) {
+                                                                       f(*ptr);
+                                                                       delete ptr;
+                                                                   });
                                 if (c.is_array()) {
-                                    value.reserve(c.size());
+                                    value->resize(c.size());
+                                    int i = 0;
                                     for (auto &v: c) {
-                                        std::function<void(object_type)> func = [&](auto n) {
-                                            value.emplace_back(n);
+                                        std::function<void(object_type)> func = [value, i](auto n) {
+                                            (*value)[i] = n;
                                         };
                                         this->operator()(func, v);
+                                        ++i;
                                     }
                                 }
-
-                                p.first(value);
                             }
                         }
                     } else if (p.first) {
@@ -189,24 +194,28 @@ void JsonSerializer::operator()(const std::function<void(sf::Color)> &c, const n
 
 void JsonSerializer::operator()(const std::function<void(TPtr<Object>)> &o, const nlohmann::json &j) {
     if (j.is_object() && !j.empty()) {
-        o(SerializerBase::Deserialize(std::string_view{j.begin().key().data()}, j.begin().value()));
+        o(SerializerBase::Deserialize(j));
     } else {
-        o(TPtr<>{nullptr});
+        o(TPtr<>{});
     }
 }
 
 void JsonSerializer::operator()(const std::function<void(std::vector<TPtr<Object>>)> &f, const nlohmann::json &j) {
-    std::vector<TPtr<Object>> value;
+    std::shared_ptr<std::vector<TPtr<Object>>> value(new std::vector<TPtr<Object>>,
+                                                     [f](auto ptr) {
+                                                         f(*ptr);
+                                                         delete ptr;
+                                                     });
 
     if (j.is_array()) {
-        value.reserve(j.size());
+        value->resize(j.size());
+        int i = 0;
         for (auto &v: j) {
-            auto func = [&](TPtr<Object> n) {
-                value.emplace_back(n);
+            auto func = [value, i](TPtr<Object> n) {
+                (*value)[i] = n;
             };
             this->operator()(func, v);
+            ++i;
         }
     }
-
-    f(value);
 }

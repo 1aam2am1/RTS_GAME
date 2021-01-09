@@ -1,7 +1,7 @@
 
 template<typename T, typename Y>
 constexpr bool operator==(const TPtr<T> &l, const TPtr<Y> &r) noexcept {
-    return static_cast<Object *>(l.get()) == static_cast<Object *>(r.get());
+    return static_cast<const Object *>(l.get()) == static_cast<const Object *>(r.get());
 }
 
 template<class T, class U>

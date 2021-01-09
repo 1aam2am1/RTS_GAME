@@ -264,7 +264,8 @@ TPtr<Texture2D> AssetDatabase::GetCachedIcon(std::string path) {
     return TPtr<Texture2D>(nullptr);
 }
 */
-bool AssetDatabase::TryGetGUIDAndLocalFileIdentifier(TPtr<Object> obj, Unity::GUID &guid, Unity::fileID &localId) {
+bool
+AssetDatabase::TryGetGUIDAndLocalFileIdentifier(TPtr<const Object> obj, Unity::GUID &guid, Unity::fileID &localId) {
     const auto &d = get_data();
 
     std::mutex m;

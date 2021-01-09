@@ -28,3 +28,14 @@ nlohmann::json SerializerBase::operator()(const nlohmann::json &j) {
 void SerializerBase::operator()(const std::function<void(nlohmann::json)> &j, const nlohmann::json &o) {
     j(o);
 }
+
+TPtr<> SerializerBase::Deserialize(const nlohmann::json &j) {
+    if (!j.is_object() || j.empty()) { return {}; }
+    for (auto &ob : j.items()) {
+        if (ob.key().starts_with("__")) { continue; }
+
+        return Deserialize(ob.key(), ob.value());
+    }
+
+    return {};
+}

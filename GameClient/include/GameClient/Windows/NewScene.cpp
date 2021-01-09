@@ -13,7 +13,9 @@ MENU_ITEM([]() {
 }, "File/New Scene", 10)
 
 MENU_ITEM([]() {
-    EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), "Assets/Scene/Basic.unity");
+    if (!EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), "Assets/Scenes/Basic.unity")) {
+        GameApi::log(ERR.fmt("Can't save current scene"));
+    }
 }, "File/Save Scene", 11)
 
 MENU_ITEM([]() {
