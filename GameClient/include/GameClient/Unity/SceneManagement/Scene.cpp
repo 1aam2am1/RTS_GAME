@@ -45,3 +45,11 @@ bool Scene::isLoaded() {
 bool Scene::isValid() {
     return global.scene.data.find(id) != global.scene.data.end();
 }
+
+std::string Scene::path() {
+    auto it = global.scene.data.find(id);
+    if (it != global.scene.data.end()) {
+        return it->second.path;
+    }
+    return {};
+}

@@ -107,6 +107,12 @@ void EditorWindow::ShowAsDropDown(sf::FloatRect buttonRect, sf::Vector2f windowS
     }
 }
 
+void EditorWindow::ShowPopup() {
+    if (work == NotShown) {
+        work = Popup;
+    }
+}
+
 void EditorWindow::drawGui() {
     if (work != NotShown) {
         ImGui::SetNextWindowSizeConstraints(minSize, maxSize);
@@ -150,7 +156,7 @@ void EditorWindow::drawGui() {
             }
 
             OnStyleChange();
-            if (ImGui::BeginPopup((titleContent + imGuiName).c_str(), flags)) {
+            if (ImGui::BeginPopup((titleContent + imGuiName).c_str(), flags | ImGuiWindowFlags_NoMove)) {
                 this->OnGUI();
 
                 ImGui::EndPopup();
@@ -163,9 +169,13 @@ void EditorWindow::drawGui() {
         case Popup: {
             ///ImGui::OpenPopup
 
+            if (!start) {
+                start = true;
+                ImGui::OpenPopup(imGuiName.data());
+            }
+
             OnStyleChange();
-            if (ImGui::BeginPopupModal((titleContent + imGuiName).c_str(), nullptr,
-                                       flags | ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginPopupModal((titleContent + imGuiName).c_str(), nullptr, flags)) {
                 this->OnGUI();
 
                 ImGui::EndPopup();

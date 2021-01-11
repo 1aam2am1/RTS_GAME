@@ -144,6 +144,8 @@ set(SRC
         include/GameClient/Unity/Core/SpriteRenderer.h
         include/GameClient/Unity/Editor/EditorGuiLayout.cpp
         include/GameClient/Unity/Editor/EditorGuiLayout.h
+        include/GameClient/Windows/FileDialogWindow.cpp
+        include/GameClient/Windows/FileDialogWindow.h
         )
 
 add_executable(GameClient ${SRC})

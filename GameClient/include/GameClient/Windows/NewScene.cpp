@@ -7,16 +7,30 @@
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/Unity/Core/Transform.h>
+#include "FileDialogWindow.h"
 
 MENU_ITEM([]() {
     EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
 }, "File/New Scene", 10)
 
-MENU_ITEM([]() {
-    if (!EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), "Assets/Scenes/Basic.unity")) {
-        GameApi::log(ERR.fmt("Can't save current scene"));
+MENU_ITEM(([]() {
+    auto scene = EditorSceneManager::GetActiveScene();
+    auto path = scene->path();
+
+    if (path.empty()) {
+        auto window = EditorWindow::GetWindow<FileDialogWindow>();
+        window->minSize.x = 600;
+        window->minSize.y = 500;
+        window->ShowPopup();
+
+        window->execute = [scene](auto path) {
+            if (!path.empty())
+                EditorSceneManager::SaveScene(scene, path.generic_string(), false);
+        };
+    } else {
+        EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), path, false);
     }
-}, "File/Save Scene", 11)
+}), "File/Save Scene", 11)
 
 MENU_ITEM([]() {
     newGameObject();

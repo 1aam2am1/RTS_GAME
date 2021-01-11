@@ -10,6 +10,7 @@
 #include <Macro.h>
 #include <Editor/AssetDatabase.h>
 #include <GameClient/MainThread.h>
+#include <GameClient/Windows/FileDialogWindow.h>
 
 namespace fs = std::filesystem;
 
@@ -85,7 +86,16 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
 
     if (dstScenePath.empty()) {
         if (global.scene.data[scene->id].path.empty()) {
-            //TODO: File dialog
+            auto window = EditorWindow::GetWindow<FileDialogWindow>();
+            window->minSize.x = 600;
+            window->minSize.y = 500;
+            window->ShowPopup();
+
+            window->execute = [scene, saveAsCopy](auto path) {
+                if (!path.empty())
+                    SaveScene(scene, path.generic_string(), saveAsCopy);
+            };
+
             return false;
         } else {
             p = global.scene.data[scene->id].path;
@@ -127,6 +137,9 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
             MainThread::Invoke([]() {
                 AssetDatabase::Refresh(); //TODO: Delete when implemented auto refresh
             });
+            if (!saveAsCopy) {
+                dirty.erase(scene->id);
+            }
         }
 
         return ret;
