@@ -5,8 +5,6 @@
 #ifndef RTS_GAME_SPRITE_H
 #define RTS_GAME_SPRITE_H
 
-#include <GameClient/Unity/Editor/AssetImporter.h>
-#include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/Texture2D.h>
 #include <SFML/Graphics/Sprite.hpp>
 #include <GameClient/TPtr.h>

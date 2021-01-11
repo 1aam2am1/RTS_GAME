@@ -6,8 +6,7 @@
 #define RTS_GAME_OBJECT_H
 
 #include <GameApi/Signal.h>
-#include <SFML/Window.hpp>
-#include <variant>
+#include <SFML/System/Vector3.hpp>
 #include <GameApi/GlobalLogSource.h>
 #include <GameApi/Compiler.h>
 #include "Quaternion.h"

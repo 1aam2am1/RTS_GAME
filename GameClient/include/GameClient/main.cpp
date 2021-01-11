@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include <GameClient/Argv_options.h>
 #include <GameApi/GlobalLogSource.h>
 #include <Version/version.h>

@@ -5,7 +5,7 @@
 #ifndef RTS_GAME_MAINTHREAD_H
 #define RTS_GAME_MAINTHREAD_H
 
-#include <memory>
+#include <functional>
 #include <GameClient/Unity/Core/Object.h>
 
 class MainThread {

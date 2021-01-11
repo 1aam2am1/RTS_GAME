@@ -3,7 +3,6 @@
 //
 
 #include "SerializerBase.h"
-#include <GameClient/TPtr.h>
 #include <GameClient/MetaData.h>
 
 TPtr<Object> SerializerBase::Deserialize(std::string_view str, const nlohmann::json &j) {

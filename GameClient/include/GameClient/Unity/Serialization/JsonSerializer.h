@@ -6,7 +6,6 @@
 #define RTS_GAME_JSONSERIALIZER_H
 
 #include "SerializerBase.h"
-#include <GameClient/GuidFileIdPack.h>
 
 class JsonSerializer : public SerializerBase {
 public:

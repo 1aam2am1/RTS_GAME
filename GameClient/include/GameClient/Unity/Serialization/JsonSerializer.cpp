@@ -5,7 +5,6 @@
 #include "JsonSerializer.h"
 #include <GameApi/IsInstance.h>
 #include <GameClient/MetaData.h>
-#include <GameClient/TPtr.h>
 #include "ISerializationCallbackReceiver.h"
 
 

@@ -17,6 +17,8 @@
 #include <GameClient/TPtr.h>
 #include <GameApi/SetterGetter.h>
 #include <SFML/Graphics/Color.hpp>
+#include <GameApi/IsInstance.h>
+#include <variant>
 
 class MetaData {
     struct Reflect;

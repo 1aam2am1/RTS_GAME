@@ -5,16 +5,12 @@
 #include "SceneManager.h"
 #include <filesystem>
 #include <GameApi/BasicString.h>
-#include <nlohmann/json.hpp>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 #include <GameClient/Unity/Serialization/SceneSerializer.h>
-#include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GuidFileIdPack.h>
-#include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/MainThread.h>
 #include <GameClient/Unity/Core/Transform.h>
-#include <cinttypes>
 #include <GameClient/GlobalStaticVariables.h>
 
 namespace fs = std::filesystem;

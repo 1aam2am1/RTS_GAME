@@ -10,6 +10,7 @@
 #include <GameClient/TPtr.h>
 #include <typeindex>
 #include <map>
+#include <functional>
 
 class Editor : public ScriptableObject {
 public:

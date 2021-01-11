@@ -7,9 +7,7 @@
 #include <GameClient/Unity/Editor/EditorApplication.h>
 #include <Core/Time.h>
 #include <SceneManagement/SceneManager.h>
-#include <Macro.h>
 #include <Core/MonoBehaviour.h>
-#include <Core/Camera.h>
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();

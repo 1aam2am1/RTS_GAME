@@ -4,10 +4,8 @@
 
 #include "EditorSceneManager.h"
 #include <filesystem>
-#include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include <Serialization/SceneSerializer.h>
-#include <Macro.h>
 #include <Editor/AssetDatabase.h>
 #include <GameClient/MainThread.h>
 #include <GameClient/Windows/FileDialogWindow.h>

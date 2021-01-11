@@ -18,10 +18,8 @@
 #include <map>
 #include <filesystem>
 #include <chrono>
-#include <GameApi/StringFormatter.h>
 #include <GameApi/GlobalLogSource.h>
 #include <unordered_set>
-#include <nlohmann/json.hpp>
 #include <set>
 #include <execution>
 #include <GameClient/Unity/Editor/OneGuidFile.h>
@@ -29,6 +27,7 @@
 #include <queue>
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 #include <GameClient/Unity/Editor/SceneAsset.h>
+#include <GameClient/Unity/Macro.h>
 
 namespace fs = std::filesystem;
 

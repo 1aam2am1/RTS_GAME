@@ -13,9 +13,6 @@
 #include <GameClient/TPtr.h>
 #include <SFML/Graphics/Color.hpp>
 
-template<typename>
-class TPtr;
-
 class SerializerBase {
 public:
     /// json -> {'TYPE NAME': Serialization}

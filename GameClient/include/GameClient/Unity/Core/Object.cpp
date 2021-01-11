@@ -4,8 +4,6 @@
 
 #include "Object.h"
 #include <GameClient/Unity/Macro.h>
-#include <GameClient/Unity/Editor/ObjectFactory.h>
-#include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/Transform.h>
 
 EXPORT_CLASS(Object, ("m_Name", name));

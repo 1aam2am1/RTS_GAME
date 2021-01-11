@@ -6,6 +6,7 @@
 #define RTS_GAME_MENU_H
 
 
+#include <SFML/Window/Mouse.hpp>
 #include "EditorWindow.h"
 #include "MenuCommand.h"
 #include "Macro.h"

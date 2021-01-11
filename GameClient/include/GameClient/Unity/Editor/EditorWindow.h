@@ -11,7 +11,6 @@
 #include <GameApi/SetterGetter.h>
 #include <list>
 #include <typeindex>
-#include <GameApi/Compiler.h>
 #include <GameApi/GlobalLogSource.h>
 
 class MainWindow;

@@ -14,23 +14,20 @@ class ObjectFactory {
 public:
 
     /// Creates a new component and adds it to the specified GameObject.
-    static Component *AddComponent(GameObject *gameObject, std::type_info type);
+    static TPtr<Component> AddComponent(TPtr<GameObject> gameObject, std::type_info type);
 
     template<typename T>
-    static Component *AddComponent(GameObject *gameObject);
+    static TPtr<T> AddComponent(TPtr<GameObject> gameObject);
 
     /// Creates a new GameObject.
-    static GameObject *CreateGameObject(std::string name, std::vector<std::type_info> types);
+    static TPtr<GameObject> CreateGameObject(std::string name, std::vector<std::type_info> types);
 
     /// Create a new instance of the given type.
-    static Object *CreateInstance(std::type_info type);
-
-    template<typename T>
-    static Object *CreateInstance();
+    static TPtr<> CreateInstance(std::type_info type);
 
     /// Create a new instance of the given type.
     template<typename T>
-    static T *CreateInstance();
+    static TPtr<T> CreateInstance();
 
 };
 

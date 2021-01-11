@@ -3,7 +3,7 @@
 //
 
 #include "SceneSerializer.h"
-#include <GameClient/Unity/Editor/AssetDatabase.h>
+#include "GameClient/Unity/Core/Guid.h"
 
 SceneSerializer::SceneSerializer() {
     static uint64_t max_id;
