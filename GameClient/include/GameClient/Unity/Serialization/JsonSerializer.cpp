@@ -33,21 +33,24 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
                                  GameApi::demangle(typeid(*object).name()).data()));
         }
         check = std::visit([this](auto &&p) {
+            if (!p.second) {
+                return nlohmann::json{};
+            }
             if constexpr (is_instance_v<decltype(p.second()), std::vector>) {
-                auto vec = p.second();
-                nlohmann::json result;
-
-                for (auto &it: vec) {
-                    result.emplace_back(this->operator()(it));
-                }
-
-                return result;
-            } else {
-                if (p.second) {
+                if constexpr(is_instance_v<typename decltype(p.second())::value_type, TPtr>) {
                     return this->operator()(p.second());
                 } else {
-                    return nlohmann::json{};
+                    auto vec = p.second();
+                    nlohmann::json result;
+
+                    for (auto &it: vec) {
+                        result.emplace_back(this->operator()(it));
+                    }
+
+                    return result;
                 }
+            } else {
+                return this->operator()(p.second());
             }
         }, it.second);
     }
@@ -142,6 +145,16 @@ nlohmann::json JsonSerializer::operator()(const TPtr<Object> &object) {
     } else {
         return nlohmann::json();
     }
+}
+
+nlohmann::json JsonSerializer::operator()(const std::vector<TPtr<Object>> &vec) {
+    nlohmann::json result;
+
+    for (auto &it: vec) {
+        result.emplace_back(this->operator()(it));
+    }
+
+    return result;
 }
 
 

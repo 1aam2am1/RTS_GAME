@@ -66,7 +66,7 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
                                                    static_cast<float>(t->t0.getSize().y)});
         }*/
 
-        if (objType == typeid(*value)) {
+        if (value && objType == typeid(*value)) {
             return value;
         }
 

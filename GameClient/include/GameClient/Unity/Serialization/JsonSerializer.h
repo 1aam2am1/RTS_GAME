@@ -34,6 +34,8 @@ protected:
 
     nlohmann::json operator()(const TPtr<Object> &) override;
 
+    nlohmann::json operator()(const std::vector<TPtr<Object>> &) override;
+
     using SerializerBase::operator();
     //endregion
 

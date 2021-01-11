@@ -82,6 +82,7 @@ public:
             objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
 
+        on_change(*this);
         return *this;
     }
 
@@ -94,6 +95,7 @@ public:
             objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
 
+        on_change(*this);
         return *this;
     }
 
@@ -108,6 +110,7 @@ public:
             objectConnection = ptr->onDestroySignal.connect(&TPtr::destroy, this);
         }
 
+        on_change(*this);
         return *this;
     }
 
@@ -150,7 +153,8 @@ public:
         return ptr.use_count();
     }
 
-    ///TODO: Signal when object ptr change
+    /// Emits signal when pointer changed
+    sigslot::signal<TPtr<T> &> on_change{};
 private:
     std::shared_ptr<T> ptr;
     sigslot::scoped_connection objectConnection;
@@ -161,6 +165,7 @@ private:
             *this = static_pointer_cast<T>(t->shared_from_this());
         } else {
             *this = nullptr;
+            on_change(*this);
         }
     }
 

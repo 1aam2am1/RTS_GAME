@@ -50,6 +50,8 @@ protected:
     virtual nlohmann::json operator()(const TPtr<Object> &) = 0;
 
     virtual nlohmann::json operator()(const nlohmann::json &);
+
+    virtual nlohmann::json operator()(const std::vector<TPtr<Object>> &) = 0;
     //endregion
 
     //region DeSerialize

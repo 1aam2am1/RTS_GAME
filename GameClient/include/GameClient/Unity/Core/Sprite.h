@@ -14,6 +14,8 @@
 
 class Sprite : public Object {
 public:
+    Sprite();
+
     sf::Sprite s0;
 
     uint32_t pixelsPerUnit = 32;

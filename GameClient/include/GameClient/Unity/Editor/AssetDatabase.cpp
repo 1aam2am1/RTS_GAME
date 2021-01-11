@@ -578,7 +578,6 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
 
             mutable int64_t priority = INT64_MIN;
 
-            Unity::GUID guid;
             OneGUIDFile backup;
         };
 
@@ -632,6 +631,7 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
                 ob->second.asset_time == iterator->second.asset_time) {
                 //TODO: Load files md5 and check
 
+                assert(!ob->second.guid.empty());
                 iterator->second.guid = ob->second.guid;
                 iterator->second.backup = d.objects[ob->second.guid];
 
@@ -647,20 +647,23 @@ void AssetDatabase::Refresh(ImportAssetOptions options) {
         d.objects.clear();
 
         auto setCompare = [](auto &&f1, auto &&f2) {
-            return f1.second.priority > f2.second.priority;
+            return f1.second->priority > f2.second->priority;
         };
-        using PAIR = std::pair<std::string, A>;
-        std::priority_queue<PAIR, std::vector<PAIR>, decltype(setCompare)> sorted(files.begin(), files.end(),
-                                                                                  setCompare);
+        using PAIR = std::pair<std::string, A *>;
+        std::priority_queue<PAIR, std::vector<PAIR>, decltype(setCompare)> sorted(setCompare);
+
+        for (auto &it : files) {
+            sorted.emplace(it.first, &it.second);
+        }
 
         ///import assets
         while (!sorted.empty()) {
             auto &ob = sorted.top();
-            if (ob.second.guid.empty()) {
+            if (ob.second->guid.empty()) {
                 ImportAssetGlobal(ob.first, options);
             } else {
-                d.objects[ob.second.guid] = ob.second.backup;
-                d.path_files[ob.first] = ob.second;
+                d.objects[ob.second->guid] = ob.second->backup;
+                d.path_files[ob.first] = *ob.second;
             }
             sorted.pop();
         }

@@ -125,17 +125,19 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
 
         nlohmann::json result;
 
-        for (auto &ob : global.scene.data[scene->id].root) {
-            if (!ob) { continue; }
-
-            result["objects"].emplace_back(serializer.Serialize(ob.get()));
+        {
+            std::vector<TPtr<Object>> c{};
+            c.reserve(global.scene.data[scene->id].root.size());
+            std::copy(global.scene.data[scene->id].root.begin(), global.scene.data[scene->id].root.end(),
+                      back_inserter(c));
+            result["objects"] = serializer.Serialize(c);
         }
 
         bool ret = GameApi::saveFullFile(dstScenePath, result.dump(2, ' ', true));
 
         if (ret) {
             MainThread::Invoke([]() {
-                AssetDatabase::Refresh(); //TODO: Delete when implemented auto refresh
+                AssetDatabase::Refresh(); //TODO: Delete this when implemented auto refresh
             });
             if (!saveAsCopy) {
                 dirty.erase(scene->id);

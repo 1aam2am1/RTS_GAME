@@ -4,6 +4,17 @@
 
 #include "Sprite.h"
 
+Sprite::Sprite() {
+    texture.on_change.connect([&](auto) {
+        if (texture) {
+            s0.setTexture(texture->t0);
+        } else {
+            sf::Texture *t0 = nullptr;
+            s0.setTexture(*t0);//Reverence must be null as sprite is now null.
+        }
+    });
+}
+
 TPtr<Sprite>
 Sprite::Create(TPtr<Texture2D> texture, sf::FloatRect rect, sf::Vector2f pivot, float pixelsPerUnit) {
     TPtr<Sprite> result{std::make_shared<Sprite>()};
