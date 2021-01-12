@@ -240,9 +240,9 @@ struct MetaData::Register {
     }
 
     template<typename Fun, typename Fun2>
-    requires requires(Fun2 get){ get(std::declval<T>()); }
+    requires requires(Fun2 get){ get(std::declval<T *>()); }
     void registerMemberForSerialize(std::string_view str, Fun set, Fun2 get) {
-        using ResultType = decltype(get(std::declval<T>()));
+        using ResultType = decltype(get(std::declval<T *>()));
         registerMemberForSerialize<ResultType>(str, set, get);
     }
 

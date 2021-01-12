@@ -34,10 +34,11 @@ struct GlobalStaticVariables {
 #endif
 
     struct {
-        uint64_t max_id = 0; ///< Max used id
+        uint64_t max_id = 1; ///< Max used id
         std::map<uint64_t, SceneData> data{}; ///< Loaded scenes
         //std::vector<uint64_t> index_to_id{1}; ///< data_id[]
-        uint64_t active_scene = 0; ///< Now active scene
+        uint64_t active_scene = 1; ///< Now active scene
+        std::unordered_map<std::thread::id, uint64_t> on_load_active_id{};
     } scene;
 };
 

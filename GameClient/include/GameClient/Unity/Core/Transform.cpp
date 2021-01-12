@@ -23,7 +23,7 @@ namespace sf {
     }
 }
 
-EXPORT_CLASS(Transform, m_localPosition, m_localRotation, m_localScale, m_parent, children);
+EXPORT_CLASS(Transform, m_localPosition, m_localRotation, m_localScale, ("m_parent", parent), children);
 
 Transform::Transform() :
         localPosition([&](auto p) { m_localPosition = p; }, [&]() { return m_localPosition; }),

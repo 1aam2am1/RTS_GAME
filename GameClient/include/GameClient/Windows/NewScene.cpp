@@ -24,8 +24,12 @@ MENU_ITEM(([]() {
         window->ShowPopup();
 
         window->execute = [scene](auto path) {
-            if (!path.empty())
+            if (!path.empty()) {
+                if (path.extension().string() != ".unity") {
+                    path += ".unity";
+                }
                 EditorSceneManager::SaveScene(scene, path.generic_string(), false);
+            }
         };
     } else {
         EditorSceneManager::SaveScene(EditorSceneManager::GetActiveScene(), path, false);

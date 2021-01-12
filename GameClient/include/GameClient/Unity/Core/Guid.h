@@ -29,33 +29,9 @@ namespace Unity {
 
         GUID &operator=(std::string str);
 
-        bool operator==(const GUID &l) const {
-            return first == l.first && second == l.second;
-        }
+        constexpr bool operator==(const GUID &l) const = default;
 
-        bool operator!=(const GUID &l) const {
-            return !(*this == l);
-        }
-
-        bool operator<(const GUID &l) const {
-            if (this->first < l.first) {
-                return true;
-            }
-            if (this->first > l.first) {
-                return false;
-            }
-            return this->second < l.second;
-        }
-
-        bool operator>(const GUID &l) const {
-            if (this->first > l.first) {
-                return true;
-            }
-            if (this->first < l.first) {
-                return false;
-            }
-            return this->second > l.second;
-        }
+        constexpr auto operator<=>(const GUID &) const = default;
 
         [[nodiscard]] bool empty() const {
             return first == 0 && second == 0;

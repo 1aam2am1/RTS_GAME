@@ -147,6 +147,8 @@ public:
 private:
     friend class SceneManager;
 
+    friend class EditorSceneManager;
+
     TPtr<Scene> m_scene{};
 
     std::vector<TPtr<Component>> components;

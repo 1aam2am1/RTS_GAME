@@ -11,7 +11,13 @@
 struct GUIDFileIDPack {
     Unity::GUID guid{};
     Unity::fileID id{};
+
+    constexpr bool operator==(const GUIDFileIDPack &) const = default;
+
+    constexpr auto operator<=>(const GUIDFileIDPack &) const = default;
 };
+
+MAKE_HASHABLE(GUIDFileIDPack, t.guid, t.id)
 
 inline void to_json(nlohmann::json &j, const GUIDFileIDPack &p) {
     j.clear();
