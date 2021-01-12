@@ -54,7 +54,7 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
         }));
 
         auto &com = global.scene.data[old_scene->id].components;
-        ///remove and add components to new scene
+        ///remove and add components to new scene (=nullptr is faster than erase)
     }
 
     {

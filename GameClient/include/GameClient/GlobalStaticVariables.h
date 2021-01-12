@@ -11,7 +11,15 @@
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <Core/Renderer.h>
 
-struct SceneData {
+class SceneData {
+public:
+    SceneData();
+
+    ~SceneData();
+    //SceneData(const SceneData&) = default;
+    //SceneData(SceneData&&) = default;
+
+
     int buildIndex = 0;
     bool isLoaded = false;
     std::string name = "Scene";
@@ -19,6 +27,12 @@ struct SceneData {
     std::vector<TPtr<GameObject>> root{};
     std::vector<TPtr<Component>> components{};
     std::vector<TPtr<Component>> new_components{};
+
+    std::vector<TPtr<Component>> loading_awake{}; //used when loading
+
+
+private:
+    const std::shared_ptr<const int> guard;
 };
 
 struct GlobalStaticVariables {

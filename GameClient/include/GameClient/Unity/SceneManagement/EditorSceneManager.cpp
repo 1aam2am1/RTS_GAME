@@ -69,7 +69,17 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
                 fix(ob);
             }
 
+            global.scene.data[new_id].isLoaded = true;
+            for (auto &ob : global.scene.data[new_id].loading_awake) {
+                //activeInHierarchy => true
+                assert(ob->gameObject()->activeInHierarchy());
+                if (Application::isPlaying() /**|| ExecuteInEditMode*/) {
+                    ob->UnityAwake();
+                }
+            }
+
         } catch (const std::exception &e) {
+            global.scene.data.erase(new_id);
             GameApi::log(ERR.fmt("%s", e.what()));
             return std::shared_ptr<Scene>{new Scene(0)};
         }
@@ -91,7 +101,7 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
     auto new_id = global.scene.max_id++;
 
     if (mode == LoadSceneMode::Single) {
-        global.scene.data.clear(); //TODO: !! Delete root
+        global.scene.data.clear();
         global.scene.active_scene = new_id;
     }
 

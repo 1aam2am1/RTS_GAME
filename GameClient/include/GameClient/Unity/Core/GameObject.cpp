@@ -52,9 +52,10 @@ bool GameObject::activeInHierarchy() const {
 
     return parent->gameObject()->activeInHierarchy();*/
 
+//TODO: Make it vaster by caching result!
+
     const GameObject *gm = this;
 
-    if (!gm->m_scene->isLoaded()) { return false; }
     while (true) {
         if (!gm->activeSelf()) { return false; }
 
@@ -72,24 +73,35 @@ bool GameObject::activeSelf() const {
 }
 
 void GameObject::SetActive(bool value) noexcept {
+    bool was_active_in_h = activeInHierarchy();
+
     if (m_active != value) {
         m_active = value;
 
-        if (!Application::isPlaying()) { return; }
+        bool now_active_in_h = activeInHierarchy();
+        if (now_active_in_h) {
+            auto copy = to_awake;
+            to_awake.clear();
 
-        for (auto &c: to_awake) {
-            c->UnityAwake();
-        }
-        to_awake.clear();
-
-        for (auto &c : components) {
-//TODO: !!! OnEnable is checking if it is enabled -> parent/child
-            auto mono = dynamic_cast<MonoBehaviour *>(c.get());
-            if (mono) {
-                if (value) {
-                    mono->OnEnable();
+            bool isPlaying = Application::isPlaying();
+            for (auto it = copy.begin(); it != copy.end(); ++it) {
+                if ((isPlaying /**|| ExecuteInEditMode*/)) {
+                    (*it)->UnityAwake();
                 } else {
-                    mono->OnDisable();
+                    to_awake.emplace_back(*it);
+                }
+            }
+        }
+
+        if (now_active_in_h != was_active_in_h) {
+            for (auto &c : components) {
+                auto mono = dynamic_cast<MonoBehaviour *>(c.get());
+                if (mono) {
+                    if (now_active_in_h) {
+                        mono->OnEnable();
+                    } else {
+                        mono->OnDisable();
+                    }
                 }
             }
         }
@@ -143,7 +155,15 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
 
     global.scene.data[scene()->id].new_components.emplace_back(result);
 
-    if (Application::isPlaying() && activeInHierarchy()) {
+    // Not in play mode as it is loading, then not playing
+    if (m_scene && !m_scene->isLoaded()) {
+        if (activeInHierarchy()) {
+            ///to_global_to_awake
+        } else {
+            to_awake.emplace_back(result);
+        }
+
+    } else if ((Application::isPlaying() /**|| ExecuteInEditMode*/) && activeInHierarchy()) {
         result->UnityAwake();
     } else {
         to_awake.emplace_back(result);

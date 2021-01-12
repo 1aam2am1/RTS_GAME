@@ -38,7 +38,7 @@ void MainThread::run() {
     }
 
     {
-        std::lock_guard<std::mutex> lock(m);
+        //std::lock_guard<std::mutex> lock(m);
         copy->clear();
     }
 }

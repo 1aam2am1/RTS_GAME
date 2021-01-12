@@ -10,6 +10,7 @@
 namespace GameApi {
     template<typename B, template<typename> typename L>
     class Lock {
+        using T = decltype(B::member);
     public:
         Lock() = delete;
 
@@ -33,9 +34,17 @@ namespace GameApi {
             return &base->member;
         }
 
+        auto &operator T() {
+            return base->member;
+        }
+
+        auto &operator T() const {
+            return base->member;
+        }
+
     private:
-        B *base;
-        std::shared_ptr<L<decltype(B::m)>> lock;
+        const B *base;
+        const std::shared_ptr<L<decltype(B::m)>> lock;
     };
 
 }

@@ -77,6 +77,12 @@ public:
 private:
     friend class GameObject;
 
+    friend class GameLoop;
+
+    friend class EditorSceneManager;
+
+    friend class SceneManager;
+
     TPtr<GameObject> m_gameObject{};
 
 protected:

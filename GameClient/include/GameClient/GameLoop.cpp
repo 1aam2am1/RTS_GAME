@@ -49,12 +49,9 @@ void GameLoop::run() {
 
             for (auto &object : scene.second.new_components) {
                 if (object) {
-                    auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-                    if (mono) {
-                        if (mono->gameObject()->activeInHierarchy()) {
-                            mono->Start();
-                        } else { continue; }
-                    }
+                    if (object->gameObject()->activeInHierarchy()) {
+                        object->UnityStart();
+                    } else { continue; }
 
                     scene.second.components.emplace_back(object);
                     object = nullptr;
@@ -112,10 +109,9 @@ void GameLoop::run() {
         }
     }
 
-    render:
     ///Scene rendering
     for (auto &camera : global.m_draw_order) {
-        if (camera.second->isActiveAndEnabled()) {
+        if (camera.second && camera.second->isActiveAndEnabled()) {
             camera.second->Render();
         }
     }
