@@ -139,17 +139,6 @@ public:
 
 private:
     friend class GameObject;
-
-    bool was_awakened = false;
-
-    void UnityAwake() override {
-        if (!was_awakened) {
-            was_awakened = true;
-            Awake();
-        } else {
-            GameApi::log(ERR << "It should not happen fix please");
-        }
-    }
 };
 
 

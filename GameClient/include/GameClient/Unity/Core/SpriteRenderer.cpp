@@ -10,7 +10,7 @@
 
 ADD_COMPONENT_MENU(SpriteRenderer, sprite)
 
-void SpriteRenderer::UnityAwake() {
+void SpriteRenderer::Awake() {
     //TODO: Move to UnityUpdate
     global.m_render.emplace_back(shared_from_this());
 }

@@ -188,6 +188,9 @@ private:
     template<typename>
     friend
     class std::hash;
+
+    friend
+    class MetaData;
 };
 
 template<typename T, typename Y>

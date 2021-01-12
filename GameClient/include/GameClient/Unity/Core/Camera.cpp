@@ -28,7 +28,7 @@ Camera::~Camera() {
 
 }
 
-void Camera::UnityAwake() {
+void Camera::Awake() {
     global.m_cameras.emplace_back(shared_from_this());
     global.m_draw_order.emplace(m_depth, shared_from_this());
 }

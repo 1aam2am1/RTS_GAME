@@ -81,8 +81,14 @@ private:
 
 protected:
     //TODO:: Make it private in MonoBehaviour
-    //Call after scene loading or AddComponent relationship
-    virtual void UnityAwake() {}
+
+#define ONE_TIME_EXEC(NAME) void Unity##NAME(){if(!m_unity##NAME##ed){m_unity##NAME##ed=true;NAME();}}bool m_unity##NAME##ed = false; virtual void NAME(){}
+
+    ONE_TIME_EXEC(Awake)
+
+    ONE_TIME_EXEC(Start)
+
+#undef ONE_TIME_EXEC
 };
 
 #include "Component.inl"

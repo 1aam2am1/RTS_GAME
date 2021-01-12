@@ -9,45 +9,81 @@
 #include <Editor/AssetDatabase.h>
 #include <GameClient/MainThread.h>
 #include <GameClient/Windows/FileDialogWindow.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 namespace fs = std::filesystem;
 
 decltype(EditorSceneManager::dirty) EditorSceneManager::dirty;
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {
-    /* auto meta = fs::directory_entry(scenePath);
-     //TODO: Check if only filename and load path from data
-     if (!meta.is_regular_file()) {
-         GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
-         return std::shared_ptr<Scene>{new Scene(0)};
-     }
+    {
+        auto scene = AssetDatabase::LoadMainAssetAtPath(std::string{scenePath});
+        if (!dynamic_pointer_cast<SceneAsset>(scene)) {
+            GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
+            return std::shared_ptr<Scene>{new Scene(0)};
+        }
+    }
 
-     auto new_id = max_id++;
-     Data result;
+    auto new_id = global.scene.max_id++;
+    {
+        auto &data = global.scene.data[new_id];
+        data.isLoaded = false;
+        data.path = scenePath;
+        data.buildIndex = -1;
+    }
 
-     result.path = scenePath;
+    {
+        global.scene.on_load_active_id[std::this_thread::get_id()] = new_id;
+        std::shared_ptr<int> lock((int *) 1,
+                                  [](auto) { global.scene.on_load_active_id.erase(std::this_thread::get_id()); });
 
-     if (LoadSceneFull(result, scenePath)) {
-         result.isLoaded = true;
+        try {
+            auto str = GameApi::readFullFile(scenePath);
+            auto json = nlohmann::json::parse(str);
 
-         switch (mode) {
-             case OpenSceneMode::Single: {
-                 data.clear();
-                 data[new_id] = result;
-                 active_scene = new_id;
-                 break;
-             }
-             case OpenSceneMode::Addictive:
-                 data[new_id] = result;
-                 break;
-         }
+            SceneSerializer serializer;
 
-     } else {
-         result.isValid = false;
-         result.isLoaded = true;
-     }
- */
-    return std::shared_ptr<Scene>{new Scene(0)};
+            {
+                std::vector<TPtr<>> result;
+                serializer.Deserialize(result, json["objects"]);
+            }
+            //creation of gameobjects adds them to the scene
+
+            std::function<void(TPtr<GameObject>)> fix = [&fix](TPtr<GameObject> go) {
+                if (!go) { return; }
+
+                decltype(go->components) copy = std::move(go->components);
+                go->components.clear();
+
+                for (auto &c : copy) {
+                    go->AddComponent(c);
+                }
+
+                for (int i = 0; i < go->transform()->childCount(); ++i) {
+                    auto child = go->transform()->GetChild(i);
+                    fix(child);
+                }
+            };
+
+            for (auto &ob : global.scene.data[new_id].root) {
+                fix(ob);
+            }
+
+        } catch (const std::exception &e) {
+            GameApi::log(ERR.fmt("%s", e.what()));
+            return std::shared_ptr<Scene>{new Scene(0)};
+        }
+    }
+
+    if (mode == OpenSceneMode::Single) {
+        global.scene.data.clear();
+        global.scene.active_scene = new_id;
+    }
+
+
+    global.scene.data[new_id].isLoaded = true;
+
+    return std::shared_ptr<Scene>{new Scene(new_id)};
 }
 
 SceneManager::SceneP
@@ -107,19 +143,6 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
 
     try {
         SceneSerializer serializer;
-        uint64_t max_id = 0;
-
-        serializer.callback_id = [&max_id](auto ptr) -> std::pair<GUIDFileIDPack, bool> {
-            GUIDFileIDPack pack;
-
-            if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
-                return {pack, false};
-            }
-            pack.guid = "";
-            pack.id = ++max_id;
-
-            return {pack, true};
-        };
 
         nlohmann::json result;
 

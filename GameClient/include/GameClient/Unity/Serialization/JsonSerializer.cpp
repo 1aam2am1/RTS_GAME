@@ -3,12 +3,88 @@
 //
 
 #include "JsonSerializer.h"
-#include <GameApi/IsInstance.h>
 #include <GameClient/MetaData.h>
 #include "ISerializationCallbackReceiver.h"
 
 
 nlohmann::json JsonSerializer::Serialize(const Object *object) {
+    return InternalSerialize(object, true);
+}
+
+nlohmann::json JsonSerializer::InternalSerialize(const Object *object, bool force) {
+    if (object == nullptr) { return {}; }
+
+    GUIDFileIDPack id;
+
+    nlohmann::json result;
+
+    auto ob = object->shared_from_this();
+    bool serialize = false;
+
+    auto it = serialize_map.find(ob);
+    if (it != serialize_map.end()) {
+        id = it->second;
+    } else {
+        auto[id2, s2] = serialize_node_callback(ob);
+        serialize_map[ob] = id2;
+        serialize = s2;
+
+        id = id2;
+    }
+
+    if (serialize || force) {
+        result = TrueSerialize(object);
+        result["__Node_id"] = id;
+
+        return result;
+    } else {
+        return id;
+    }
+}
+
+TPtr<> JsonSerializer::Deserialize(const nlohmann::json &j) {
+    auto lock = register_check();
+
+    if (j.size() == 2 && j.contains("guid") && j.contains("fileID")) [[unlikely]] {
+        auto pack = j.get<GUIDFileIDPack>();
+        auto it = deserialize_map.find(pack);
+        if (it != deserialize_map.end()) {
+            return it->second;
+        }
+
+        auto ob = deserialize_get_node_callback(pack);
+        if (ob) {
+            deserialize_map[pack] = ob;
+        }
+        return ob;
+    }
+
+    if (!j.is_object() || j.empty()) { return {}; }
+    for (auto &ob : j.items()) {
+        if (ob.key().starts_with("__")) { continue; }
+
+        auto result = MetaData::getReflection(ob.key()).CreateInstance();
+
+        Update(result, ob.value());
+
+        /** Check some internal values **/
+        {
+            if (j.contains("__Node_id")) {
+                try {
+                    auto pack = j.at("__Node_id").get<GUIDFileIDPack>();
+                    deserialize_map[pack] = result;
+                }
+                EXCEPTION_PRINT
+            }
+        }
+
+        return result;
+    }
+
+    return {};
+}
+
+nlohmann::json JsonSerializer::TrueSerialize(const Object *object) {
     nlohmann::json result;
 
     {
@@ -35,30 +111,16 @@ nlohmann::json JsonSerializer::Serialize(const Object *object) {
             if (!p.second) {
                 return nlohmann::json{};
             }
-            if constexpr (is_instance_v<decltype(p.second()), std::vector>) {
-                if constexpr(is_instance_v<typename decltype(p.second())::value_type, TPtr>) {
-                    return this->operator()(p.second());
-                } else {
-                    auto vec = p.second();
-                    nlohmann::json result;
-
-                    for (auto &it: vec) {
-                        result.emplace_back(this->operator()(it));
-                    }
-
-                    return result;
-                }
-            } else {
-                return this->operator()(p.second());
-            }
+            return this->operator()(p.second());
         }, it.second);
     }
 
     return result;
 }
 
-void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &serialized) {
+void JsonSerializer::Update(TPtr<Object> result, const nlohmann::json &serialized) {
 
+    /// Thing this through, do we want to clear data, that could not be serialized?
     if (serialized.is_object()) {
         auto reflection = MetaData::getReflection(result.get());
         for (auto &it: reflection.getFields) {
@@ -70,34 +132,7 @@ void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &seri
                                               typeid(*result.get()).name()).data()));
             } else {
                 std::visit([this, &c = check.value()](auto &&p) {
-                    if constexpr (is_instance_v<function_traits_arg_t<decltype(p.first), 0>, std::vector>) {
-                        if (p.first) {
-                            using vector_type = function_traits_arg_t<decltype(p.first), 0>;
-                            using object_type = typename vector_type::value_type;
-
-                            if constexpr (std::is_same_v<object_type, TPtr<Object>>) {
-                                this->operator()(p.first, c);
-                            } else {
-                                auto f = p.first;
-                                std::shared_ptr<vector_type> value(new vector_type,
-                                                                   [f](auto ptr) {
-                                                                       f(*ptr);
-                                                                       delete ptr;
-                                                                   });
-                                if (c.is_array()) {
-                                    value->resize(c.size());
-                                    int i = 0;
-                                    for (auto &v: c) {
-                                        std::function<void(object_type)> func = [value, i](auto n) {
-                                            (*value)[i] = n;
-                                        };
-                                        this->operator()(func, v);
-                                        ++i;
-                                    }
-                                }
-                            }
-                        }
-                    } else if (p.first) {
+                    if (p.first) {
                         this->operator()(p.first, c);
                     }
                 }, it.second);
@@ -111,123 +146,51 @@ void JsonSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &seri
     }
 }
 
-nlohmann::json JsonSerializer::operator()(int64_t i) {
-    return nlohmann::json(i);
-}
+std::shared_ptr<int> JsonSerializer::register_check() {
+    std::shared_ptr<int> lock = checking.lock();
+    if (!lock) [[unlikely]] {
+        lock = std::shared_ptr<int>((int *) 1, [&](auto) {
+            for (auto &it : to_check) {
+                auto ob = deserialize_map.find(it.first);
+                if (ob != deserialize_map.end()) {
+                    it.second(ob->second);
+                    continue;
+                }
 
-nlohmann::json JsonSerializer::operator()(double d) {
-    return nlohmann::json(d);
-}
+                auto ob2 = deserialize_get_node_callback(it.first);
+                deserialize_map[it.first] = ob2;
 
-nlohmann::json JsonSerializer::operator()(const std::string &str) {
-    return nlohmann::json(str);
-}
+                it.second(ob2);
+            }
 
-nlohmann::json JsonSerializer::operator()(bool b) {
-    return nlohmann::json(b);
-}
-
-nlohmann::json JsonSerializer::operator()(sf::Color c) {
-    nlohmann::json result;
-
-    result["red"] = c.r;
-    result["green"] = c.g;
-    result["blue"] = c.b;
-    result["alpha"] = c.a;
-
-    return result;
-}
-
-nlohmann::json JsonSerializer::operator()(const TPtr<Object> &object) {
-    if (object) {
-        return Serialize(object.get());
-    } else {
-        return nlohmann::json();
-    }
-}
-
-nlohmann::json JsonSerializer::operator()(const std::vector<TPtr<Object>> &vec) {
-    nlohmann::json result;
-
-    for (auto &it: vec) {
-        result.emplace_back(this->operator()(it));
+            to_check.clear();
+        });
+        checking = lock;
     }
 
-    return result;
+    return lock;
 }
 
-
-void JsonSerializer::operator()(const std::function<void(int64_t)> &i, const nlohmann::json &j) {
-    if (j.is_number()) {
-        i(j.get<int64_t>());
-    } else {
-        i(0);
-    }
+std::pair<GUIDFileIDPack, bool> JsonSerializer::serialize_node_callback(TPtr<const Object>) {
+    static uint64_t max_id;
+    return {{Unity::GUID("0"), ++max_id}, true};
 }
 
-void JsonSerializer::operator()(const std::function<void(double)> &d, const nlohmann::json &j) {
-    if (j.is_number()) {
-        d(j.get<double>());
-    } else {
-        d(0);
-    }
+TPtr<> JsonSerializer::deserialize_get_node_callback(GUIDFileIDPack) {
+    return TPtr<>();
 }
 
-void JsonSerializer::operator()(const std::function<void(std::string)> &str, const nlohmann::json &j) {
-    if (j.is_string()) {
-        str(j.get<std::string>());
-    } else {
-        str("");
-    }
-}
-
-void JsonSerializer::operator()(const std::function<void(bool)> &b, const nlohmann::json &j) {
-    if (j.is_number()) {
-        b(j.get<bool>());
-    } else {
-        b(false);
-    }
-}
-
-void JsonSerializer::operator()(const std::function<void(sf::Color)> &c, const nlohmann::json &j) {
-    if (j.is_object() && !j.empty()) {
-        sf::Color col;
-
-        col.r = j["red"].get<int>();
-        col.g = j["green"].get<int>();
-        col.b = j["blue"].get<int>();
-        col.a = j["alpha"].get<int>();
-
-        c(col);
-    } else {
-        c({});
-    }
+nlohmann::json JsonSerializer::operator()(TPtr<> o) {
+    return InternalSerialize(o.get(), false);
 }
 
 void JsonSerializer::operator()(const std::function<void(TPtr<Object>)> &o, const nlohmann::json &j) {
-    if (j.is_object() && !j.empty()) {
-        o(SerializerBase::Deserialize(j));
-    } else {
-        o(TPtr<>{});
-    }
-}
+    if (j.size() == 2 && j.contains("guid") && j.contains("fileID")) {
+        auto pack = j.get<GUIDFileIDPack>();
 
-void JsonSerializer::operator()(const std::function<void(std::vector<TPtr<Object>>)> &f, const nlohmann::json &j) {
-    std::shared_ptr<std::vector<TPtr<Object>>> value(new std::vector<TPtr<Object>>,
-                                                     [f](auto ptr) {
-                                                         f(*ptr);
-                                                         delete ptr;
-                                                     });
-
-    if (j.is_array()) {
-        value->resize(j.size());
-        int i = 0;
-        for (auto &v: j) {
-            auto func = [value, i](TPtr<Object> n) {
-                (*value)[i] = n;
-            };
-            this->operator()(func, v);
-            ++i;
-        }
+        to_check.emplace(pack, o);
+        return;
     }
+
+    o(Deserialize(j));
 }

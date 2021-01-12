@@ -60,7 +60,7 @@ public:
 private:
     float m_depth = 0;
 
-    void UnityAwake() override;
+    void Awake() override;
 };
 
 

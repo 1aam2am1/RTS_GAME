@@ -6,36 +6,20 @@
 #define RTS_GAME_SCENESERIALIZER_H
 
 #include <GameClient/Unity/Serialization/JsonSerializer.h>
-#include <GameClient/GuidFileIdPack.h>
 
 
 class SceneSerializer final : public JsonSerializer {
 public:
-    SceneSerializer();
-
-    nlohmann::json Serialize(const Object *object) override;
-
-    nlohmann::json Serialize(const std::vector<TPtr<>> &objects);
-
-    void Deserialize(TPtr<Object>, const nlohmann::json &) override;
+    nlohmann::json Serialize(const std::vector<TPtr<>> &);
 
     void Deserialize(std::vector<TPtr<>> &, const nlohmann::json &);
-
-    /// Callback that will be called when we need id for our object
-    std::function<std::pair<GUIDFileIDPack, bool>(TPtr<const Object>)> callback_id{};
-
-    /// Callback that will be called when we need object from this json id
-    std::function<TPtr<>(GUIDFileIDPack)> ret_callback_id{};
-
-    const std::unordered_map<TPtr<const Object>, GUIDFileIDPack> &get_id_map();
-
 protected:
-    void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) final;
+    std::pair<GUIDFileIDPack, bool> serialize_node_callback(TPtr<const Object> ptr) override;
 
-    nlohmann::json operator()(const std::vector<TPtr<Object>> &) final;
+    TPtr<> deserialize_get_node_callback(GUIDFileIDPack pack) override;
 
 private:
-    std::unordered_map<TPtr<const Object>, GUIDFileIDPack> serialize_map{};
+    uint64_t max_id = 0;
 };
 
 

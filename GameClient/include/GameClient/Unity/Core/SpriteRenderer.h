@@ -17,7 +17,7 @@ public:
 
 
 protected:
-    void UnityAwake() override;
+    void Awake() override;
 
     void draw() override;
 };

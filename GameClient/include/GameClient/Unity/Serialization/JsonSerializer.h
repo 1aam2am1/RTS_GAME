@@ -5,60 +5,78 @@
 #ifndef RTS_GAME_JSONSERIALIZER_H
 #define RTS_GAME_JSONSERIALIZER_H
 
-#include "SerializerBase.h"
+#include <GameClient/Unity/Core/Object.h>
+#include <GameClient/GuidFileIdPack.h>
+#include <GameClient/TPtr.h>
+#include "to_json.h"
+#include <nlohmann/json.hpp>
+#include <typeindex>
+#include <cstdint>
+#include <string>
+#include <Macro.h>
 
-class JsonSerializer : public SerializerBase {
+
+class JsonSerializer {
 public:
-    nlohmann::json Serialize(const Object *) override;
+    /// json -> {{'TYPE NAME': Serialization}, OPTIONAL{'__NODE': Node}}
+    nlohmann::json Serialize(const Object *);
+
+    /// json -> {{'TYPE NAME': Serialization}, OPTIONAL{'__NODE': Node}}
+    TPtr<> Deserialize(const nlohmann::json &);
 
     /// json -> {value: Serialization from Serialize}
-    template<typename T>
-    TPtr<T> DeserializeT(const nlohmann::json &);
+    /// \param o Object to serialize, not null!
+    /// \param j Values of object
+    virtual void Update(TPtr<Object> o, const nlohmann::json &);
 
-    void Deserialize(TPtr<Object>, const nlohmann::json &) override;
-
-    using SerializerBase::Deserialize;
+    const std::unordered_map<TPtr<const Object>, GUIDFileIDPack> &get_id_map() { return serialize_map; }
 
 protected:
+    /// Must give unique GUIDFileIDPack, if returns true object is serialized as it is not saved elsewhere
+    virtual std::pair<GUIDFileIDPack, bool> serialize_node_callback(TPtr<const Object>);
+
+    /// Gives valid object or nullptr
+    virtual TPtr<> deserialize_get_node_callback(GUIDFileIDPack);
+
     //region Serialize
-    nlohmann::json operator()(int64_t) final;
+    template<typename T>
+    nlohmann::json operator()(T &&t);
 
-    nlohmann::json operator()(double) final;
+    nlohmann::json operator()(TPtr<> o);
 
-    nlohmann::json operator()(const std::string &) final;
+    template<typename T>
+    nlohmann::json operator()(std::vector<T> vec);
 
-    nlohmann::json operator()(bool) final;
-
-    nlohmann::json operator()(sf::Color) final;
-
-    nlohmann::json operator()(const TPtr<Object> &) override;
-
-    nlohmann::json operator()(const std::vector<TPtr<Object>> &) override;
-
-    using SerializerBase::operator();
     //endregion
 
     //region DeSerialize
-    void operator()(const std::function<void(int64_t)> &, const nlohmann::json &) final;
 
-    void operator()(const std::function<void(double)> &, const nlohmann::json &) final;
+    template<typename T>
+    requires std::is_default_constructible_v<T>
+    void operator()(const std::function<void(T)> &f, const nlohmann::json &j);
 
-    void operator()(const std::function<void(std::string)> &, const nlohmann::json &) final;
+    void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &);
 
-    void operator()(const std::function<void(bool)> &, const nlohmann::json &) final;
-
-    void operator()(const std::function<void(sf::Color)> &, const nlohmann::json &) final;
-
-    void operator()(const std::function<void(TPtr<Object>)> &, const nlohmann::json &) override;
-
-    void operator()(const std::function<void(std::vector<TPtr<Object>>)> &, const nlohmann::json &) override;
+    template<typename T>
+    void operator()(const std::function<void(std::vector<T>)> &f, const nlohmann::json &j);
     //endregion
+
+protected:
+
+    nlohmann::json InternalSerialize(const Object *, bool force);
+
+    std::unordered_map<TPtr<const Object>, GUIDFileIDPack> serialize_map{};//to_bimap
+    std::unordered_map<GUIDFileIDPack, TPtr<Object>> deserialize_map{};//to_bimap
+
+    std::unordered_multimap<GUIDFileIDPack, std::function<void(TPtr<Object>)>> to_check{};
+    std::weak_ptr<int> checking;
+
+    std::shared_ptr<int> register_check();
+
+private:
+    nlohmann::json TrueSerialize(const Object *);
 };
 
-template<typename T>
-TPtr<T> JsonSerializer::DeserializeT(const nlohmann::json &j) {
-    return Deserialize(typeid(T), j);
-}
-
+#include "JsonSerializer.inl"
 
 #endif //RTS_GAME_JSONSERIALIZER_H

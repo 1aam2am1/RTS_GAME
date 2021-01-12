@@ -181,7 +181,7 @@ ImportAssetGlobal(std::string assetPath, ImportAssetOptions options) {
 
             if (!result.importer->importSettingsMissing) {
                 JsonSerializer js;
-                js.Deserialize(result.importer, object);
+                js.Update(result.importer, object);
             }
 
             AssetImportContext context(&result);

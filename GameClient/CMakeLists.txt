@@ -74,8 +74,6 @@ set(SRC
         include/GameClient/Unity/Editor/ObjectFactory.h
         include/GameClient/Unity/Serialization/JsonSerializer.cpp
         include/GameClient/Unity/Serialization/JsonSerializer.h
-        include/GameClient/Unity/Serialization/SerializerBase.h
-        include/GameClient/Unity/Serialization/SerializerBase.cpp
         include/GameClient/Unity/forEachMacro.h
         include/GameClient/Initializer.cpp
         include/GameClient/Initializer.h
@@ -146,6 +144,7 @@ set(SRC
         include/GameClient/Unity/Editor/EditorGuiLayout.h
         include/GameClient/Windows/FileDialogWindow.cpp
         include/GameClient/Windows/FileDialogWindow.h
+        include/GameClient/Unity/Serialization/to_json.h
         )
 
 add_executable(GameClient ${SRC})

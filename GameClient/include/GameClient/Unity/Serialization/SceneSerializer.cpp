@@ -2,103 +2,80 @@
 // Created by Michal_Marszalek on 24.11.2020.
 //
 
+#include <Macro.h>
+#include <Editor/AssetDatabase.h>
 #include "SceneSerializer.h"
 #include "GameClient/Unity/Core/Guid.h"
 
-SceneSerializer::SceneSerializer() {
-    static uint64_t max_id;
-    callback_id = [&](auto) -> std::pair<GUIDFileIDPack, bool> { return {{Unity::GUID("0"), ++max_id}, true}; };
+std::pair<GUIDFileIDPack, bool> SceneSerializer::serialize_node_callback(TPtr<const Object> ptr) {
+    GUIDFileIDPack pack;
+
+    if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
+        return {pack, false};
+    }
+    pack.guid = "";
+    pack.id = ++max_id;
+
+    return {pack, true};
 }
 
-const std::unordered_map<TPtr<const Object>, GUIDFileIDPack> &SceneSerializer::get_id_map() {
-    return serialize_map;
+TPtr<> SceneSerializer::deserialize_get_node_callback(GUIDFileIDPack pack) {
+    auto assets = AssetDatabase::LoadAllAssetsAtPath(AssetDatabase::GUIDToAssetPath(pack.guid));
+
+    AssetDatabase::fileID localID;
+    Unity::GUID guid;
+    for (auto a : assets) {
+        if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == pack.id) {
+            return a;
+        }
+    }
+    return TPtr<>{};
 }
 
-nlohmann::json SceneSerializer::Serialize(const Object *object) {
-    if (object == nullptr) { return JsonSerializer::Serialize(object); }
-
-    GUIDFileIDPack id;
-
-    nlohmann::json result;
-
-    auto ob = object->shared_from_this();
-    bool serialize = true;
-
-    auto it = serialize_map.find(ob);
-    if (it != serialize_map.end()) {
-        return it->second;
-    }
-
-    if (callback_id) {
-        auto[id2, s2] = callback_id(ob);
-        serialize_map[ob] = id2;
-        serialize = s2;
-
-        id = id2;
-    }
-
-    if (serialize) {
-        result = JsonSerializer::Serialize(object);
-    } else {
-        return id;
-    }
-
-    if (callback_id) {
-        result["__Node_id"] = id;
-    }
-
-    return result;
-}
-
-nlohmann::json SceneSerializer::Serialize(const std::vector<TPtr<>> &objects) {
-    nlohmann::json result;
+nlohmann::json SceneSerializer::Serialize(const std::vector<TPtr<>> &vec) {
+    nlohmann::json::array_t result;
     std::vector<bool> serialize;
-    serialize.reserve(objects.size());
 
-    for (auto &ob : objects) {
+    result.reserve(vec.size());
+    serialize.reserve(vec.size());
+
+    for (auto &ob : vec) {
         auto it = serialize_map.find(ob);
         if (it != serialize_map.end()) {
             serialize.emplace_back(false);
 
         } else {
-            if (callback_id) {
-                auto[id2, s2] = callback_id(ob);
-                serialize_map[ob] = id2;
+            auto[id2, s2] = serialize_node_callback(ob);
+            serialize_map[ob] = id2;
 
-                serialize.emplace_back(s2);
-            } else {
-                serialize.emplace_back(true);
-            }
+            serialize.emplace_back(s2);
         }
     }
 
     auto ser = serialize.begin();
-    for (auto ob = objects.begin(); ob != objects.end(); ++ob, ++ser) {
-        nlohmann::json j;
-        if (*ser) {
-            j = JsonSerializer::Serialize(ob->get());
-            if (callback_id) {
-                j["__Node_id"] = serialize_map[*ob];
-            }
-
-        } else {
-            j = serialize_map[*ob];;
-        }
-
-        result.emplace_back(j);
+    for (auto ob = vec.begin(); ob != vec.end(); ++ob, ++ser) {
+        result.emplace_back(InternalSerialize(ob->get(), *ser));
     }
 
     return result;
 }
 
-void SceneSerializer::Deserialize(TPtr<Object> result, const nlohmann::json &serialized) {
-    JsonSerializer::Deserialize(result, serialized);
-}
+void SceneSerializer::Deserialize(std::vector<TPtr<>> &vec, const nlohmann::json &j) {
+    assert(checking.expired());
+    auto lock = register_check();
 
-void SceneSerializer::operator()(const std::function<void(TPtr<Object>)> &o, const nlohmann::json &j) {
-    JsonSerializer::operator()(o, j);
-}
+    vec.clear();
+    vec.reserve(j.size());
 
-nlohmann::json SceneSerializer::operator()(const std::vector<TPtr<Object>> &vec) {
-    return Serialize(vec);
+    if (j.is_array()) {
+
+        int i = 0;
+        for (auto &v : j.items()) {
+            auto func = [&vec, i](TPtr<> n) {
+                vec[i] = n;
+            };
+            this->operator()(func, v.value());
+            ++i;
+        }
+    }
 }

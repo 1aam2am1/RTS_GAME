@@ -33,9 +33,6 @@ void GameLoop::run() {
         m_physics_time = 0;
     }
 
-    if (!isPlaying) { goto render; }
-    if (EditorApplication::isPaused) { goto render; }
-
     ///Timers
     {
         Time::m_deltaTime = Time::timeScale * Time::m_unscaled_deltaTime;
@@ -46,7 +43,7 @@ void GameLoop::run() {
         m_physics_time += Time::m_deltaTime;
     }
     ///Start
-    {
+    {//EditorApplication::isPaused
         for (auto &scene: global.scene.data) {
             if (!scene.second.isLoaded) { continue; };
 

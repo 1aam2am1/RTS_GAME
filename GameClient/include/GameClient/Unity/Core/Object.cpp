@@ -5,6 +5,7 @@
 #include "Object.h"
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/Transform.h>
+#include <GameClient/MainThread.h>
 
 EXPORT_CLASS(Object, ("m_Name", name));
 
@@ -52,7 +53,10 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
                 DestroyImmediate(g, allowDestroyingAssets);
             }
         } else {
+            std::shared_ptr<Object> copy = static_cast<std::enable_shared_from_this<Object> *>(obj.get())->shared_from_this();
             obj->onDestroySignal(nullptr);
+            //TODO: OnDestroy
+            MainThread::Invoke([copy]() {});
         }
     }
 }

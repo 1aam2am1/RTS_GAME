@@ -7,6 +7,7 @@
 
 #include <functional>
 
+//TODO: Remove SetterGetter as it bloat code, think of something better __declspec(property)
 template<typename T>
 class SetterGetter {
 public:

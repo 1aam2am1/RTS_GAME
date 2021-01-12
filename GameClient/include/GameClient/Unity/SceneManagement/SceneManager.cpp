@@ -52,6 +52,9 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
         root.erase(std::find_if(root.begin(), root.end(), [&](auto i) {
             return i == go;
         }));
+
+        auto &com = global.scene.data[old_scene->id].components;
+        ///remove and add components to new scene
     }
 
     {
@@ -239,6 +242,13 @@ int SceneManager::sceneCount() {
 }
 
 SceneManager::SceneP SceneManager::GetActiveScene() {
+    {
+        auto it = global.scene.on_load_active_id.find(std::this_thread::get_id());
+        if (it != global.scene.on_load_active_id.end()) {
+            return std::shared_ptr<Scene>(new Scene(it->second));
+        }
+    }
+
     auto it = global.scene.data.find(global.scene.active_scene);
     if (it == global.scene.data.end()) {
         if (!global.scene.data.empty()) {

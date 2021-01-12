@@ -54,6 +54,7 @@ bool GameObject::activeInHierarchy() const {
 
     const GameObject *gm = this;
 
+    if (!gm->m_scene->isLoaded()) { return false; }
     while (true) {
         if (!gm->activeSelf()) { return false; }
 
@@ -142,14 +143,10 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
 
     global.scene.data[scene()->id].new_components.emplace_back(result);
 
-    if (dynamic_cast<MonoBehaviour *>(result.get())) {
-        if (Application::isPlaying() && activeInHierarchy()) {
-            result->UnityAwake();
-        } else {
-            to_awake.emplace_back(result);
-        }
-    } else {
+    if (Application::isPlaying() && activeInHierarchy()) {
         result->UnityAwake();
+    } else {
+        to_awake.emplace_back(result);
     }
 
     return result;

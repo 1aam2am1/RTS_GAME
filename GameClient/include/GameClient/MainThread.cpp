@@ -26,11 +26,19 @@ void MainThread::Invoke(std::function<void()> f) {
 }
 
 void MainThread::run() {
-    std::lock_guard<std::mutex> lock(m);
+    std::vector<std::function<void()>> *copy = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(m);
 
-    auto &copy = getInvokedFunctions(true);
-    for (auto &object : copy) {
+        copy = &getInvokedFunctions(true);
+    }
+
+    for (auto &object : *copy) {
         if (object)object();
     }
-    copy.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(m);
+        copy->clear();
+    }
 }
