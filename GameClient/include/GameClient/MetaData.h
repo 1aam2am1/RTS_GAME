@@ -51,6 +51,9 @@ public:
     /// Get Reflection based of class type
     static Reflect getReflection(std::type_index type);
 
+    using flags_type = uintmax_t;
+    //std::unordered_map<std::type_index, uintmax_t>
+
 private:
     template<typename T>
     struct Register;
@@ -80,6 +83,7 @@ private:
 
         std::vector<std::pair<std::string_view, std::function<TU(Object *)>>> members{};
         std::vector<std::pair<std::string_view, std::function<TU(const Object *)>>> c_members{};
+        flags_type flags{};
         std::vector<std::pair<std::string_view, const std::type_index>> TPtr_type{};
     };
 

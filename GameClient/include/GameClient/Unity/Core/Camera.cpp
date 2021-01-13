@@ -10,14 +10,17 @@
 #include <GameClient/Unity/Editor/Selection.h>
 #include <SFML/OpenGL.hpp>
 #include <execution>
+#include <GameClient/Unity/Core/Attributes.h>
 
 ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize)
+ADD_ATTRIBUTE(Camera, ExecuteInEditMode)
 
 Camera::Camera() : depth(
         [&](auto d) {
-            global.m_draw_order.erase(
-                    std::find_if(std::execution::par_unseq, global.m_draw_order.begin(), global.m_draw_order.end(),
-                                 [this](auto it) { return it.second.get() == this; }));
+            auto it = std::find_if(std::execution::par_unseq, global.m_draw_order.begin(), global.m_draw_order.end(),
+                                   [this](auto &it) { return it.second.get() == this; });
+            if (it != global.m_draw_order.end()) { global.m_draw_order.erase(it); }
+
             m_depth = d;
             global.m_draw_order.emplace(m_depth, shared_from_this());
 

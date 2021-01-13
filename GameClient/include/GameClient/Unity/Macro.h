@@ -35,6 +35,9 @@
 
 #define REGISTER_MEMBER_FOR_PRIVATE_BREAK(arg, TYPE) RMFS_SERIALIZE_PRIVATE_BREAK(TYPE, UNPAREN(arg))
 //endregion
+
+#define REGISTER_FLAG(arg, TYPE) registerFlag(arg)
+
 //endregion
 
 #define UNIQUE_ID(PRE) CONCATENATE(PRE, __COUNTER__)
@@ -57,6 +60,14 @@ namespace {                                                                     
     static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){            \
         [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE);        \
         FOR_EACH(t.REGISTER_MEMBER_FOR_SERIALIZE, TYPE, __VA_ARGS__)            \
+    });                                                                         \
+}
+
+#define ADD_ATTRIBUTE(TYPE, ...)                                                \
+namespace{                                                                      \
+    static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){           \
+        [[maybe_unused]] auto t = MetaData::register_class<TYPE>(#TYPE, {});    \
+        FOR_EACH(t.REGISTER_FLAG, TYPE, __VA_ARGS__)                            \
     });                                                                         \
 }
 

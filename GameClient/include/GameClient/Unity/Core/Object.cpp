@@ -51,12 +51,17 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
         if (auto t = dynamic_cast<Transform *>(obj.get())) {
             if (auto g = t->gameObject()) {
                 DestroyImmediate(g, allowDestroyingAssets);
+                return;
             }
-        } else {
-            std::shared_ptr<Object> copy = static_cast<std::enable_shared_from_this<Object> *>(obj.get())->shared_from_this();
-            obj->onDestroySignal(nullptr);
-            //TODO: OnDestroy
-            MainThread::Invoke([copy]() {});
         }
+
+        std::shared_ptr<Object> copy = static_cast<std::enable_shared_from_this<Object> *>(obj.get())->shared_from_this();
+        std::weak_ptr<Object> memory_release = copy;
+
+        //TODO: OnDestroy
+        obj->onDestroySignal(nullptr);
+
+        MainThread::Invoke([memory_release]() {});
+
     }
 }

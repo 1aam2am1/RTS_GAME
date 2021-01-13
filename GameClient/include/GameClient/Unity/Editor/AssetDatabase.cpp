@@ -522,7 +522,9 @@ void AssetDatabase::SaveAssets() {
         if (it.second.main && it.second.importer) {
             if (!std::any_of(it.second.object.begin(), it.second.object.end(), [](auto &&o) {
                 return EditorUtility::IsDirty(o.second);
-            })) { return; }
+            })) {
+                continue;
+            }
 
             SaveAsset(it.first, &it.second);
         }

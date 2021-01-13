@@ -7,8 +7,10 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/GlobalStaticVariables.h>
+#include <GameClient/Unity/Core/Attributes.h>
 
 ADD_COMPONENT_MENU(SpriteRenderer, sprite)
+ADD_ATTRIBUTE(SpriteRenderer, ExecuteInEditMode)
 
 void SpriteRenderer::Awake() {
     //TODO: Move to UnityUpdate

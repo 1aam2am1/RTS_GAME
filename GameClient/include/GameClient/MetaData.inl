@@ -9,9 +9,12 @@ struct MetaData::Reflect {
 
     const std::function<bool(Object *, Object *)> CopyInstance;
 
+    const MetaData::flags_type &flags;
+
     Reflect(const std::string_view name, const std::type_index type,
             const std::function<TPtr<Object>()> &createInstance,
-            const std::function<bool(Object *, Object *)> &copyInstance);
+            const std::function<bool(Object *, Object *)> &copyInstance,
+            const MetaData::flags_type &flags);
 };
 
 struct MetaData::ReflectFull : Reflect {
@@ -21,6 +24,7 @@ struct MetaData::ReflectFull : Reflect {
     ReflectFull(const std::string_view name, const std::type_index type,
                 const std::function<TPtr<Object>()> &createInstance,
                 const std::function<bool(Object *, Object *)> &copyInstance,
+                const MetaData::flags_type &flags,
                 const std::vector<std::pair<std::string_view, MetaData::TU>> &getFields,
                 const std::map<std::string_view, std::type_index> &getTPtrType);
 };
@@ -218,7 +222,21 @@ struct MetaData::Register {
             }
             return std::pair<std::function<void(R)>, std::function<R(void)>>{s, g};
         });
+    }
 
+    template<typename E>
+    requires std::is_enum_v<E>
+    void registerFlag(E e) {
+        static_assert(sizeof(E) <= sizeof(uintmax_t), "Enum flag should be smaller or equal size, that we can store.");
+
+        d.flags |= e;
+/**
+        auto it = d.flags.find(typeid(E));
+        if (it != d.flags.end()) {
+            it->second |= e;
+        } else {
+            d.flags[typeid(E)] = e;
+        }*/
     }
 
     template<typename R>
@@ -236,7 +254,6 @@ struct MetaData::Register {
             }
             return std::pair<std::function<void(R)>, std::function<R(void)>>{s, g};
         });
-
     }
 
     template<typename Fun, typename Fun2>
@@ -276,6 +293,9 @@ auto MetaData::register_class(std::string_view str, std::function<TPtr<T>()> con
                             it->second.name.data(),
                             str.data()));
         }
+        if (constructor && !it->second.create) {
+            it->second.create = constructor;
+        }
         return Register < T > {it->second};
     }
 
@@ -290,14 +310,7 @@ auto MetaData::register_class(std::string_view str, std::function<TPtr<T>()> con
 
     Data result;
     result.name = str;
-    result.create = [constructor]() -> TPtr<> {
-        if (!constructor) {
-            GameApi::log(ERR.fmt("Tried creating object with empty constructor function"));
-            return {};
-        } else {
-            return constructor();
-        }
-    };
+    result.create = constructor;
     result.copy = [](auto f1, auto f2) {
         auto left = dynamic_cast<T *>(f1);
         auto right = dynamic_cast<T *>(f2);

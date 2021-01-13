@@ -17,6 +17,7 @@ public:
 
     ~SceneData();
     //SceneData(const SceneData&) = default;
+    //SceneData& operator=(const SceneData&) = default;
     //SceneData(SceneData&&) = default;
 
 
@@ -25,17 +26,17 @@ public:
     std::string name = "Scene";
     std::string path{};
     std::vector<TPtr<GameObject>> root{};
-    std::vector<TPtr<Component>> components{};
-    std::vector<TPtr<Component>> new_components{};
+    std::vector<TPtr<Component>> new_components{}; //To Start
 
     std::vector<TPtr<Component>> loading_awake{}; //used when loading
 
-
 private:
-    const std::shared_ptr<const int> guard;
+    std::shared_ptr<const int> guard;
 };
 
 struct GlobalStaticVariables {
+    ~GlobalStaticVariables();
+
     ///Camera
     std::vector<TPtr<Camera>> m_cameras{};
     std::multimap<float, TPtr<Camera>> m_draw_order{};
@@ -53,6 +54,8 @@ struct GlobalStaticVariables {
         //std::vector<uint64_t> index_to_id{1}; ///< data_id[]
         uint64_t active_scene = 1; ///< Now active scene
         std::unordered_map<std::thread::id, uint64_t> on_load_active_id{};
+
+        std::vector<TPtr<Component>> components{}; //< Global components that are running
     } scene;
 };
 

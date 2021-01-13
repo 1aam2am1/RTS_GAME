@@ -12,15 +12,17 @@ decltype(Importers::ext_priority) Importers::ext_priority;
 
 MetaData::Reflect::Reflect(const std::string_view n, const std::type_index t,
                            const std::function<TPtr<Object>()> &createInstance,
-                           const std::function<bool(Object *, Object *)> &copyInstance) :
-        name(n), type(t), CreateInstance(createInstance), CopyInstance(copyInstance) {}
+                           const std::function<bool(Object *, Object *)> &copyInstance,
+                           const MetaData::flags_type &f) :
+        name(n), type(t), CreateInstance(createInstance), CopyInstance(copyInstance), flags(f) {}
 
 MetaData::ReflectFull::ReflectFull(const std::string_view name, const std::type_index type,
                                    const std::function<TPtr<Object>()> &createInstance,
                                    const std::function<bool(Object *, Object *)> &copyInstance,
+                                   const MetaData::flags_type &flag,
                                    const std::vector<std::pair<std::string_view, TU>> &f,
                                    const std::map<std::string_view, std::type_index> &t) :
-        Reflect(name, type, createInstance, copyInstance), getFields(f), getTPtrType(t) {}
+        Reflect(name, type, createInstance, copyInstance, flag), getFields(f), getTPtrType(t) {}
 
 MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     auto object_reflection = getReflection(typeid(*ob));
@@ -40,7 +42,7 @@ MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, fields, types};
+                                 object_reflection.CopyInstance, object_reflection.flags, fields, types};
 
     return result;
 }
@@ -63,7 +65,7 @@ MetaData::ReflectFull MetaData::getReflection(const Object *ob) {
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, fields, types};
+                                 object_reflection.CopyInstance, object_reflection.flags, fields, types};
 
     return result;
 }
@@ -82,16 +84,28 @@ MetaData::Reflect MetaData::getReflection(std::string_view str) {
     throw std::runtime_error(s);
 }
 
+static const MetaData::flags_type empty_flag_reflection{};
+
 MetaData::Reflect MetaData::getReflection(std::type_index type) {
     std::string_view name;
     std::function<TPtr<Object>()> constructor;
     std::function<bool(Object *, Object *)> copy;
+    const MetaData::flags_type *flags = &empty_flag_reflection;
 
     auto object_reflection = reflection.find(type);
     if (object_reflection != reflection.end()) {
         name = object_reflection->second.name;
-        constructor = object_reflection->second.create;
+        if (object_reflection->second.create) {
+            constructor = object_reflection->second.create;
+        } else {
+            constructor = []() -> TPtr<> {
+                GameApi::log(ERR.fmt("Tried creating object with empty constructor function"));
+                return {};
+            };
+        }
+
         copy = object_reflection->second.copy;
+        flags = &object_reflection->second.flags;
     } else {
         constructor = [type]() -> TPtr<Object> {
             std::string s;
@@ -114,7 +128,7 @@ MetaData::Reflect MetaData::getReflection(std::type_index type) {
         };
     }
 
-    MetaData::Reflect result{name, type, constructor, copy};
+    MetaData::Reflect result{name, type, constructor, copy, *flags};
 
     return result;
 }

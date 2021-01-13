@@ -3,6 +3,7 @@
 //
 
 #include "GameObject.h"
+#include "Attributes.h"
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
@@ -78,6 +79,9 @@ void GameObject::SetActive(bool value) noexcept {
     if (m_active != value) {
         m_active = value;
 
+        if (!m_scene) { return; } //this is prefab
+        assert(m_scene->isLoaded()); //should only be called on loaded scene
+
         bool now_active_in_h = activeInHierarchy();
         if (now_active_in_h) {
             auto copy = to_awake;
@@ -85,8 +89,9 @@ void GameObject::SetActive(bool value) noexcept {
 
             bool isPlaying = Application::isPlaying();
             for (auto it = copy.begin(); it != copy.end(); ++it) {
-                if ((isPlaying /**|| ExecuteInEditMode*/)) {
+                if ((isPlaying || Attributes::CheckCustomAttribute(*it, ExecuteInEditMode))) {
                     (*it)->UnityAwake();
+                    global.scene.data[m_scene->id].new_components.emplace_back(*it);
                 } else {
                     to_awake.emplace_back(*it);
                 }
@@ -153,20 +158,19 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
     IM_ASSERT(result->m_gameObject == nullptr);
     result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
 
-    global.scene.data[scene()->id].new_components.emplace_back(result);
+    if (!m_scene) { return result; } //this is prefab, don't call Awake or Start
 
-    // Not in play mode as it is loading, then not playing
-    if (m_scene && !m_scene->isLoaded()) {
-        if (activeInHierarchy()) {
-            ///to_global_to_awake
+    if ((Application::isPlaying() || Attributes::CheckCustomAttribute(result, ExecuteInEditMode)) &&
+        activeInHierarchy()) {
+        if (!m_scene->isLoaded()) {
+            // In load mode
+            global.scene.data[m_scene->id].loading_awake.emplace_back(result);
         } else {
-            to_awake.emplace_back(result);
+            result->UnityAwake(); //maybe here, maybe before frame?
         }
-
-    } else if ((Application::isPlaying() /**|| ExecuteInEditMode*/) && activeInHierarchy()) {
-        result->UnityAwake();
     } else {
-        to_awake.emplace_back(result);
+        to_awake.emplace_back(
+                result); //I'm not activeInHierarchy, changing play mode won't run this, therefore load scene anew in play mode
     }
 
     return result;

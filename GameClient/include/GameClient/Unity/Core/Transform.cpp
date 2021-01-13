@@ -77,18 +77,23 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
     //TODO: worldPositionStays
 
     if (m_parent) {
-        m_parent->children.erase(std::find_if(m_parent->children.begin(), m_parent->children.end(),
-                                              [&](auto &it) {
-                                                  return new_parent == it;
-                                              }));
+        auto it = std::find_if(m_parent->children.begin(), m_parent->children.end(),
+                               [&](auto &it) {
+                                   return new_parent == it;
+                               });
+        if (it != m_parent->children.end()) {
+            m_parent->children.erase(it);
+        } else {
+            assert(0); //should not happen, that we have parent and he don't know anything about it
+        }
     } else {
         auto gm = gameObject();
         auto &root = global.scene.data[gm->scene.get()->id].root;
-        root.erase(
-                std::find_if(root.begin(), root.end(),
-                             [&](auto &it) {
-                                 return gm == it;
-                             }));
+        auto it = std::find_if(root.begin(), root.end(),
+                               [&](auto &it) {
+                                   return gm == it;
+                               });
+        if (it != root.end()) { root.erase(it); }
     }
 
     if (new_parent) {

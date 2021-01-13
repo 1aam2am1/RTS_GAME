@@ -145,7 +145,7 @@ set(SRC
         include/GameClient/Windows/FileDialogWindow.cpp
         include/GameClient/Windows/FileDialogWindow.h
         include/GameClient/Unity/Serialization/to_json.h
-        )
+        include/GameClient/Unity/Core/Attributes.h include/GameClient/Unity/Core/Attributes.cpp)
 
 add_executable(GameClient ${SRC})
 
@@ -156,6 +156,7 @@ set_target_properties(GameClient PROPERTIES
         CXX_EXTENSIONS OFF)
 
 target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:UNITY_EDITOR>)
+#target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:_GLIBCXX_DEBUG>)
 
 target_link_libraries(GameClient sfml-network sfml-graphics)
 target_link_libraries(GameClient ImGui)

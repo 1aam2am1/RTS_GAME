@@ -8,6 +8,9 @@
 #include <Core/Time.h>
 #include <SceneManagement/SceneManager.h>
 #include <Core/MonoBehaviour.h>
+#include <Core/Attributes.h>
+
+extern bool Application_isPlaying;
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();
@@ -15,6 +18,7 @@ void GameLoop::run() {
     if (EditorApplication::isPlaying != isPlaying) {
 
         //TODO: Load and save scene from playing mode to editor mode
+
         isPlaying = EditorApplication::isPlaying;
 
         if (isPlaying) {
@@ -32,6 +36,7 @@ void GameLoop::run() {
         Time::m_unscaled_fixedTime = 0;
         m_physics_time = 0;
     }
+    Application_isPlaying = EditorApplication::isPlaying && !EditorApplication::isPaused;
 
     ///Timers
     {
@@ -43,18 +48,20 @@ void GameLoop::run() {
         m_physics_time += Time::m_deltaTime;
     }
     ///Start
-    {//EditorApplication::isPaused
+    {
         for (auto &scene: global.scene.data) {
             if (!scene.second.isLoaded) { continue; };
 
             for (auto &object : scene.second.new_components) {
                 if (object) {
-                    if (object->gameObject()->activeInHierarchy()) {
-                        object->UnityStart();
-                    } else { continue; }
+                    if (object->gameObject()->activeInHierarchy() &&
+                        (Application_isPlaying || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
 
-                    scene.second.components.emplace_back(object);
-                    object = nullptr;
+                        object->UnityStart();
+
+                        global.scene.components.emplace_back(object);
+                        object = nullptr;
+                    }
                 }
             }
             //TODO: Garbage collect new_components nullptr objects
@@ -73,6 +80,9 @@ void GameLoop::run() {
         /**box2d*/
         /**should_run_every_time*/
         /**fixed update*/
+        if (Application_isPlaying) {
+
+        }
 
         //If my elapsed frame time is bigger than should break.
         if ((Time::m_unscaled_deltaTime + deltaClock.getElapsedTime().asSeconds()) > Time::maximumDeltaTime) {
@@ -86,28 +96,24 @@ void GameLoop::run() {
      */
 
     ///Update
-    for (auto &scene: global.scene.data) {
-        if (!scene.second.isLoaded) { continue; };
-
-        for (auto &object : scene.second.components) {
-            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-            if (mono && mono->isActiveAndEnabled()) {
-                mono->Update();
-            }
+    for (auto &object : global.scene.components) {
+        auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+        if (mono && mono->isActiveAndEnabled() &&
+            (Application_isPlaying || Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
+            mono->Update(); //TODO: Call only when something happened
         }
     }
+
 
     ///Late Update
-    for (auto &scene: global.scene.data) {
-        if (!scene.second.isLoaded) { continue; };
-
-        for (auto &object : scene.second.components) {
-            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-            if (mono && mono->isActiveAndEnabled()) {
-                mono->LateUpdate();
-            }
+    for (auto &object : global.scene.components) {
+        auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+        if (mono && mono->isActiveAndEnabled() &&
+            (Application_isPlaying || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
+            mono->LateUpdate(); //TODO: Call only when something happened
         }
     }
+
 
     ///Scene rendering
     for (auto &camera : global.m_draw_order) {
@@ -115,8 +121,6 @@ void GameLoop::run() {
             camera.second->Render();
         }
     }
-    if (!isPlaying) { return; }
-    if (EditorApplication::isPaused) { return; }
 
     ///On Gui
 

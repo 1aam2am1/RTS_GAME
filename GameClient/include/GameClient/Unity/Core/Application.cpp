@@ -7,8 +7,10 @@
 
 #if UNITY_EDITOR
 
+bool Application_isPlaying = false; //Global changes when GameLoop have loop
+
 bool Application::isPlaying() {
-    return EditorApplication::isPlaying;
+    return Application_isPlaying;
 }
 
 #endif

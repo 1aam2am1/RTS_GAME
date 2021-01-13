@@ -24,7 +24,7 @@ public:
     std::string userData;
 
     /// Save asset importer settings if asset importer is dirty.
-    virtual void SaveAndReimport();
+    void SaveAndReimport();
 
     /// Retrieves the asset importer for the asset at path.
     static TPtr<AssetImporter> GetAtPath(std::string path);

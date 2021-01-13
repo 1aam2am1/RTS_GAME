@@ -110,6 +110,12 @@ private:
     template<typename>
     friend
     class TPtr;
+
+private:
+    friend class Attributes;
+
+    //const std::unordered_map<std::type_index, uintmax_t>* flags = nullptr;
+    const mutable uintmax_t *flags = nullptr;
 };
 
 

@@ -10,6 +10,7 @@
 #include <GameClient/MainThread.h>
 #include <GameClient/Windows/FileDialogWindow.h>
 #include <GameClient/Unity/Core/Transform.h>
+#include <Core/Attributes.h>
 
 namespace fs = std::filesystem;
 
@@ -29,6 +30,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         auto &data = global.scene.data[new_id];
         data.isLoaded = false;
         data.path = scenePath;
+        data.name = fs::path(scenePath).stem().generic_string();
         data.buildIndex = -1;
     }
 
@@ -41,10 +43,10 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
             auto str = GameApi::readFullFile(scenePath);
             auto json = nlohmann::json::parse(str);
 
-            SceneSerializer serializer;
-
             {
+                SceneSerializer serializer;
                 std::vector<TPtr<>> result;
+
                 serializer.Deserialize(result, json["objects"]);
             }
             //creation of gameobjects adds them to the scene
@@ -73,10 +75,14 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
             for (auto &ob : global.scene.data[new_id].loading_awake) {
                 //activeInHierarchy => true
                 assert(ob->gameObject()->activeInHierarchy());
-                if (Application::isPlaying() /**|| ExecuteInEditMode*/) {
-                    ob->UnityAwake();
-                }
+                // Should not happen, maybe if we stopped playing when there was active loading,
+                // therefore it should happen between frames
+                // pause=>do, play-not=>only execute in edit mode
+                //if (Application::isPlaying() || Attributes::CheckCustomAttribute(ob, ExecuteInEditMode)) {
+                ob->UnityAwake();
+                //}
             }
+            global.scene.data[new_id].loading_awake.clear();
 
         } catch (const std::exception &e) {
             global.scene.data.erase(new_id);
@@ -86,12 +92,12 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
     }
 
     if (mode == OpenSceneMode::Single) {
+        auto copy = std::move(global.scene.data[new_id]);
         global.scene.data.clear();
+        global.scene.data[new_id] = copy;
+
         global.scene.active_scene = new_id;
     }
-
-
-    global.scene.data[new_id].isLoaded = true;
 
     return std::shared_ptr<Scene>{new Scene(new_id)};
 }

@@ -36,8 +36,9 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     if (!scene->isValid()) {
         throw std::runtime_error("Scene should be valid");//#3
     }
-    if (!scene->isLoaded()) {
-        throw std::runtime_error("Scene should be loaded");
+    if (!scene->isLoaded() &&
+        global.scene.on_load_active_id.find(std::this_thread::get_id()) == global.scene.on_load_active_id.end()) {
+        throw std::runtime_error("Scene should be loaded"); //&& We don't throw if this is loading proces,
     }
     auto new_scene_id = scene->id;
 
@@ -49,12 +50,10 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     auto old_scene = go->scene.get();
     if (old_scene) {
         auto &root = global.scene.data[old_scene->id].root;
-        root.erase(std::find_if(root.begin(), root.end(), [&](auto i) {
+        auto it = std::find_if(root.begin(), root.end(), [&](auto i) {
             return i == go;
-        }));
-
-        auto &com = global.scene.data[old_scene->id].components;
-        ///remove and add components to new scene (=nullptr is faster than erase)
+        });
+        if (it != root.end()) { root.erase(it); }
     }
 
     {
@@ -245,7 +244,9 @@ SceneManager::SceneP SceneManager::GetActiveScene() {
     {
         auto it = global.scene.on_load_active_id.find(std::this_thread::get_id());
         if (it != global.scene.on_load_active_id.end()) {
-            return std::shared_ptr<Scene>(new Scene(it->second));
+            if (global.scene.data.find(it->second) != global.scene.data.end())
+                return std::shared_ptr<Scene>(new Scene(it->second));
+            return {}; //empty this is prefab!!!
         }
     }
 

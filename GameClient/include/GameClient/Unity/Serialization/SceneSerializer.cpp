@@ -65,7 +65,7 @@ void SceneSerializer::Deserialize(std::vector<TPtr<>> &vec, const nlohmann::json
     auto lock = register_check();
 
     vec.clear();
-    vec.reserve(j.size());
+    vec.resize(j.size());
 
     if (j.is_array()) {
 

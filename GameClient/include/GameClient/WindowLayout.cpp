@@ -305,6 +305,9 @@ void WindowLayout::drawLayout() {
 
         {
             bool playing = EditorApplication::isPlaying;
+            if (!playing) {
+                EditorApplication::isPaused = false;
+            }
             if (playing) { enabled_push(); }
 
             if (ImGui::Button(ICON_FA_PLAY "##play", LocalButtonSize)) {
