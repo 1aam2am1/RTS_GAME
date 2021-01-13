@@ -7,9 +7,18 @@
 
 #include <vector>
 #include <map>
+#include <filesystem>
+#include <unordered_set>
+#include <set>
+#include <queue>
+#include <execution>
 #include <GameClient/Unity/Core/Camera.h>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <Core/Renderer.h>
+#include <GameClient/Unity/Core/Guid.h>
+#include <Editor/OneGuidFile.h>
+
+namespace fs = std::filesystem;
 
 class SceneData {
 public:
@@ -32,6 +41,20 @@ public:
 
 private:
     std::shared_ptr<const int> guard;
+};
+
+struct FileTime {
+    Unity::GUID guid{};
+
+    fs::file_time_type asset_time{};
+    fs::file_time_type meta_time{};
+
+    uint64_t md5_asset = 0;
+    uint64_t md5_time = 0;
+
+    bool operator==(const FileTime &) = delete;
+
+    bool operator!=(const FileTime &) = delete;
 };
 
 struct GlobalStaticVariables {
@@ -57,6 +80,20 @@ struct GlobalStaticVariables {
 
         std::vector<TPtr<Component>> components{}; //< Global components that are running
     } scene;
+
+    struct AssetDatabaseData {
+        AssetDatabaseData() = default;
+
+        AssetDatabaseData(const AssetDatabaseData &) = delete;
+
+        AssetDatabaseData &operator=(const AssetDatabaseData &) = delete;
+
+        std::map<Unity::GUID, OneGUIDFile> objects{};
+
+        std::map<std::string, FileTime> path_files{};
+
+        std::map<std::string, std::set<std::string>> dir_tree{};
+    } assets;
 };
 
 extern GlobalStaticVariables global;

@@ -12,9 +12,6 @@
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/Guid.h>
 #include "ImportAssetOptions.h"
-#include "AssetImporter.h"
-
-class OneGUIDFile;
 
 class AssetDatabase {
 public:

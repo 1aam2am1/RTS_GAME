@@ -1,6 +1,6 @@
 template<typename T>
 nlohmann::json JsonSerializer::operator()(T &&t) {
-    return t;
+    return std::forward<T>(t);
 }
 
 //Should I specialize TPtr vector like in scene serializer?
@@ -9,7 +9,7 @@ nlohmann::json JsonSerializer::operator()(std::vector<T> vec) {
     nlohmann::json::array_t result;
     result.reserve(vec.size());
 
-    for (auto &it : vec) {
+    for (auto &&it : vec) {
         result.emplace_back(operator()(it));
     }
 
@@ -41,7 +41,7 @@ void JsonSerializer::operator()(const std::function<void(std::vector<T>)> &f,
     if (j.is_array()) {
         value->resize(j.size());
         int i = 0;
-        for (auto &v : j.items()) {
+        for (auto &&v : j.items()) {
             std::function<void(T)> func = [value, i](auto n) -> void {
                 (*value)[i] = n;
             };

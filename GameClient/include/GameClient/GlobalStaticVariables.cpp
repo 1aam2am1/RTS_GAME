@@ -12,7 +12,19 @@ GlobalStaticVariables global;
 INITIALIZE_FUNC(MainThread::Invoke(
         []() { EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects); }))
 
-static int UNIQUE_ID(p) = Initializer::d_add([]() { global.scene.data.clear(); });
+static int UNIQUE_ID(p) = Initializer::d_add([]() {
+    global.scene.data.clear();
+
+    global.assets.path_files.clear();
+    global.assets.dir_tree.clear();
+
+    for (auto iterator: global.assets.objects) {
+        std::for_each(std::execution::par_unseq, iterator.second.object.begin(), iterator.second.object.end(),
+                      [](auto &&f) {
+                          Object::DestroyImmediate(f.second, true);
+                      });
+    }
+});
 
 SceneData::SceneData() : guard((int *) 1, [](auto) {}) {
 }

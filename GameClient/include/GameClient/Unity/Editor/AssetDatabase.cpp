@@ -15,72 +15,21 @@
 
 #include "AssetDatabase.h"
 #include "EditorUtility.h"
-#include <map>
-#include <filesystem>
 #include <chrono>
 #include <GameApi/GlobalLogSource.h>
-#include <unordered_set>
-#include <set>
-#include <execution>
 #include <GameClient/Unity/Editor/OneGuidFile.h>
 #include <GameClient/Unity/Serialization/JsonSerializer.h>
-#include <queue>
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 #include <GameClient/Unity/Editor/SceneAsset.h>
 #include <GameClient/Unity/Macro.h>
-
-namespace fs = std::filesystem;
-
-struct FileTime {
-    Unity::GUID guid{};
-
-    fs::file_time_type asset_time{};
-    fs::file_time_type meta_time{};
-
-    uint64_t md5_asset = 0;
-    uint64_t md5_time = 0;
-
-    bool operator==(const FileTime &) = delete;
-
-    bool operator!=(const FileTime &) = delete;
-};
-
-struct Data {
-    Data() = default;
-
-    Data(const Data &) = delete;
-
-    Data &operator=(const Data &) = delete;
-
-    std::map<Unity::GUID, OneGUIDFile> objects;
-
-    std::map<std::string, FileTime> path_files;
-
-    std::map<std::string, std::set<std::string>> dir_tree;
-};
+#include "AssetImporter.h"
+#include <GameClient/GlobalStaticVariables.h>
 
 decltype(AssetDatabase::importPackageStarted) AssetDatabase::importPackageStarted;
 decltype(AssetDatabase::importPackageCompleted) AssetDatabase::importPackageCompleted;
 
-static Data &get_data() {
-    static Data d;
-    return d;
-}
-
-namespace {
-    static int UNIQUE_ID(p) = Initializer::d_add([]() {
-        auto &d = get_data();
-
-        d.path_files.clear();
-        d.dir_tree.clear();
-
-        for (auto iterator: d.objects) {
-            std::for_each(std::execution::par_unseq, iterator.second.object.begin(), iterator.second.object.end(),
-                          [](auto &&f) {
-                              Object::DestroyImmediate(f.second, true);
-                          });
-        }
-    });
+static auto &get_data() {
+    return global.assets;
 }
 
 void SaveAsset(Unity::GUID g, OneGUIDFile *o);
@@ -522,7 +471,7 @@ void AssetDatabase::SaveAssets() {
         if (it.second.main && it.second.importer) {
             if (!std::any_of(it.second.object.begin(), it.second.object.end(), [](auto &&o) {
                 return EditorUtility::IsDirty(o.second);
-            })) {
+            }) && !EditorUtility::IsDirty(it.second.importer)) {
                 continue;
             }
 

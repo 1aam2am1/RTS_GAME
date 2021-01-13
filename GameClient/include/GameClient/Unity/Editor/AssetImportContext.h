@@ -12,8 +12,6 @@
 
 class OneGUIDFile;
 
-class AssetDatabase;
-
 class AssetImportContext : public Object {
 public:
     /// The path of the source asset file to be imported.

@@ -145,7 +145,13 @@ set(SRC
         include/GameClient/Windows/FileDialogWindow.cpp
         include/GameClient/Windows/FileDialogWindow.h
         include/GameClient/Unity/Serialization/to_json.h
-        include/GameClient/Unity/Core/Attributes.h include/GameClient/Unity/Core/Attributes.cpp)
+        include/GameClient/Unity/Core/Attributes.h
+        include/GameClient/Unity/Core/Attributes.cpp
+        include/GameClient/Editors/TextureImporterEditor.cpp
+        include/GameClient/Unity/Editor/AssetImporterEditor.cpp
+        include/GameClient/Unity/Editor/AssetImporterEditor.h
+        include/GameClient/Importers/TextureImporter.h
+        )
 
 add_executable(GameClient ${SRC})
 

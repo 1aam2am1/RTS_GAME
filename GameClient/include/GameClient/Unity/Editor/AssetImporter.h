@@ -9,8 +9,6 @@
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Editor/AssetImportContext.h>
 
-class AssetDatabase;
-
 class AssetImporter : public Object {
 public:
 

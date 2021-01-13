@@ -52,7 +52,7 @@ bool Editor::DrawDefaultInspector() {
                     if constexpr (std::is_same_v<type, int64_t>) {
                         dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, double>) {
-                        dirty = ImGui::InputDouble(key.data(), &value);
+                        dirty = ImGui::InputScalar(key.data(), ImGuiDataType_Double, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, std::string>) {
                         dirty = ImGui::InputText(key.data(), &value);
                     } else if constexpr (std::is_same_v<type, bool>) {
@@ -191,6 +191,7 @@ TPtr<Editor> Editor::CreateEditor(TPtr<Object> targetObject, std::type_index edi
     if (it != t_editor.end()) {
         auto c = it->second.create();
         c->target = targetObject;
+        c->Awake();
         return c;
     }
 
@@ -200,6 +201,7 @@ TPtr<Editor> Editor::CreateEditor(TPtr<Object> targetObject, std::type_index edi
     if (it != t_editor.end()) {
         auto c = it->second.create();
         c->target = targetObject;
+        c->Awake();
         return c;
     }
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +211,7 @@ TPtr<Editor> Editor::CreateEditor(TPtr<Object> targetObject, std::type_index edi
     if (it != t_fallback_editor.end()) {
         auto c = it->second.create();
         c->target = targetObject;
+        c->Awake();
         return c;
     }
 
@@ -218,6 +221,7 @@ TPtr<Editor> Editor::CreateEditor(TPtr<Object> targetObject, std::type_index edi
     if (it != t_fallback_editor.end()) {
         auto c = it->second.create();
         c->target = targetObject;
+        c->Awake();
         return c;
     }
     ///////////////////////////////////////////////////////////////////////////////////////
