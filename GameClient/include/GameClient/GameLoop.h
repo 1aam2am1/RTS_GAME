@@ -7,6 +7,7 @@
 
 
 #include <SFML/System/Clock.hpp>
+#include <string>
 
 
 class GameLoop {
@@ -18,6 +19,8 @@ private:
     float m_physics_time = 0;
 
     bool isPlaying = false;
+    bool isPaused = false;
+    std::string loaded_scene_path;
 };
 
 

@@ -9,6 +9,7 @@
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GlobalStaticVariables.h>
+#include <Editor/EditorApplication.h>
 
 EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components)
 
@@ -89,11 +90,17 @@ void GameObject::SetActive(bool value) noexcept {
 
             bool isPlaying = Application::isPlaying();
             for (auto it = copy.begin(); it != copy.end(); ++it) {
+                if (!*it) { continue; }
+
                 if ((isPlaying || Attributes::CheckCustomAttribute(*it, ExecuteInEditMode))) {
                     (*it)->UnityAwake();
                     global.scene.data[m_scene->id].new_components.emplace_back(*it);
                 } else {
-                    to_awake.emplace_back(*it);
+                    if (EditorApplication::isPaused) {
+                        global.scene.data[m_scene->id].loading_awake.emplace_back(*it);
+                    } else {
+                        to_awake.emplace_back(*it);
+                    }
                 }
             }
         }
@@ -169,8 +176,15 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
             result->UnityAwake(); //maybe here, maybe before frame?
         }
     } else {
-        to_awake.emplace_back(
-                result); //I'm not activeInHierarchy, changing play mode won't run this, therefore load scene anew in play mode
+        if (EditorApplication::isPaused && activeInHierarchy()) {
+            global.scene.data[m_scene->id].loading_awake.emplace_back(result);
+        } else {
+            to_awake.emplace_back(
+                    result); //I'm not activeInHierarchy, changing play mode won't run this, therefore load scene anew in play mode
+
+        }
+
+        //TODO: Move code with activation to different function from this place and setenable, and fix on enable calling
     }
 
     return result;

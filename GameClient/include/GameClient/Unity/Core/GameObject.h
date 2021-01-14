@@ -149,6 +149,8 @@ private:
 
     friend class EditorSceneManager;
 
+    friend class GameLoop;
+
     TPtr<Scene> m_scene{};
 
     mutable std::vector<TPtr<Component>> components;

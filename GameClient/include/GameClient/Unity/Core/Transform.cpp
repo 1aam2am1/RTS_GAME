@@ -7,21 +7,7 @@
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/GlobalStaticVariables.h>
-
-namespace sf {
-    inline void to_json(nlohmann::json &j, const Vector3f &p) {
-        j.clear();
-        j["x"] = p.x;
-        j["y"] = p.y;
-        j["z"] = p.z;
-    }
-
-    inline void from_json(const nlohmann::json &j, Vector3f &p) {
-        j.at("x").get_to(p.x);
-        j.at("y").get_to(p.y);
-        j.at("z").get_to(p.z);
-    }
-}
+#include <GameClient/Unity/Serialization/to_json.h>
 
 EXPORT_CLASS(Transform, m_localPosition, m_localRotation, m_localScale, ("m_parent", parent), children);
 

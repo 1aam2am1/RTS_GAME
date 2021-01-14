@@ -162,7 +162,8 @@ namespace GameApi {
         {
             fs::path p = path;
             p = p.parent_path();
-            fs::create_directory(p);
+            if (!p.empty())
+                fs::create_directory(p);
         }
 
         FILE *file = fopen(path.data(), "wb");

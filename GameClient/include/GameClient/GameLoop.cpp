@@ -6,9 +6,10 @@
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Editor/EditorApplication.h>
 #include <Core/Time.h>
-#include <SceneManagement/SceneManager.h>
+#include <SceneManagement/EditorSceneManager.h>
 #include <Core/MonoBehaviour.h>
 #include <Core/Attributes.h>
+#include <Editor/AssetDatabase.h>
 
 extern bool Application_isPlaying;
 
@@ -17,17 +18,44 @@ void GameLoop::run() {
 
     if (EditorApplication::isPlaying != isPlaying) {
 
-        //TODO: Load and save scene from playing mode to editor mode
-
         isPlaying = EditorApplication::isPlaying;
 
+        //TODO: -- Change saving directory, save id of editing gameobject to try resume editor settings before and after play
+        Application_isPlaying = EditorApplication::isPlaying && !EditorApplication::isPaused;
         if (isPlaying) {
-            //TODO: !!! Load first scene
+            //load default scene or active one
+            if (!SceneManager::GetActiveScene()->isValid()) {
+                EditorApplication::isPlaying = false;
+                isPlaying = false;
+            } else {
 
-            //TODO: From global settings
-            Time::timeScale = 1;
-            Time::maximumDeltaTime = 1.f / 5.f;
-            Time::fixedDeltaTime = 0.02;
+                loaded_scene_path = global.scene.data[global.scene.active_scene].path;
+                if (AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get()).empty()) {
+                    if (!loaded_scene_path.empty()) {
+                        EditorSceneManager::SaveScene(SceneManager::GetActiveScene());
+                    } else {
+                        loaded_scene_path = "Assets/_U.unity";
+                        EditorSceneManager::SaveScene(SceneManager::GetActiveScene(), loaded_scene_path);
+                    }
+                } else {
+                    EditorSceneManager::SaveScene(SceneManager::GetActiveScene());
+                    loaded_scene_path = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+                }
+
+
+                EditorSceneManager::OpenScene(loaded_scene_path);
+
+                global.settings.Apply();
+            }
+        } else {
+            //Load old scene
+            EditorSceneManager::OpenScene(loaded_scene_path);
+            if (global.scene.data[global.scene.active_scene].path == "Assets/_U.unity") {
+                global.scene.data[global.scene.active_scene].path.clear();
+                global.scene.data[global.scene.active_scene].name = "Scene";
+                fs::remove("Assets/_U.unity"); //Clear after yourself
+                fs::remove("Assets/_U.unity.meta");
+            }
         }
 
         Time::m_Time = 0;
@@ -47,6 +75,33 @@ void GameLoop::run() {
 
         m_physics_time += Time::m_deltaTime;
     }
+    ///Awake after pause
+    {
+        if (isPaused != EditorApplication::isPaused) {
+            isPaused = EditorApplication::isPaused;
+
+            for (auto &scene: global.scene.data) {
+                if (!scene.second.isLoaded) { continue; };
+
+                for (auto &object : scene.second.loading_awake) {
+                    if (object) {
+                        if (object->gameObject()->activeInHierarchy()) {
+                            object->UnityAwake();
+
+                            auto &to_awake = object->gameObject()->to_awake;
+                            auto it = std::find_if(to_awake.begin(), to_awake.end(), [&object](auto &&i) {
+                                return i == object;
+                            });
+                            if (it != to_awake.end()) { to_awake.erase(it); }
+                        }
+                        object = nullptr;
+                    }
+                }
+                //TODO: Garbage collect loading_awake nullptr objects
+            }
+        }
+    }
+
     ///Start
     {
         for (auto &scene: global.scene.data) {

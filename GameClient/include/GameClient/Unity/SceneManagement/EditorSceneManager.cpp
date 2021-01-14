@@ -15,6 +15,7 @@
 namespace fs = std::filesystem;
 
 decltype(EditorSceneManager::dirty) EditorSceneManager::dirty;
+decltype(EditorSceneManager::playModeStartScene) EditorSceneManager::playModeStartScene;
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {
     {
@@ -93,10 +94,14 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
 
     if (mode == OpenSceneMode::Single) {
         auto copy = std::move(global.scene.data[new_id]);
+        auto old = std::move(global.scene.data);
         global.scene.data.clear();
-        global.scene.data[new_id] = copy;
 
+        global.scene.data[new_id] = copy;
         global.scene.active_scene = new_id;
+
+        MainThread::Invoke([old]() {}); //< Here delete old data, as this can be called from update,
+        // by inexperienced user we save him, by deleting objects in new frame
     }
 
     return std::shared_ptr<Scene>{new Scene(new_id)};
@@ -107,7 +112,10 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
     auto new_id = global.scene.max_id++;
 
     if (mode == LoadSceneMode::Single) {
+        auto old = std::move(global.scene.data);
         global.scene.data.clear();
+        MainThread::Invoke([old]() {}); //< Here delete old data
+
         global.scene.active_scene = new_id;
     }
 

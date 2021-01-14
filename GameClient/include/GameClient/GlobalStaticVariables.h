@@ -17,6 +17,7 @@
 #include <Core/Renderer.h>
 #include <GameClient/Unity/Core/Guid.h>
 #include <Editor/OneGuidFile.h>
+#include <box2d/box2d.h>
 
 namespace fs = std::filesystem;
 
@@ -37,7 +38,7 @@ public:
     std::vector<TPtr<GameObject>> root{};
     std::vector<TPtr<Component>> new_components{}; //To Start
 
-    std::vector<TPtr<Component>> loading_awake{}; //used when loading
+    std::vector<TPtr<Component>> loading_awake{}; //used when loading, unpausing game
 
 private:
     std::shared_ptr<const int> guard;
@@ -94,6 +95,30 @@ struct GlobalStaticVariables {
 
         std::map<std::string, std::set<std::string>> dir_tree{};
     } assets;
+
+
+    struct {
+        b2World world{{0.f, -10.f}};
+    } physics;
+
+    struct Settings {
+
+        /// Save global settings
+        void Save();
+
+        /// Load global settings
+        void Load();
+
+        /// Apply global settings
+        void Apply();
+
+        float timeScale = 1;
+        float maximumDeltaTime = 1.f / 5.f;
+        float fixedDeltaTime = 0.02;
+        sf::Vector2f gravity = {0.f, -10.f};
+        std::string scene_path;
+
+    } settings;
 };
 
 extern GlobalStaticVariables global;
