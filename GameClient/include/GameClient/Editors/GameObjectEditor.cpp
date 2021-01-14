@@ -64,6 +64,15 @@ public:
             bool open = ImGui::CollapsingHeader(("##" + GameApi::to_string(c.get())).data(),
                                                 ImGuiTreeNodeFlags_DefaultOpen |
                                                 ImGuiTreeNodeFlags_AllowItemOverlap); //ImGuiTreeNodeFlags_OpenOnArrow
+
+            if (ImGui::BeginPopupContextItem()) {
+                if (ImGui::MenuItem("Remove")) {
+                    Object::DestroyImmediate(c);
+                }
+
+                ImGui::EndPopup();
+            }
+
             ImGui::SameLine();
 
             auto behaviour = dynamic_pointer_cast<Behaviour>(c);

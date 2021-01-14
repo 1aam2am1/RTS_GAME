@@ -40,7 +40,7 @@ public:
 
     /// Camera's half-size when in orthographic mode.
     /// \note this means that if it is 1 then object that have 1m is half of screen
-    float orthographicSize = 3.6f;
+    double orthographicSize = 3.6f;
 
     /// Set the target display for this Camera.
     /// \note This setting makes a Camera render into the specified display.
@@ -48,7 +48,7 @@ public:
     //int targetDisplay = 0;
 
     /// Where on the screen is the camera rendered in screen coordinates.
-    ///sf::FloatRect pixelRect = {0.f, 0.f, 1.f, 1.f};
+    sf::FloatRect pixelRect = {0.f, 0.f, 1.f, 1.f};
 
     /// Camera's depth in the camera rendering order.
     /// \note Cameras with lower depth are rendered before cameras with higher depth.

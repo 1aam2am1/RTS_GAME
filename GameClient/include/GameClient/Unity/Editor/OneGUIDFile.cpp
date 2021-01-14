@@ -8,7 +8,7 @@ OneGUIDFile &OneGUIDFile::operator=(const OneGUIDFile &r) {
     if (&r == this) { return *this; }
 
     this->path = r.path;
-    this->importer = r.importer;
+    this->importer.reset(r.importer);
     this->dependency = r.dependency;
     this->main.reset(r.main);
 

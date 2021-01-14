@@ -26,7 +26,7 @@ void SpriteRenderer::draw() {
     double pixelsPerUnit = sprite->pixelsPerUnit;
     pixelsPerUnit = 1.0 / pixelsPerUnit;
 
-    states.transform.translate(position.x, position.y);
+    states.transform.translate(position.x, -position.y);
     states.transform.rotate(transform()->localRotation);
 
     states.transform.scale(transform()->localScale.get().x * pixelsPerUnit,

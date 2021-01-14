@@ -151,6 +151,7 @@ set(SRC
         include/GameClient/Unity/Editor/AssetImporterEditor.cpp
         include/GameClient/Unity/Editor/AssetImporterEditor.h
         include/GameClient/Importers/TextureImporter.h
+        include/GameClient/Editors/CameraEditor.cpp
         )
 
 add_executable(GameClient ${SRC})

@@ -151,7 +151,7 @@ private:
 
     TPtr<Scene> m_scene{};
 
-    std::vector<TPtr<Component>> components;
+    mutable std::vector<TPtr<Component>> components;
     std::vector<TPtr<Component>> to_awake;
 private:
     bool m_active = true;

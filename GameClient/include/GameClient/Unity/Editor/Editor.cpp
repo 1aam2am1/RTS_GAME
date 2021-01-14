@@ -104,6 +104,7 @@ bool Editor::DrawDefaultInspector() {
                 }
         };
 
+        ImGui::AlignTextToFramePadding();
         ImGui::Text("%s", name.data());
         ImGui::SameLine();
         std::visit(visitor, it.second);

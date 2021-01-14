@@ -262,6 +262,8 @@ std::vector<TPtr<Object>> AssetDatabase::LoadAllAssetRepresentationsAtPath(std::
 }
 
 bool AssetDatabase::IsSubAsset(Object *obj) {
+    if (!obj) { return false; }
+
     const auto &d = get_data();
     for (auto &it : d.objects) {
         auto p = std::find_if(it.second.object.begin(), it.second.object.end(),
@@ -272,6 +274,8 @@ bool AssetDatabase::IsSubAsset(Object *obj) {
 }
 
 bool AssetDatabase::IsMainAsset(Object *obj) {
+    if (!obj) { return false; }
+
     const auto &d = get_data();
     auto p = std::find_if(d.objects.begin(), d.objects.end(),
                           [&](auto &p) { return p.second.main.get() == obj; });
@@ -280,6 +284,8 @@ bool AssetDatabase::IsMainAsset(Object *obj) {
 }
 
 bool AssetDatabase::Contains(Object *obj) {
+    if (!obj) { return false; }
+
     const auto &d = get_data();
     for (auto &it : d.objects) {
         auto p = std::find_if(it.second.object.begin(), it.second.object.end(),
@@ -451,6 +457,7 @@ void SaveAsset(Unity::GUID g, OneGUIDFile *o) {
             GameApi::log(ERR.fmt("Can't save object: %s",
                                  (o->path + ".meta").data()));
         } else {
+            EditorUtility::ClearDirty(o->importer);
             for (auto &ob: o->object) {
                 EditorUtility::ClearDirty(ob.second);
             }

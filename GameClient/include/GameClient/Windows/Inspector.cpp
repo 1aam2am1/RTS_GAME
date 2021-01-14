@@ -7,6 +7,7 @@
 #include <GameClient/Unity/Editor/Editor.h>
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/WindowLayout.h>
+#include <Editor/AssetDatabase.h>
 
 class Inspector : public EditorWindow {
 public:
@@ -26,7 +27,9 @@ public:
     }
 
     void Update() override {
-        if (Selection::activeObject != activeObject) {
+        if (Application::isPlaying() && AssetDatabase::Contains(Selection::activeObject.get())) {
+            editor = nullptr;
+        } else if (Selection::activeObject != activeObject) {
             activeObject = Selection::activeObject;
 
             editor = nullptr;

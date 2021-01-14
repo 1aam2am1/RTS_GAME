@@ -11,6 +11,7 @@ TPtr<GameObject> newGameObject(std::string name) {
 
 template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
 std::vector<TPtr<T>> GameObject::GetComponents() const {
+    std::erase_if(components, [](auto &&c) { return c.expired(); });
     if constexpr (std::is_same_v<T, Component>) {
         return components;
     } else {

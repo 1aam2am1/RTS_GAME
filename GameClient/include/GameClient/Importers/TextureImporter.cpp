@@ -4,11 +4,15 @@
 
 
 #include "TextureImporter.h"
+#include <GameClient/Unity/Serialization/to_json.h>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 
 void TextureImporter::OnImportAsset(AssetImportContext &ctx) {
     TPtr<Texture2D> texture = std::make_shared<Texture2D>();
     texture->t0.loadFromFile(ctx.assetPath);
+    texture->name = ctx.name;
     ctx.AddObjectToAsset(0, texture, texture);
     ctx.SetMainObject(texture);
 
@@ -17,25 +21,28 @@ void TextureImporter::OnImportAsset(AssetImportContext &ctx) {
                                                          static_cast<float>(texture->t0.getSize().y)}));
     }
 
-    for (auto s: sprites) {
+    int i = 1;
+    for (auto s : sprites) {
         auto p = s["pivot"];
         sf::Vector2f pivot;
         p["x"].get_to(pivot.x);
         p["y"].get_to(pivot.y);
 
-        auto r = s["rect"];
-        sf::FloatRect rect;
-        r["left"].get_to(rect.left);
-        r["top"].get_to(rect.top);
-        r["width"].get_to(rect.width);
-        r["height"].get_to(rect.height);
+        sf::FloatRect rect = s["rect"].get<sf::FloatRect>();
 
         auto id = s["id"].get<Unity::fileID>();
         auto ppu = s["pixelsPerUnit"].get<float>();
 
+        auto name = s.contains("name") ? s["name"].get<std::string>() :
+                    (fs::path(assetPath).filename().generic_string() + "_" + GameApi::to_string(i));
+
         if (force_sprites) { ppu = pixelsPerUnit; }
 
-        ctx.AddObjectToAsset(id, Sprite::Create(texture, rect, pivot, ppu));
+        auto sprite = Sprite::Create(texture, rect, pivot, ppu);
+        sprite->name = name;
+        ctx.AddObjectToAsset(id, sprite);
+
+        ++i;
     }
 
 }
@@ -57,11 +64,7 @@ void TextureImporter::OnExportAsset(AssetImportContext &ctx) {
         pivot["x"] = sprite->s0.getOrigin().x / sprite->s0.getLocalBounds().getSize().x;
         pivot["y"] = sprite->s0.getOrigin().y / sprite->s0.getLocalBounds().getSize().y;
 
-        auto &rect = j["rect"];
-        rect["left"] = sprite->s0.getTextureRect().left;
-        rect["top"] = sprite->s0.getTextureRect().top;
-        rect["width"] = sprite->s0.getTextureRect().width;
-        rect["height"] = sprite->s0.getTextureRect().height;
+        j["rect"] = sprite->s0.getTextureRect();
 
         {
             Unity::GUID g;
@@ -74,6 +77,7 @@ void TextureImporter::OnExportAsset(AssetImportContext &ctx) {
         }
 
         j["pixelsPerUnit"] = sprite->pixelsPerUnit;
+        j["name"] = sprite->name;
 
         return j;
     };

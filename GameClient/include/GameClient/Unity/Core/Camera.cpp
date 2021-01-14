@@ -11,8 +11,9 @@
 #include <SFML/OpenGL.hpp>
 #include <execution>
 #include <GameClient/Unity/Core/Attributes.h>
+#include <GameClient/Unity/Serialization/to_json.h>
 
-ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize)
+ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize, pixelRect)
 ADD_ATTRIBUTE(Camera, ExecuteInEditMode)
 
 Camera::Camera() : depth(
@@ -58,6 +59,7 @@ std::vector<TPtr<Camera>> Camera::allCameras() {
 
 void Camera::Render() {
     auto position = transform()->localPosition.get();
+    sf::Vector2f size{global.m_target.getSize()};
     //TODO: !!! Change to global position and rotation
     //TODO: !!! Check order of zoom/move/rotate
     /* view.zoom(transform()->localScale.get().z);
@@ -75,11 +77,20 @@ void Camera::Render() {
               (int) pixelRect.width * global.m_target.getSize().x,
               (int) pixelRect.height * global.m_target.getSize().y);
 */
-    ///global.m_target.draw()
-//TODO: Pixel per unit
-    global.m_target.clear(backgroundColor);
+    if (size.y != 0) {
+        size.x = 2.f * orthographicSize * (size.x / size.y);
+        size.y = 2.f * orthographicSize;
+    } else {
+        return;
+    }
 
-    global.m_target.setView(sf::View({0.f, 0.f}, sf::Vector2f{global.m_target.getSize()}));
+    sf::View view({position.x, -position.y}, size);
+    view.setViewport(pixelRect);
+    view.setRotation(transform()->localRotation);
+
+    global.m_target.setView(view);
+
+    global.m_target.clear(backgroundColor);//TODO: Clear only pixelRect
 
     for (auto &it : global.m_render) {
         if (it && it->enabled && !it->forceRenderingOff && it->gameObject()->activeInHierarchy())

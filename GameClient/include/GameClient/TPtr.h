@@ -145,7 +145,7 @@ public:
         if (ptr && ptr != o.ptr) {
             ptr->onDestroySignal(o.get());
         } else {
-            *this = o;
+            *this = dynamic_pointer_cast<T>(o);
         }
     }
 
