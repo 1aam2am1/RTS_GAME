@@ -59,7 +59,7 @@ std::vector<TPtr<Camera>> Camera::allCameras() {
 
 void Camera::Render() {
     auto position = transform()->localPosition.get();
-    sf::Vector2f size{global.m_target.getSize()};
+    sf::Vector2f size{global.m_target().getSize()};
     //TODO: !!! Change to global position and rotation
     //TODO: !!! Check order of zoom/move/rotate
     /* view.zoom(transform()->localScale.get().z);
@@ -88,9 +88,9 @@ void Camera::Render() {
     view.setViewport(pixelRect);
     view.setRotation(transform()->localRotation);
 
-    global.m_target.setView(view);
+    global.m_target().setView(view);
 
-    global.m_target.clear(backgroundColor);//TODO: Clear only pixelRect
+    global.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
 
     for (auto &it : global.m_render) {
         if (it && it->enabled && !it->forceRenderingOff && it->gameObject()->activeInHierarchy())
@@ -100,5 +100,7 @@ void Camera::Render() {
 
     ///glDisable(GL_SCISSOR_TEST);
 
-    global.m_target.display();
+#if UNITY_EDITOR
+    global.m_target().display(); //Display only in editor as window is displayed in main screen
+#endif
 }

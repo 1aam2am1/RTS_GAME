@@ -243,6 +243,10 @@ void WindowLayout::dockWindow(WindowLayout::Align align, TPtr<EditorWindow> ptr)
 void WindowLayout::drawLayout() {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;// | ImGuiDockNodeFlags_CentralNode;
 
+#if !(UNITY_EDITOR)
+    dockspace_flags |= ImGuiDockNodeFlags_PassthruCentralNode;
+#endif
+
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;

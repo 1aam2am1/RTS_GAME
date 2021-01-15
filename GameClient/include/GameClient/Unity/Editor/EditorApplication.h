@@ -10,10 +10,18 @@ class EditorApplication {
 public:
 
     /// Is editor currently in play mode?
+#if UNITY_EDITOR
     static bool isPlaying;
+#else
+    static constexpr bool isPlaying = true;
+#endif
 
     /// Is editor currently paused?
+#if UNITY_EDITOR
     static bool isPaused;
+#else
+    static constexpr bool isPaused = false;
+#endif
 };
 
 

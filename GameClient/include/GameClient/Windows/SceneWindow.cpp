@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include <imgui-SFML.h>
+#include <GameClient/Windows/GameSceneMenuGizmo.h>
 
 class SceneWindow : public EditorWindow {
 public:
@@ -16,13 +17,18 @@ public:
         // Get existing open window or if none, make a new one:
         auto window = EditorWindow::GetWindow<SceneWindow>();
         WindowLayout::dockWindow(WindowLayout::Center, window);
+        window->flags |= ImGuiWindowFlags_MenuBar;
         window->Show();
     }
 
     void OnGUI() override {
         ///TODO: Has it own camera implementation
 #if UNITY_EDITOR
-        ImGui::Image(global.m_target.getTexture());
+        DrawGameSceneGizmoMenu();
+        ImGui::Image(global.m_target().getTexture());
+        if (global.mis.draw_gizmo) {
+            //draw box2d debug
+        }
 #endif
     }
 

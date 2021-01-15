@@ -19,10 +19,12 @@ decltype(EditorSceneManager::playModeStartScene) EditorSceneManager::playModeSta
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {
     {
-        auto scene = AssetDatabase::LoadMainAssetAtPath(std::string{scenePath});
-        if (!dynamic_pointer_cast<SceneAsset>(scene)) {
+        auto scene = dynamic_pointer_cast<SceneAsset>(AssetDatabase::LoadMainAssetAtPath(std::string{scenePath}));
+        if (!scene) {
             GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
             return std::shared_ptr<Scene>{new Scene(0)};
+        } else {
+            playModeStartScene = dynamic_pointer_cast<SceneAsset>(scene);
         }
     }
 

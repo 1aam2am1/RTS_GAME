@@ -11,11 +11,14 @@
 #include <Core/Attributes.h>
 #include <Editor/AssetDatabase.h>
 
+#if UNITY_EDITOR
 extern bool Application_isPlaying;
+#endif
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();
 
+#if UNITY_EDITOR
     if (EditorApplication::isPlaying != isPlaying) {
 
         isPlaying = EditorApplication::isPlaying;
@@ -65,6 +68,9 @@ void GameLoop::run() {
         m_physics_time = 0;
     }
     Application_isPlaying = EditorApplication::isPlaying && !EditorApplication::isPaused;
+#else
+    isPlaying = true;
+#endif
 
     ///Timers
     {
@@ -110,7 +116,7 @@ void GameLoop::run() {
             for (auto &object : scene.second.new_components) {
                 if (object) {
                     if (object->gameObject()->activeInHierarchy() &&
-                        (Application_isPlaying || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
+                        (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
 
                         object->UnityStart();
 
@@ -135,7 +141,7 @@ void GameLoop::run() {
         /**box2d*/
         /**should_run_every_time*/
         /**fixed update*/
-        if (Application_isPlaying) {
+        if (Application::isPlaying()) {
 
         }
 
@@ -154,7 +160,7 @@ void GameLoop::run() {
     for (auto &object : global.scene.components) {
         auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
         if (mono && mono->isActiveAndEnabled() &&
-            (Application_isPlaying || Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
             mono->Update(); //TODO: Call only when something happened
         }
     }
@@ -164,7 +170,7 @@ void GameLoop::run() {
     for (auto &object : global.scene.components) {
         auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
         if (mono && mono->isActiveAndEnabled() &&
-            (Application_isPlaying || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
             mono->LateUpdate(); //TODO: Call only when something happened
         }
     }

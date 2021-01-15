@@ -16,9 +16,21 @@ GlobalStaticVariables global;
 
 INITIALIZE_FUNC(MainThread::Invoke(
         []() {
-            EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
             global.settings.Load();
             global.settings.Apply();
+
+
+            auto loaded_scene_path = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+            auto scene = EditorSceneManager::OpenScene(loaded_scene_path);
+
+            if (!scene->isValid()) {
+#if UNITY_EDITOR
+                EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
+#else
+                GameApi::log(ERR.fmt("Start scene don't exists"));
+                std::exit(-24);
+#endif
+            }
         }))
 
 static int UNIQUE_ID(p) = Initializer::d_add([]() {

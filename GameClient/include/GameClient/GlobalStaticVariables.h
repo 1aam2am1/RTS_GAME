@@ -67,9 +67,14 @@ struct GlobalStaticVariables {
 
     std::vector<TPtr<Renderer>> m_render{};
 #if UNITY_EDITOR
-    sf::RenderTexture m_target;
+private:
+    sf::RenderTexture m_real_target;
+public:
+    constexpr sf::RenderTexture &m_target() { return m_real_target; }
+
 #else
-    sf::RenderTarget m_target;
+    sf::RenderTarget* m_real_target = nullptr;
+    constexpr sf::RenderTarget& m_target(){return *m_real_target;}
 #endif
 
     struct {

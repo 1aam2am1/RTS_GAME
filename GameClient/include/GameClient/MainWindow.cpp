@@ -11,6 +11,10 @@
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include <GameClient/WindowLayout.h>
 
+#if !(UNITY_EDITOR)
+#include <GameClient/GlobalStaticVariables.h>
+#endif
+
 MainWindow::MainWindow(const Argv_options &options) {
     window.create(sf::VideoMode{options.getOptions().size.x, options.getOptions().size.y}, "RTS_GAME",
                   sf::Style::Default, sf::ContextSettings{0, 0, 0, 2, 1});
@@ -28,6 +32,10 @@ MainWindow::MainWindow(const Argv_options &options) {
     window.setFramerateLimit(options.getOptions().fps);
 
     lastEvents.reserve(16);
+
+#if !(UNITY_EDITOR)
+    global.m_real_target = &window;
+#endif
 }
 
 MainWindow::~MainWindow() {

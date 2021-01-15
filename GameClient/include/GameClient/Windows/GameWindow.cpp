@@ -10,6 +10,7 @@
 #include <imgui-SFML.h>
 #include <imgui_internal.h>
 #include <GameClient/MainThread.h>
+#include <GameClient/Windows/GameSceneMenuGizmo.h>
 
 class GameWindow : public EditorWindow {
 public:
@@ -18,6 +19,7 @@ public:
         // Get existing open window or if none, make a new one:
         auto window = EditorWindow::GetWindow<GameWindow>();
         WindowLayout::dockWindow(WindowLayout::Center, window);
+        window->flags |= ImGuiWindowFlags_MenuBar;
         window->Show();
     }
 
@@ -32,14 +34,15 @@ public:
             }
 
             if (s.x > 0 && s.y > 0)
-                global.m_target.create(s.x, s.y);
+                global.m_target().create(s.x, s.y);
         });
 #endif
     }
 
     void OnGUI() override {
 #if UNITY_EDITOR
-        ImGui::Image(global.m_target.getTexture());
+        DrawGameSceneGizmoMenu();
+        ImGui::Image(global.m_target().getTexture());
 #else
         //Target is RenderTexture therefore it is drown on main screen
 #endif
@@ -48,7 +51,7 @@ public:
 protected:
 #if !(UNITY_EDITOR)
     void drawGui() override {
-        static_assert(false, "Run in full window mode");
+        //static_assert(false, "Run in full window mode");
     }
 #endif
 };
