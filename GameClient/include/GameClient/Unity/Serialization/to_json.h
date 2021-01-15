@@ -5,6 +5,7 @@
 #ifndef RTS_GAME_TO_JSON_H
 #define RTS_GAME_TO_JSON_H
 
+#include <nlohmann/json.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
 

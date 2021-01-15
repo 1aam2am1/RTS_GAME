@@ -19,6 +19,14 @@ INITIALIZE_FUNC(MainThread::Invoke(
             global.settings.Load();
             global.settings.Apply();
 
+            {
+                b2BodyDef def;
+                def.position = {0, 0};
+                def.angle = 0;
+                def.type = b2_staticBody;
+
+                global.physics.worldBody = global.physics.world.CreateBody(&def);
+            }
 
             auto loaded_scene_path = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
             auto scene = EditorSceneManager::OpenScene(loaded_scene_path);
@@ -46,6 +54,7 @@ static int UNIQUE_ID(p) = Initializer::d_add([]() {
                       });
     }
 
+    global.physics.world.DestroyBody(global.physics.worldBody);
     assert(global.physics.world.GetBodyCount() == 0);
 
 });

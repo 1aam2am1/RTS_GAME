@@ -3,18 +3,12 @@ include(FetchContent)
 
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET ON)
-set(LOCAL_REPO ON CACHE BOOL "Use local repository to copy")
+set(LOCAL_REPO ON CACHE PATH "Use local repository to copy")
 
-if (${LOCAL_REPO})
-    if (WIN32)
-        set(SFML_REPO C:/Users/Michal_Marszalek/CLionProjects/SFML)
-        set(box2d_REPO C:/Users/Michal_Marszalek/CLionProjects/box2d)
-        set(JSON_REPO C:/Users/Michal_Marszalek/CLionProjects/json)
-    elseif (UNIX)
-        set(SFML_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/SFML)
-        set(box2d_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/box2d)
-        set(JSON_REPO /mnt/c/Users/Michal_Marszalek/CLionProjects/json)
-    endif ()
+if (NOT "${LOCAL_REPO}" STREQUAL "")
+    set(SFML_REPO "${LOCAL_REPO}/SFML")
+    set(box2d_REPO "${LOCAL_REPO}/box2d")
+    set(JSON_REPO "${LOCAL_REPO}/json")
 else ()
     set(SFML_REPO https://github.com/SFML/SFML)
     set(box2d_REPO https://github.com/erincatto/box2d)
@@ -68,8 +62,13 @@ endif ()
 
 ### Box2d Dependency ###
 set(BOX2D_BUILD_TESTBED FALSE CACHE BOOL "" FORCE)
+set(BOX2D_USER_SETTINGS TRUE CACHE BOOL "" FORCE)
+add_compile_definitions(B2_USER_SETTINGS)
+set(BUILD_SHARED_LIBS TRUE CACHE BOOL "" FORCE)
+set(BOX2D_USER_SETTINGS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/GameClient/include/GameClient/box2d" CACHE PATH "" FORCE)
 FetchContent_Declare(box2d
         GIT_REPOSITORY ${box2d_REPO}
+        GIT_TAG origin/UserData
         GIT_SHALLOW TRUE)
 
 FetchContent_GetProperties(box2d)
@@ -77,6 +76,7 @@ if (NOT box2d_POPULATED)
     FetchContent_Populate(box2d)
     add_subdirectory(${box2d_SOURCE_DIR} ${box2d_BINARY_DIR})
 endif ()
+target_include_directories(box2d PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/GameClient/include/GameClient/box2d>)
 
 
 ### Protobuf Dependency ###

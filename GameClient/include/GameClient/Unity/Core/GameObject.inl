@@ -29,6 +29,18 @@ std::vector<TPtr<T>> GameObject::GetComponents() const {
 }
 
 template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
+TPtr<T> GameObject::GetComponent() const {
+    for (auto &c : components) {
+        auto p = dynamic_pointer_cast<T>(c);
+        if (p) [[unlikely]] {
+            return p;
+        }
+    }
+
+    return {};
+}
+
+template<typename T, std::enable_if_t<std::is_base_of_v<Component, T>, int>>
 TPtr<T> GameObject::AddComponent() {
     return AddComponent(std::make_shared<T>());
 }

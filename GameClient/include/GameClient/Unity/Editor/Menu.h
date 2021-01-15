@@ -7,6 +7,7 @@
 
 
 #include <SFML/Window/Mouse.hpp>
+#include <GameClient/Unity/Editor/Selection.h>
 #include "EditorWindow.h"
 #include "MenuCommand.h"
 #include "Macro.h"

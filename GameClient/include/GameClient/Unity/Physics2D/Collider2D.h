@@ -7,9 +7,34 @@
 
 
 #include <GameClient/Unity/Core/Behaviour.h>
+#include <box2d/box2d.h>
+#include "Rigidbody2D.h"
 
 class Collider2D : public Behaviour {
+public:
 
+    /// The Rigidbody2D attached to the Collider2D.
+    TPtr<Rigidbody2D> attachedRigidbody;
+
+
+protected:
+    friend class Rigidbody2D;
+
+    // Apply fixture to body
+    virtual void Apply() = 0;
+
+    void Awake() final;
+
+    void OnEnable() final;
+
+    void OnDisable() final;
+
+    b2Body *GetBody();
+
+    //Fixture of this body
+    b2Fixture *fixture = nullptr;
+
+    void RecalculateMass();
 };
 
 

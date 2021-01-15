@@ -142,7 +142,23 @@ void GameLoop::run() {
         /**should_run_every_time*/
         /**fixed update*/
         if (Application::isPlaying()) {
+            global.physics.world.ClearForces();
 
+            for (auto &object : global.scene.components) {
+                auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+                if (mono && mono->isActiveAndEnabled()) {
+                    mono->FixedUpdate();
+                }
+            }
+
+            /// TODO: !!!!!!! for transform update b2World
+
+            //global.physics.world.SetContactListener()
+            global.physics.world.Step(Time::fixedDeltaTime, 10, 8);
+
+            /// TODO: !!!!!!! for transform update world
+
+            /// On collision on trigger
         }
 
         //If my elapsed frame time is bigger than should break.

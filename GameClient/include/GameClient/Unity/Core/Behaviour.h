@@ -21,6 +21,13 @@ public:
     /// If a GameObject is active and has an enabled script then isActiveAndEnabled will return true.
     /// Otherwise false is returned.
     [[nodiscard]] bool isActiveAndEnabled() const;
+
+protected:
+    /// This function is called when the object becomes enabled and active.
+    virtual void OnEnable() = 0;
+
+    /// This function is called when the behaviour becomes disabled.
+    virtual void OnDisable() = 0;
 };
 
 

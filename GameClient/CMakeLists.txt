@@ -152,6 +152,17 @@ set(SRC
         include/GameClient/Unity/Editor/AssetImporterEditor.h
         include/GameClient/Importers/TextureImporter.h
         include/GameClient/Editors/CameraEditor.cpp
+        include/GameClient/Unity/Physics2D/Rigidbody2D.cpp
+        include/GameClient/Unity/Physics2D/Rigidbody2D.h
+        include/GameClient/Unity/Physics2D/BoxCollider2D.cpp
+        include/GameClient/Unity/Physics2D/BoxCollider2D.h
+        include/GameClient/Unity/Physics2D/CircleCollider2D.cpp
+        include/GameClient/Unity/Physics2D/CircleCollider2D.h
+        include/GameClient/Unity/Physics2D/PolygonCollider2D.cpp
+        include/GameClient/Unity/Physics2D/PolygonCollider2D.h
+        include/GameClient/Windows/GameSceneMenuGizmo.h
+        include/GameClient/box2d/b2_user_settings.h
+        include/GameClient/Unity/Physics2D/RigidbodyType2D.h
         )
 
 add_executable(GameClient ${SRC})

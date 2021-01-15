@@ -61,6 +61,11 @@ private:
     float m_depth = 0;
 
     void Awake() override;
+
+protected:
+    void OnEnable() override;
+
+    void OnDisable() override;
 };
 
 

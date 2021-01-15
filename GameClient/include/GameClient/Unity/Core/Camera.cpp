@@ -104,3 +104,11 @@ void Camera::Render() {
     global.m_target().display(); //Display only in editor as window is displayed in main screen
 #endif
 }
+
+void Camera::OnEnable() {
+
+}
+
+void Camera::OnDisable() {
+
+}
