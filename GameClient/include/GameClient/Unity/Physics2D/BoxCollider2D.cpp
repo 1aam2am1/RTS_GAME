@@ -5,9 +5,11 @@
 #include "BoxCollider2D.h"
 #include <GameClient/Unity/Serialization/to_json.h>
 #include <Editor/Menu.h>
+#include <Core/Attributes.h>
 
 
 ADD_COMPONENT_MENU(BoxCollider2D, size, offset)
+ADD_ATTRIBUTE(BoxCollider2D, ExecuteInEditMode)
 
 void BoxCollider2D::Apply() {
     if (fixture) {

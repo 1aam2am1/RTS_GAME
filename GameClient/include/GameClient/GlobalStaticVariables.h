@@ -38,7 +38,7 @@ public:
     std::vector<TPtr<GameObject>> root{};
     std::vector<TPtr<Component>> new_components{}; //To Start
 
-    std::vector<TPtr<Component>> loading_awake{}; //used when loading, unpausing game
+    std::vector<TPtr<Component>> loading_awake{}; //used when loading
 
 private:
     std::shared_ptr<const int> guard;
@@ -123,6 +123,7 @@ public:
         float fixedDeltaTime = 0.02;
         sf::Vector2f gravity = {0.f, -10.f};
         std::string scene_path{};
+        bool gizmo = false;
 
     } settings;
 

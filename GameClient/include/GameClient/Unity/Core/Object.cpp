@@ -3,6 +3,7 @@
 //
 
 #include "Object.h"
+#include "ScriptableObject.h"
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/MainThread.h>
@@ -47,6 +48,8 @@ TPtr<Object> Object::Instantiate(Object *original) {
 
 void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
     //TODO: Thread save
+    //TODO: lock obj so that we could not destroy it from destroy
+
     if (obj) {
         if (auto t = dynamic_cast<Transform *>(obj.get())) {
             if (auto g = t->gameObject()) {
@@ -58,7 +61,13 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
         std::shared_ptr<Object> copy = static_cast<std::enable_shared_from_this<Object> *>(obj.get())->shared_from_this();
         std::weak_ptr<Object> memory_release = copy;
 
-        //TODO: OnDestroy
+        if (auto component = dynamic_cast<Component *>(obj.get())) {
+            component->UnityOnActiveChange(false);
+            component->OnDestroy();
+        } else if (auto scriptableOb = dynamic_cast<ScriptableObject *>(obj.get())) {
+            scriptableOb->OnDestroy();
+        }
+
         obj->onDestroySignal(nullptr);
 
         MainThread::Invoke([memory_release]() {});

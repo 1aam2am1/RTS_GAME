@@ -12,3 +12,15 @@ Behaviour::Behaviour() : enabled(true) {}
 bool Behaviour::isActiveAndEnabled() const {
     return enabled && gameObject()->activeInHierarchy();
 }
+
+void Behaviour::UnityOnActiveChange(bool b) {
+    if (b && enabled && !m_onEnable) {
+        m_onEnable = true;
+        OnEnable();
+    }
+
+    if (!(b && enabled) && m_onEnable) {
+        m_onEnable = false;
+        OnDisable();
+    }
+}

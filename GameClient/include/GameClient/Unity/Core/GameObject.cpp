@@ -85,36 +85,26 @@ void GameObject::SetActive(bool value) noexcept {
 
         bool now_active_in_h = activeInHierarchy();
         if (now_active_in_h) {
-            auto copy = to_awake;
-            to_awake.clear();
+            decltype(to_awake) copy;
+            std::swap(copy, to_awake);
 
-            bool isPlaying = Application::isPlaying();
+            bool isPlaying = EditorApplication::isPlaying;
             for (auto it = copy.begin(); it != copy.end(); ++it) {
                 if (!*it) { continue; }
 
                 if ((isPlaying || Attributes::CheckCustomAttribute(*it, ExecuteInEditMode))) {
                     (*it)->UnityAwake();
-                    global.scene.data[m_scene->id].new_components.emplace_back(*it);
+                    //result->UnityOnActiveChange(true); later in now_active_in_h != was_active_in_h
+                    global.scene.data[m_scene->id].new_components.emplace_back(*it); //To Start()
                 } else {
-                    if (EditorApplication::isPaused) {
-                        global.scene.data[m_scene->id].loading_awake.emplace_back(*it);
-                    } else {
-                        to_awake.emplace_back(*it);
-                    }
+                    // Don't add, reload scene
                 }
             }
         }
 
         if (now_active_in_h != was_active_in_h) {
             for (auto &c : components) {
-                auto mono = dynamic_cast<MonoBehaviour *>(c.get());
-                if (mono) {
-                    if (now_active_in_h) {
-                        mono->OnEnable();
-                    } else {
-                        mono->OnDisable();
-                    }
-                }
+                c->UnityOnActiveChange(now_active_in_h);
             }
         }
     }
@@ -167,24 +157,20 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
 
     if (!m_scene) { return result; } //this is prefab, don't call Awake or Start
 
-    if ((Application::isPlaying() || Attributes::CheckCustomAttribute(result, ExecuteInEditMode)) &&
-        activeInHierarchy()) {
-        if (!m_scene->isLoaded()) {
-            // In load mode
-            global.scene.data[m_scene->id].loading_awake.emplace_back(result);
-        } else {
-            result->UnityAwake(); //maybe here, maybe before frame?
-        }
+    if (!activeInHierarchy()) {
+        to_awake.emplace_back(result);
     } else {
-        if (EditorApplication::isPaused && activeInHierarchy()) {
-            global.scene.data[m_scene->id].loading_awake.emplace_back(result);
+        if (EditorApplication::isPlaying || Attributes::CheckCustomAttribute(result, ExecuteInEditMode)) {
+            if (m_scene->isLoaded()) {
+                result->UnityAwake();
+                result->UnityOnActiveChange(true);
+                global.scene.data[m_scene->id].new_components.emplace_back(result); //To Start()
+            } else {
+                global.scene.data[m_scene->id].loading_awake.emplace_back(result); //To Awake()
+            }
         } else {
-            to_awake.emplace_back(
-                    result); //I'm not activeInHierarchy, changing play mode won't run this, therefore load scene anew in play mode
-
+            // Don't add, reload scene
         }
-
-        //TODO: Move code with activation to different function from this place and setenable, and fix on enable calling
     }
 
     return result;

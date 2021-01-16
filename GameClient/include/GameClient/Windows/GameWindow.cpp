@@ -19,7 +19,7 @@ public:
         // Get existing open window or if none, make a new one:
         auto window = EditorWindow::GetWindow<GameWindow>();
         WindowLayout::dockWindow(WindowLayout::Center, window);
-        window->flags |= ImGuiWindowFlags_MenuBar;
+        window->flags |= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
         window->Show();
     }
 

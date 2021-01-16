@@ -83,6 +83,8 @@ private:
 
     friend class SceneManager;
 
+    friend class Object;
+
     TPtr<GameObject> m_gameObject{};
 
 protected:
@@ -95,6 +97,10 @@ protected:
     ONE_TIME_EXEC(Start)
 
 #undef ONE_TIME_EXEC
+
+    virtual void UnityOnActiveChange(bool) = 0; //Emits OnEnable, OnDisable
+
+    virtual void OnDestroy() {}
 };
 
 #include "Component.inl"

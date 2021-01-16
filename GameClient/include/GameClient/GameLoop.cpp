@@ -82,40 +82,14 @@ void GameLoop::run() {
 
         m_physics_time += Time::m_deltaTime;
     }
-    ///Awake after pause
-    {
-        if (isPaused != EditorApplication::isPaused) {
-            isPaused = EditorApplication::isPaused;
-
-            for (auto &scene: global.scene.data) {
-                if (!scene.second.isLoaded) { continue; };
-
-                for (auto &object : scene.second.loading_awake) {
-                    if (object) {
-                        if (object->gameObject()->activeInHierarchy()) {
-                            object->UnityAwake();
-
-                            auto &to_awake = object->gameObject()->to_awake;
-                            auto it = std::find_if(to_awake.begin(), to_awake.end(), [&object](auto &&i) {
-                                return i == object;
-                            });
-                            if (it != to_awake.end()) { to_awake.erase(it); }
-                        }
-                        object = nullptr;
-                    }
-                }
-                //TODO: Garbage collect loading_awake nullptr objects
-            }
-        }
-    }
 
     ///Start
     {
         for (auto &scene: global.scene.data) {
-            if (!scene.second.isLoaded) { continue; };
+            if (!scene.second.isLoaded) [[unlikely]] { continue; };
 
             for (auto &object : scene.second.new_components) {
-                if (object) {
+                if (object) [[likely]] {
                     if (object->gameObject()->activeInHierarchy() &&
                         (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
 
@@ -126,6 +100,7 @@ void GameLoop::run() {
                     }
                 }
             }
+            std::erase_if(scene.second.new_components, [](auto ob) { return ob.expired(); });
             //TODO: Garbage collect new_components nullptr objects
         }
     }
@@ -139,9 +114,6 @@ void GameLoop::run() {
 
         m_physics_time -= Time::fixedDeltaTime;
 
-        /**box2d*/
-        /**should_run_every_time*/
-        /**fixed update*/
         if (Application::isPlaying()) {
             global.physics.world.ClearForces();
 

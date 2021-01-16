@@ -9,6 +9,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include "Behaviour.h"
+#include "Renderer.h"
+
 #include <map>
 
 class Camera : public Behaviour {

@@ -14,7 +14,7 @@ public:
 
     /// The width and height of the rectangle.
     /// These values are specified relative to a center point, so the distance from the center to the left edge is actually width/2.
-    sf::Vector2f size{};
+    sf::Vector2f size{1.f, 1.f};
 
     /// The local offset of the collider geometry.
     sf::Vector2f offset{};

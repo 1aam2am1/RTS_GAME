@@ -19,7 +19,7 @@ public:
 protected:
     void Awake() override;
 
-    void draw() override;
+    void draw(sf::RenderTarget *) override;
 };
 
 

@@ -11,6 +11,7 @@
 #include <GameClient/Windows/FileDialogWindow.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <Core/Attributes.h>
+#include <Editor/EditorApplication.h>
 
 namespace fs = std::filesystem;
 
@@ -55,7 +56,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
             }
             //creation of gameobjects adds them to the scene
 
-            std::function<void(TPtr<GameObject>)> fix = [&fix](TPtr<GameObject> go) {
+            std::function<void(const TPtr<GameObject> &)> fix = [&fix](const TPtr<GameObject> &go) {
                 if (!go) { return; }
 
                 decltype(go->components) copy = std::move(go->components);
@@ -77,16 +78,16 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
 
             global.scene.data[new_id].isLoaded = true;
             for (auto &ob : global.scene.data[new_id].loading_awake) {
-                //activeInHierarchy => true
                 assert(ob->gameObject()->activeInHierarchy());
-                // Should not happen, maybe if we stopped playing when there was active loading,
-                // therefore it should happen between frames
-                // pause=>do, play-not=>only execute in edit mode
-                //if (Application::isPlaying() || Attributes::CheckCustomAttribute(ob, ExecuteInEditMode)) {
-                ob->UnityAwake();
-                //}
+                if (EditorApplication::isPlaying || Attributes::CheckCustomAttribute(ob, ExecuteInEditMode)) {
+                    ob->UnityAwake();
+                    global.scene.data[new_id].new_components.emplace_back(ob); //To Start()
+                }
             }
             global.scene.data[new_id].loading_awake.clear();
+            for (auto &ob : global.scene.data[new_id].new_components) {
+                ob->UnityOnActiveChange(true); //OnEnable()
+            }
 
         } catch (const std::exception &e) {
             global.scene.data.erase(new_id);
@@ -96,11 +97,11 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
     }
 
     if (mode == OpenSceneMode::Single) {
-        auto copy = std::move(global.scene.data[new_id]);
+        auto copy = global.scene.data.extract(new_id);
         auto old = std::move(global.scene.data);
         global.scene.data.clear();
 
-        global.scene.data[new_id] = copy;
+        global.scene.data.insert(std::move(copy));
         global.scene.active_scene = new_id;
 
         MainThread::Invoke([old]() {}); //< Here delete old data, as this can be called from update,

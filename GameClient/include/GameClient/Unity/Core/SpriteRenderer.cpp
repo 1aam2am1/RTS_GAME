@@ -17,8 +17,9 @@ void SpriteRenderer::Awake() {
     global.m_render.emplace_back(shared_from_this());
 }
 
-void SpriteRenderer::draw() {
+void SpriteRenderer::draw(sf::RenderTarget *target) {
     if (!sprite) { return; }
+    if (!target) { target = &global.m_target(); }
 
     auto position = transform()->localPosition.get();
 
@@ -32,5 +33,5 @@ void SpriteRenderer::draw() {
     states.transform.scale(transform()->localScale.get().x * pixelsPerUnit,
                            transform()->localScale.get().y * pixelsPerUnit);
 
-    global.m_target().draw(sprite->s0, states);
+    target->draw(sprite->s0, states);
 }

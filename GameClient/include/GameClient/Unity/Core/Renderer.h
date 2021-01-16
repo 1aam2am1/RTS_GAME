@@ -6,6 +6,7 @@
 #define RTS_GAME_RENDERER_H
 
 
+#include <SFML/Graphics/RenderTarget.hpp>
 #include "Component.h"
 
 class Renderer : public Component {
@@ -24,10 +25,16 @@ public:
 private:
     friend class Camera;
 
+    friend class SceneWindow; //remove this
+
     int64_t m_sortingOrder;
 
+    bool m_onEnable = false;
+
+    void UnityOnActiveChange(bool) override;
+
 protected:
-    virtual void draw() = 0;
+    virtual void draw(sf::RenderTarget * = nullptr) = 0;
 };
 
 

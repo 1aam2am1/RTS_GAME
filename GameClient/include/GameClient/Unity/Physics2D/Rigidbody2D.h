@@ -31,6 +31,8 @@ private:
     friend class Collider2D;
 
     b2Body *body = nullptr;
+
+    void UnityOnActiveChange(bool) override;
 };
 
 

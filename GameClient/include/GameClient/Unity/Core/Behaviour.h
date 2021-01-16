@@ -28,6 +28,11 @@ protected:
 
     /// This function is called when the behaviour becomes disabled.
     virtual void OnDisable() = 0;
+
+private:
+    bool m_onEnable = false;
+
+    void UnityOnActiveChange(bool b) override;
 };
 
 

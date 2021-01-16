@@ -17,3 +17,7 @@ Renderer::Renderer() : enabled(true), forceRenderingOff(false),
                        m_sortingOrder(0) {
 
 }
+
+void Renderer::UnityOnActiveChange(bool b) {
+    m_onEnable = b & enabled;
+}

@@ -60,26 +60,9 @@ std::vector<TPtr<Camera>> Camera::allCameras() {
 void Camera::Render() {
     auto position = transform()->localPosition.get();
     sf::Vector2f size{global.m_target().getSize()};
-    //TODO: !!! Change to global position and rotation
-    //TODO: !!! Check order of zoom/move/rotate
-    /* view.zoom(transform()->localScale.get().z);
-     view.move(position.x, position.y);
-     view.setRotation(transform()->localRotation);
-
-     global.m_target.setView(view);
-     global.m_target.setActive();*/
-/*
-    glEnable(GL_SCISSOR_TEST);
-
-    //TODO: !!! Check glScissor
-    glScissor((int) pixelRect.left * global.m_target.getSize().x,
-              (int) pixelRect.top * global.m_target.getSize().y,
-              (int) pixelRect.width * global.m_target.getSize().x,
-              (int) pixelRect.height * global.m_target.getSize().y);
-*/
-    if (size.y != 0) {
-        size.x = 2.f * orthographicSize * (size.x / size.y);
-        size.y = 2.f * orthographicSize;
+    if (size.y != 0 && pixelRect.getSize().x != 0 && pixelRect.getSize().x != 0) {
+        size.x = 2.f * orthographicSize * (size.x / size.y) * pixelRect.getSize().x;
+        size.y = 2.f * orthographicSize * pixelRect.getSize().y;
     } else {
         return;
     }
@@ -93,7 +76,7 @@ void Camera::Render() {
     global.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
 
     for (auto &it : global.m_render) {
-        if (it && it->enabled && !it->forceRenderingOff && it->gameObject()->activeInHierarchy())
+        if (it && it->m_onEnable && !it->forceRenderingOff)
             it->draw();
     }
 

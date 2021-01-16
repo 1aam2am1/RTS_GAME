@@ -102,11 +102,12 @@ void GlobalStaticVariables::Settings::Load() {
     nlohmann::json result = nlohmann::json::parse(str);
     auto &s = result["settings"];
 
-    s.at("timeScale").get_to(timeScale);
-    s.at("maximumDeltaTime").get_to(maximumDeltaTime);
-    s.at("fixedDeltaTime").get_to(fixedDeltaTime);
-    s.at("gravity").get_to(gravity);
-    s.at("scene").get_to(scene_path);
+    if (s.contains("timeScale")) { s.at("timeScale").get_to(timeScale); }
+    if (s.contains("maximumDeltaTime")) { s.at("maximumDeltaTime").get_to(maximumDeltaTime); }
+    if (s.contains("fixedDeltaTime")) { s.at("fixedDeltaTime").get_to(fixedDeltaTime); }
+    if (s.contains("gravity")) { s.at("gravity").get_to(gravity); }
+    if (s.contains("scene")) { s.at("scene").get_to(scene_path); }
+    if (s.contains("gizmo")) { s.at("gizmo").get_to(gizmo); }
 }
 
 void GlobalStaticVariables::Settings::Save() {
@@ -118,6 +119,7 @@ void GlobalStaticVariables::Settings::Save() {
     s["fixedDeltaTime"] = fixedDeltaTime;
     s["gravity"] = gravity;
     s["scene"] = scene_path;
+    s["gizmo"] = gizmo;
 
     if (!GameApi::saveFullFile("settings.json", result.dump(2, ' ', true))) {
         GameApi::log(ERR.fmt("Can't save settings.json"));
@@ -129,6 +131,7 @@ void GlobalStaticVariables::Settings::Apply() {
     Time::maximumDeltaTime = maximumDeltaTime;
     Time::fixedDeltaTime = fixedDeltaTime;
     global.physics.world.SetGravity({gravity.x, gravity.y});
+    global.mis.draw_gizmo = gizmo;
     EditorSceneManager::playModeStartScene = dynamic_pointer_cast<SceneAsset>(
             AssetDatabase::LoadMainAssetAtPath(scene_path));
 }
