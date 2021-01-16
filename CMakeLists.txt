@@ -30,16 +30,41 @@ macro(copy_deps_dll T)
             -P ${PROJECT_SOURCE_DIR}/CCopyDLL.cmake)
 endmacro()
 
-macro(add_flags T)
-    set(FLAGS
-            -Wall
-            -Wextra
-            -Wreturn-local-addr
-            -Wattributes
-            -Wdeprecated
-            -Wno-unknown-pragmas)
-    target_compile_options(${T} PUBLIC ${FLAGS})
-endmacro()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    macro(add_flags T)
+        set(FLAGS
+                -Wall
+                -Wextra
+                -Wreturn-stack-address
+                -Wattributes
+                -Wdeprecated
+                -Wno-unknown-pragmas)
+        target_compile_options(${T} PUBLIC ${FLAGS})
+    endmacro()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    macro(add_flags T)
+        set(FLAGS
+                -Wall
+                -Wextra
+                -Wreturn-local-addr
+                -Wattributes
+                -Wdeprecated
+                -Wno-unknown-pragmas)
+        target_compile_options(${T} PUBLIC ${FLAGS})
+    endmacro()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    macro(add_flags T)
+        set(FLAGS "")
+        target_compile_options(${T} PUBLIC ${FLAGS})
+    endmacro()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    macro(add_flags T)
+        set(FLAGS "")
+        target_compile_options(${T} PUBLIC ${FLAGS})
+    endmacro()
+endif ()
+
 
 include(CLibsDownload.cmake)
 

@@ -56,8 +56,9 @@ void GameLoop::run() {
             if (global.scene.data[global.scene.active_scene].path == "Assets/_U.unity") {
                 global.scene.data[global.scene.active_scene].path.clear();
                 global.scene.data[global.scene.active_scene].name = "Scene";
-                fs::remove("Assets/_U.unity"); //Clear after yourself
-                fs::remove("Assets/_U.unity.meta");
+                AssetDatabase::DeleteAsset("Assets/_U.unity");
+                //fs::remove("Assets/_U.unity"); //Clear after yourself
+                //fs::remove("Assets/_U.unity.meta");
             }
         }
 

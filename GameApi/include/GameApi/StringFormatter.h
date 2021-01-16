@@ -13,7 +13,9 @@
 #include "BasicString.h"
 #include "Externalsstream.h"
 
-#if defined(__GNUC__)
+#if defined(__clang__)
+#define ATTRIBUTE_FORMAT(i, j) __attribute__ ((format (printf, i, j)))
+#elif defined(__GNUC__)
 #define ATTRIBUTE_FORMAT(i, j) __attribute__ ((format (gnu_printf, i, j)))
 #else
 #define ATTRIBUTE_FORMAT(i, j)

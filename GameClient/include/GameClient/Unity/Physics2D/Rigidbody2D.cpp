@@ -13,8 +13,9 @@
 ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia)
 
 Rigidbody2D::~Rigidbody2D() {
+    if (!body) { return; }
     auto list = body->GetFixtureList();
-    bool active = gameObject()->activeInHierarchy();
+    bool active = gameObject() ? gameObject()->activeInHierarchy() : false;
     while (list) {
         auto collider = dynamic_pointer_cast<Collider2D>(list->GetUserData().lock());
         if (collider && active) {

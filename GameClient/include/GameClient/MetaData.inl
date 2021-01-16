@@ -312,13 +312,17 @@ auto MetaData::register_class(std::string_view str, std::function<TPtr<T>()> con
     result.name = str;
     result.create = constructor;
     result.copy = [](auto f1, auto f2) {
-        auto left = dynamic_cast<T *>(f1);
-        auto right = dynamic_cast<T *>(f2);
-        if (left && right) {
-            *left = *right;
-            return true;
-        } else {
+        if constexpr(!std::is_assignable_v<T &, const T &>) {
             return false;
+        } else {
+            auto left = dynamic_cast<T *>(f1);
+            auto right = dynamic_cast<T *>(f2);
+            if (left && right) {
+                *left = *right;
+                return true;
+            } else {
+                return false;
+            }
         }
     };
     result.check = [](auto o) {

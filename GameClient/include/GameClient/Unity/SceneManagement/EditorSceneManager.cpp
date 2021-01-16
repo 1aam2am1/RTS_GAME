@@ -24,7 +24,8 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
             GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
             return std::shared_ptr<Scene>{new Scene(0)};
         } else {
-            playModeStartScene = dynamic_pointer_cast<SceneAsset>(scene);
+            if (scenePath != "Assets/_U.unity")
+                playModeStartScene = dynamic_pointer_cast<SceneAsset>(scene);
         }
     }
 

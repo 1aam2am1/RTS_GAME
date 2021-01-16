@@ -29,9 +29,13 @@ INITIALIZE_FUNC(MainThread::Invoke(
             }
 
             auto loaded_scene_path = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
-            auto scene = EditorSceneManager::OpenScene(loaded_scene_path);
+            bool valid = false;
+            if (!loaded_scene_path.empty()) {
+                auto scene = EditorSceneManager::OpenScene(loaded_scene_path);
+                valid = scene->isValid();
+            }
 
-            if (!scene->isValid()) {
+            if (!valid) {
 #if UNITY_EDITOR
                 EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
 #else

@@ -197,13 +197,13 @@ namespace {
 
 template<typename Tag, auto Member>
 struct break_in_ {
-    friend constexpr auto break_in(Tag) {
+    friend constexpr bool sf::Texture::* break_in(Tag) {
         return Member;
     }
 };
 
 struct pixelsFlipped {
-    friend constexpr auto break_in(pixelsFlipped);
+    friend constexpr bool sf::Texture::* break_in(pixelsFlipped);
 };
 
 template

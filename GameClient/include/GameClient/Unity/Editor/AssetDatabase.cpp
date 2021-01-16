@@ -40,6 +40,7 @@ ImportAssetGlobal(std::string assetPath, ImportAssetOptions options) {
     //TODO: Load only loaded, or new??? <- SMALL
     auto &d = get_data();
 
+    if (assetPath.empty()) { return {}; } //Should not happen but who knows
     auto &file = d.path_files[assetPath];
 
     auto status = fs::directory_entry(assetPath);
