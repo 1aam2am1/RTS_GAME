@@ -11,9 +11,9 @@ struct MetaData::Reflect {
 
     const MetaData::flags_type &flags;
 
-    Reflect(const std::string_view name, const std::type_index type,
-            const std::function<TPtr<Object>()> &createInstance,
-            const std::function<bool(Object *, Object *)> &copyInstance,
+    Reflect(std::string_view name, std::type_index type,
+            std::function<TPtr<Object>()> createInstance,
+            std::function<bool(Object *, Object *)> copyInstance,
             const MetaData::flags_type &flags);
 };
 
@@ -21,12 +21,12 @@ struct MetaData::ReflectFull : Reflect {
     const std::vector<std::pair<std::string_view, MetaData::TU>> getFields;
     const std::map<std::string_view, std::type_index> getTPtrType; //TODO: Remove if unnecessary
 
-    ReflectFull(const std::string_view name, const std::type_index type,
+    ReflectFull(std::string_view name, std::type_index type,
                 const std::function<TPtr<Object>()> &createInstance,
                 const std::function<bool(Object *, Object *)> &copyInstance,
                 const MetaData::flags_type &flags,
-                const std::vector<std::pair<std::string_view, MetaData::TU>> &getFields,
-                const std::map<std::string_view, std::type_index> &getTPtrType);
+                std::vector<std::pair<std::string_view, MetaData::TU>> getFields,
+                std::map<std::string_view, std::type_index> getTPtrType);
 };
 
 template<typename T>
@@ -51,15 +51,7 @@ struct MetaData::Register {
             };
         };
 
-        d.members.emplace_back(str, [=](Object *ob) -> TU {
-            auto t = static_cast<T *>(ob);
-            return func(t);
-        });
-
-        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
-            auto t = static_cast<const T *>(ob);
-            return func(t);
-        });
+        add(str, func);
     }
 
     template<typename Y>
@@ -81,147 +73,238 @@ struct MetaData::Register {
             };
         };
 
-        d.members.emplace_back(str, [=](Object *ob) -> TU {
-            auto t = static_cast<T *>(ob);
-            return func(t);
-        });
-
-        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
-            auto t = static_cast<const T *>(ob);
-            return func(t);
-        });
+        add(str, func);
 
         d.TPtr_type.emplace_back(str, typeid(Y));
     }
 
     template<typename Y>
-    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+    void registerMemberForSerialize(std::string_view str, std::vector<TPtr<Y>> T::*ptr) {
         auto func = [=](auto t) -> TU {
-            auto def = [&]() {
-                std::function<void(Y)> set;
-                std::function<Y()> get;
+            std::function<void(std::vector<TPtr<Object>>)> f;
 
-                if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
-                    set = [=](Y arg) { t->*ptr = arg; };
-                }
-
-                get = [=]() -> Y { return t->*ptr; };
-
-                return std::pair<std::function<void(Y)>, std::function<Y(void)>>{
-                        set,
-                        get
-                };
-            };
-
-            if constexpr (std::is_same_v<Y, Unity::GUID>) {
-                std::function<void(std::string)> f;
-
-                if constexpr (std::is_assignable<decltype(t->*ptr), std::string>::value) {
-                    f = [=](std::string arg) { t->*ptr = arg; };
-                }
-
-                return std::pair<std::function<void(std::string)>, std::function<std::string(void)>>{
-                        f,
-                        [=]() -> std::string { return t->*ptr; }
-                };
-            } else if constexpr (is_instance_v<Y, std::vector>) {
-                using object_type = typename Y::value_type;
-                if constexpr(is_instance_v<object_type, TPtr>) {
-                    std::function<void(std::vector<TPtr<Object>>)> f;
-
-                    if constexpr (std::is_assignable<decltype(t->*ptr), Y>::value) {
-                        f = [=](std::vector<TPtr<Object>> arg) {
-                            auto &vec = t->*ptr;
-                            vec.clear();
-                            vec.reserve(arg.size());
-                            for (auto &e : arg) {
-                                vec.emplace_back(dynamic_pointer_cast<typename object_type::element_type>(e));
-                            }
-                        };
+            if constexpr (std::is_assignable<decltype(t->*ptr), std::vector<TPtr<Y>>>::value) {
+                f = [=](std::vector<TPtr<Object>> arg) {
+                    auto &vec = t->*ptr;
+                    vec.clear();
+                    vec.reserve(arg.size());
+                    for (auto &e : arg) {
+                        vec.emplace_back(dynamic_pointer_cast<Y>(e));
                     }
+                };
+            }
 
-                    return std::pair<
-                            std::function<void(std::vector<TPtr<Object>>)>,
-                            std::function<std::vector<TPtr<Object>>(void)>>{
-                            f,
-                            [=]() -> std::vector<TPtr<Object>> {
-                                std::vector<TPtr<Object>> result;
-                                auto &vec = t->*ptr;
-                                result.reserve(vec.size());
-                                for (auto &e : vec) {
-                                    result.emplace_back(static_pointer_cast<Object>(e));
-                                }
-
-                                return result;
-                            }
-                    };
-
-                } else {
-                    if constexpr(std::is_assignable<TU, decltype(def())>::value) {
-                        return def();
-                    } else {
-                        std::function<void(nlohmann::json)> set;
-                        std::function<nlohmann::json()> get;
-
-                        if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
-                            set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
+            return std::pair<
+                    std::function<void(std::vector<TPtr<Object>>)>,
+                    std::function<std::vector<TPtr<Object>>(void)>>{
+                    f,
+                    [=]() -> std::vector<TPtr<Object>> {
+                        std::vector<TPtr<Object>> result;
+                        auto &vec = t->*ptr;
+                        result.reserve(vec.size());
+                        for (auto &e : vec) {
+                            result.emplace_back(static_pointer_cast<Object>(e));
                         }
 
-                        get = [=]() -> nlohmann::json { return t->*ptr; };
-
-                        return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
-                                set,
-                                get
-                        };
+                        return result;
                     }
-                }
-            } else {
-                if constexpr(std::is_assignable<TU, decltype(def())>::value) {
-                    return def();
-                } else {
-                    std::function<void(nlohmann::json)> set;
-                    std::function<nlohmann::json()> get;
-
-                    if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
-                        set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
-                    }
-
-                    get = [=]() -> nlohmann::json { return t->*ptr; };
-
-                    return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
-                            set,
-                            get
-                    };
-                }
-            }
+            };
         };
 
-        d.members.emplace_back(str, [=](Object *ob) -> TU {
-            auto t = static_cast<T *>(ob);
-            return func(t);
-        });
+        add(str, func);
 
-        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
-            auto t = static_cast<const T *>(ob);
-            return func(t);
-        });
+        d.TPtr_type.emplace_back(str, typeid(Y));
+    }
+
+    template<typename Y>
+    requires std::is_assignable<TU &, std::pair<
+            std::function<void(std::vector<Y>)>,
+            std::function<std::vector<Y>(void)>>>::value
+    void registerMemberForSerialize(std::string_view str, std::vector<Y> T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(std::vector<Y>)> set;
+            std::function<std::vector<Y>()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), std::vector<Y>>::value) {
+                set = [=](std::vector<Y> arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> std::vector<Y> { return t->*ptr; };
+
+            return std::pair<std::function<void(std::vector<Y>)>, std::function<std::vector<Y>(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+    }
+
+    template<typename Y>
+    requires (!std::is_assignable<TU &, std::pair<
+            std::function<void(std::vector<Y>)>,
+            std::function<std::vector<Y>(void)>>>::value)
+    void registerMemberForSerialize(std::string_view str, std::vector<Y> T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(nlohmann::json)> set;
+            std::function<nlohmann::json()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
+            }
+
+            get = [=]() -> nlohmann::json { return t->*ptr; };
+
+            return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+
+        d.TPtr_type.emplace_back(str, typeid(Y));
+    }
+
+    template<typename Y>
+    void registerMemberForSerialize(std::string_view str, Unity::GUID T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(std::string)> f;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), std::string>::value) {
+                f = [=](std::string arg) { t->*ptr = arg; };
+            }
+
+            return std::pair<std::function<void(std::string)>, std::function<std::string(void)>>{
+                    f,
+                    [=]() -> std::string { return t->*ptr; }
+            };
+        };
+
+        add(str, func);
+    }
+
+    template<typename Y>
+    requires std::is_assignable<TU &, std::pair<
+            std::function<void(Y)>,
+            std::function<Y(void)>>>::value
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(Y)> set;
+            std::function<Y()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](Y arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> Y { return t->*ptr; };
+
+            return std::pair<std::function<void(Y)>, std::function<Y(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+    }
+
+    template<typename Y>
+    requires requires{
+        requires std::is_floating_point_v<Y>;
+        requires !std::is_assignable<TU &, std::pair<std::function<void(Y)>, std::function<Y(void)>>>::value;
+    }
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(double)> set;
+            std::function<double()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](double arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> double { return t->*ptr; };
+
+            return std::pair<std::function<void(double)>, std::function<double(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+    }
+
+    template<typename Y>
+    requires requires {
+        requires std::is_integral_v<Y>;
+        requires (sizeof(Y) <= sizeof(int64_t));
+        requires !std::is_assignable<TU &, std::pair<std::function<void(Y)>, std::function<Y(void)>>>::value;
+    }
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(int64_t)> set;
+            std::function<int64_t()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](int64_t arg) { t->*ptr = arg; };
+            }
+
+            get = [=]() -> int64_t { return t->*ptr; };
+
+            return std::pair<std::function<void(int64_t)>, std::function<int64_t(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+    }
+
+    template<typename Y>
+    requires requires{
+        requires !std::is_assignable<TU &, std::pair<std::function<void(Y)>, std::function<Y(void)>>>::value;
+        requires !(std::is_integral_v<Y> && (sizeof(Y) <= sizeof(int64_t)));
+        requires !std::is_floating_point_v<Y>;
+    }
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(nlohmann::json)> set;
+            std::function<nlohmann::json()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](nlohmann::json arg) { arg.get_to(t->*ptr); };
+            }
+
+            get = [=]() -> nlohmann::json { return t->*ptr; };
+
+            return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+
+        d.TPtr_type.emplace_back(str, typeid(Y));
     }
 
     template<typename R>
     void registerMemberForSerialize(std::string_view str, void (T::*set)(R), R (T::*get)()) {
-        d.members.emplace_back(str, [=](Object *ob) -> TU {
-            auto t = static_cast<T *>(ob);
-            std::function<void(R)> s;
-            std::function<R(void)> g;
+        auto func = [=](auto t) -> TU {
+            std::function<void(R)> set;
+            std::function<R(void)> get;
 
-            if (set) {
-                s = [=](R arg) { t->*set(arg); };
+            if constexpr (std::is_invocable<decltype(set), decltype(t), R>::value) {
+                set = [=](R arg) { t->*set(arg); };
             }
-            if (get) {
-                g = [=]() -> R { return t->*get(); };
+
+            if constexpr (std::is_invocable_r<R, decltype(get), decltype(t)>::value) {
+                get = [=]() -> R { return t->*get(); };
             }
-            return std::pair<std::function<void(R)>, std::function<R(void)>>{s, g};
-        });
+
+            return std::pair<std::function<void(R)>, std::function<R(void)>>{set, get};
+        };
+
+        add(str, func);
     }
 
     template<typename E>
@@ -261,6 +344,19 @@ struct MetaData::Register {
     void registerMemberForSerialize(std::string_view str, Fun set, Fun2 get) {
         using ResultType = decltype(get(std::declval<T *>()));
         registerMemberForSerialize<ResultType>(str, set, get);
+    }
+
+    template<typename F>
+    constexpr void add(std::string_view str, F func) {
+        d.members.emplace_back(str, [=](Object *ob) -> TU {
+            auto t = static_cast<T *>(ob);
+            return func(t);
+        });
+
+        d.c_members.emplace_back(str, [=](const Object *ob) -> TU {
+            auto t = static_cast<const T *>(ob);
+            return func(t);
+        });
     }
 
     MetaData::Data &d;

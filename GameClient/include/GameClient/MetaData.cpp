@@ -4,25 +4,27 @@
 
 #include "MetaData.h"
 
+#include <utility>
+
 decltype(MetaData::reflection) MetaData::reflection;
 decltype(MetaData::name_type) MetaData::name_type;
 decltype(Importers::ext_importer) Importers::ext_importer;
 decltype(Importers::ext_priority) Importers::ext_priority;
 
 
-MetaData::Reflect::Reflect(const std::string_view n, const std::type_index t,
-                           const std::function<TPtr<Object>()> &createInstance,
-                           const std::function<bool(Object *, Object *)> &copyInstance,
+MetaData::Reflect::Reflect(std::string_view n, std::type_index t,
+                           std::function<TPtr<Object>()> createInstance,
+                           std::function<bool(Object *, Object *)> copyInstance,
                            const MetaData::flags_type &f) :
-        name(n), type(t), CreateInstance(createInstance), CopyInstance(copyInstance), flags(f) {}
+        name(n), type(t), CreateInstance(std::move(createInstance)), CopyInstance(std::move(copyInstance)), flags(f) {}
 
-MetaData::ReflectFull::ReflectFull(const std::string_view name, const std::type_index type,
+MetaData::ReflectFull::ReflectFull(std::string_view name, std::type_index type,
                                    const std::function<TPtr<Object>()> &createInstance,
                                    const std::function<bool(Object *, Object *)> &copyInstance,
                                    const MetaData::flags_type &flag,
-                                   const std::vector<std::pair<std::string_view, TU>> &f,
-                                   const std::map<std::string_view, std::type_index> &t) :
-        Reflect(name, type, createInstance, copyInstance, flag), getFields(f), getTPtrType(t) {}
+                                   std::vector<std::pair<std::string_view, TU>> f,
+                                   std::map<std::string_view, std::type_index> t) :
+        Reflect(name, type, createInstance, copyInstance, flag), getFields(std::move(f)), getTPtrType(std::move(t)) {}
 
 MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     auto object_reflection = getReflection(typeid(*ob));
