@@ -9,7 +9,7 @@
 
 #include "StringFormatter.h"
 #include "Message.h"
-#include "GameAPI/Config.h"
+#include "GameApi/Config.h"
 #include "BasicString.h"
 
 namespace GameApi {

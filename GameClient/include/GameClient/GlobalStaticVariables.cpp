@@ -2,13 +2,12 @@
 // Created by Michal_Marszalek on 15.12.2020.
 //
 
+#include <GameClient/Unity/Serialization/to_json.h>
 #include <SceneManagement/EditorSceneManager.h>
 #include "GlobalStaticVariables.h"
 #include "MainThread.h"
 #include "Macro.h"
-#include <nlohmann/json.hpp>
 #include <GameApi/BasicString.h>
-#include <GameClient/Unity/Serialization/to_json.h>
 #include <Core/Time.h>
 #include <Editor/AssetDatabase.h>
 

@@ -19,6 +19,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <GameApi/IsInstance.h>
 #include <variant>
+#include <SFML/Graphics/Rect.hpp>
 
 class MetaData {
     struct Reflect;
@@ -68,6 +69,12 @@ private:
             FUNC_META_PAIR(sf::Color),
             FUNC_META_PAIR(TPtr<Object>),
             FUNC_META_PAIR(nlohmann::json),
+            FUNC_META_PAIR(sf::IntRect),
+            FUNC_META_PAIR(sf::FloatRect),
+            FUNC_META_PAIR(sf::Vector3f),
+            FUNC_META_PAIR(sf::Vector3i),
+            FUNC_META_PAIR(sf::Vector2f),
+            FUNC_META_PAIR(sf::Vector2i),
             FUNC_META_PAIR(std::vector<int64_t>),
             FUNC_META_PAIR(std::vector<std::string>),
             FUNC_META_PAIR(std::vector<TPtr<Object>>)>;

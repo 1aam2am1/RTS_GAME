@@ -5,7 +5,7 @@
 #include "Behaviour.h"
 #include <GameClient/Unity/Macro.h>
 
-EXPORT_CLASS(Behaviour, enabled)
+EXPORT_CLASS(Behaviour, ("m_enabled", enabled))
 
 Behaviour::Behaviour() : enabled(true) {}
 

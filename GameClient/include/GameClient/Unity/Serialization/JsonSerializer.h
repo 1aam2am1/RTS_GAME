@@ -5,11 +5,10 @@
 #ifndef RTS_GAME_JSONSERIALIZER_H
 #define RTS_GAME_JSONSERIALIZER_H
 
+#include <GameClient/Unity/Serialization/to_json.h>
 #include <GameClient/Unity/Core/Object.h>
 #include <GameClient/GuidFileIdPack.h>
 #include <GameClient/TPtr.h>
-#include "to_json.h"
-#include <nlohmann/json.hpp>
 #include <typeindex>
 #include <cstdint>
 #include <string>

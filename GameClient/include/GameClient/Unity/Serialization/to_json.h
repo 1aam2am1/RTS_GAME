@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/System/Vector3.hpp>
 
 namespace sf {
     inline void to_json(nlohmann::json &j, const Color &c) {

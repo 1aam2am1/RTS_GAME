@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include <GameClient/Unity/Macro.h>
 
-EXPORT_CLASS(Renderer, enabled, forceRenderingOff, sortingOrder)
+EXPORT_CLASS(Renderer, ("m_enabled", enabled), forceRenderingOff, sortingOrder)
 
 
 Renderer::Renderer() : enabled(true), forceRenderingOff(false),

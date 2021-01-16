@@ -34,6 +34,7 @@ bool Editor::DrawDefaultInspector() {
         std::string key = "##";
         key += it.first.data();
 
+        if (name == "enabled") { continue; }
         bool dirty = false;
         auto visitor = overload{
                 [&name, &key, &dirty, &types](auto &&p) {
@@ -84,6 +85,27 @@ bool Editor::DrawDefaultInspector() {
 
                         auto v2 = EditorGUILayout::ObjectField(value, type, true);
                         if (v2) {
+                            dirty = true;
+                            value = v2;
+                        }
+                    } else if constexpr (is_instance_v<type, sf::Vector2>) {
+                        auto v2 = EditorGUILayout::Vector2Field(value);
+
+                        if (v2 != value) {
+                            dirty = true;
+                            value = v2;
+                        }
+                    } else if constexpr (is_instance_v<type, sf::Vector3>) {
+                        auto v2 = EditorGUILayout::Vector3Field(value);
+
+                        if (v2 != value) {
+                            dirty = true;
+                            value = v2;
+                        }
+                    } else if constexpr (is_instance_v<type, sf::Rect>) {
+                        auto v2 = EditorGUILayout::RectField(value);
+
+                        if (v2 != value) {
                             dirty = true;
                             value = v2;
                         }

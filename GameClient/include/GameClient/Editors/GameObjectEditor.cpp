@@ -58,8 +58,7 @@ public:
         for (auto &c : components) {
             ImGui::PushID(c.get());
 
-            std::type_index type = typeid(*c.get());
-            auto reflection = MetaData::getReflection(type);
+            auto reflection = MetaData::getReflection(c.get());
 
             bool open = ImGui::CollapsingHeader(("##" + GameApi::to_string(c.get())).data(),
                                                 ImGuiTreeNodeFlags_DefaultOpen |
@@ -75,12 +74,16 @@ public:
 
             ImGui::SameLine();
 
-            auto behaviour = dynamic_pointer_cast<Behaviour>(c);
-            if (behaviour) {
-                dirty = ImGui::Checkbox("##behaviour", &behaviour->enabled);
+            auto it = std::find_if(reflection.getFields.begin(), reflection.getFields.end(),
+                                   [](auto &&it) { return it.first == "m_enabled"; });
+            if (it != reflection.getFields.end() && it->second.index() == 3) {
+                auto set_get = std::get<3>(it->second);
+                bool enabled = set_get.second();
+                dirty = ImGui::Checkbox("##behaviour", &enabled);
 
                 if (dirty) {
-                    EditorUtility::SetDirty(behaviour);
+                    set_get.first(enabled);
+                    EditorUtility::SetDirty(c);
                 }
             } else {
                 auto total_bb = ImVec2(ImGui::GetFrameHeight(),
@@ -94,7 +97,7 @@ public:
 
             if (open) {
                 TPtr<Editor> editor;
-                Editor::CreateCachedEditor(c, editor, type);
+                Editor::CreateCachedEditor(c, editor, reflection.type);
 
                 editor->OnInspectorGUI();
             }

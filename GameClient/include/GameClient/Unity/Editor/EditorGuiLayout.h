@@ -7,6 +7,8 @@
 
 #include <GameClient/TPtr.h>
 #include <typeindex>
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
 class EditorGUILayout {
 public:
@@ -18,6 +20,18 @@ public:
     /// \param allowSceneObjects Allow assigning Scene objects. See Description for more info.
     /// \return The object that has been set by the user.
     static TPtr<> ObjectField(TPtr<> obj, std::type_index objType, bool allowSceneObjects);
+
+    static sf::FloatRect RectField(sf::FloatRect);
+
+    static sf::IntRect RectField(sf::IntRect);
+
+    static sf::Vector2i Vector2Field(sf::Vector2i);
+
+    static sf::Vector2f Vector2Field(sf::Vector2f);
+
+    static sf::Vector3i Vector3Field(sf::Vector3i);
+
+    static sf::Vector3f Vector3Field(sf::Vector3f);
 };
 
 

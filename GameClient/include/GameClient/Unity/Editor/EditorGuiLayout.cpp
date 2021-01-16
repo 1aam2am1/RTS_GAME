@@ -18,7 +18,7 @@ static bool cleared = true;
 static std::map<ImGuiID, uint16_t> window_ob;
 
 std::string GetKey() {
-    if (!cleared) {
+    if (cleared) {
         cleared = false;
         MainThread::Invoke([]() {
             cleared = true;
@@ -77,4 +77,262 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
         }
     }
     return TPtr<>();
+}
+
+sf::FloatRect EditorGUILayout::RectField(sf::FloatRect rect) {
+    std::string key = GetKey();
+
+    if (ImGui::BeginTable(key.data(), 4)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##x", &rect.left);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##y", &rect.top);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("W");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##w", &rect.width);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("H");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##h", &rect.height);
+
+        ImGui::EndTable();
+    }
+
+    return rect;
+}
+
+sf::IntRect EditorGUILayout::RectField(sf::IntRect rect) {
+    std::string key = GetKey();
+
+    if (ImGui::BeginTable(key.data(), 4)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##x", &rect.left);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##y", &rect.top);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("W");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##w", &rect.width);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("H");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##h", &rect.height);
+
+        ImGui::EndTable();
+    }
+
+    return rect;
+}
+
+sf::Vector2i EditorGUILayout::Vector2Field(sf::Vector2i vec) {
+    std::string key = GetKey();
+
+    if (ImGui::BeginTable(key.data(), 4)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##x", &vec.x);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##y", &vec.y);
+
+        ImGui::EndTable();
+    }
+
+    return vec;
+}
+
+sf::Vector2f EditorGUILayout::Vector2Field(sf::Vector2f vec) {
+    std::string key = GetKey();
+
+    if (ImGui::BeginTable(key.data(), 4)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##x", &vec.x);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##y", &vec.y);
+
+        ImGui::EndTable();
+    }
+
+    return vec;
+}
+
+sf::Vector3i EditorGUILayout::Vector3Field(sf::Vector3i vec) {
+    std::string key = GetKey();
+
+    ImGui::NewLine();
+    if (ImGui::BeginTable(key.data(), 6)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##x", &vec.x);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##y", &vec.y);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("W");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputInt("##w", &vec.z);
+
+        ImGui::EndTable();
+    }
+
+    return vec;
+}
+
+sf::Vector3f EditorGUILayout::Vector3Field(sf::Vector3f vec) {
+    std::string key = GetKey();
+
+    ImGui::NewLine();
+    if (ImGui::BeginTable(key.data(), 6)) {
+        auto width = ImGui::CalcTextSize("X").x;
+
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, width);
+        ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("X");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##x", &vec.x);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Y");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##y", &vec.y);
+        ImGui::TableNextColumn();
+
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("W");
+        ImGui::TableNextColumn();
+
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        ImGui::InputFloat("##w", &vec.z);
+
+        ImGui::EndTable();
+    }
+
+    return vec;
 }
