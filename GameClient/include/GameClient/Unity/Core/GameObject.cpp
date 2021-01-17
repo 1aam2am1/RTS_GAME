@@ -10,21 +10,22 @@
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include <Editor/EditorApplication.h>
+#include <utility>
 
 EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components)
 
 TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());
     i->scene = SceneManager::GetActiveScene();
-    auto _ = i->transform(); ///< Create transform
+    //auto _ = i->transform(); ///< Create transform //Fix components as serializing was overwriting transform without destroying
 
     return i;
 }
 
 TPtr<GameObject> newGameObject(std::string name) {
-    auto i = std::shared_ptr<GameObject>(new GameObject(name));
+    auto i = std::shared_ptr<GameObject>(new GameObject(std::move(name)));
     i->scene = SceneManager::GetActiveScene();
-    auto _ = i->transform(); ///< Create transform
+    //auto _ = i->transform(); ///< Create transform
 
     return i;
 }
@@ -38,7 +39,7 @@ GameObject::GameObject() : scene([&](auto s) {
 }
 
 GameObject::GameObject(std::string name) : GameObject() {
-    Object::name = name;
+    Object::name = std::move(name);
 }
 
 GameObject::~GameObject() {

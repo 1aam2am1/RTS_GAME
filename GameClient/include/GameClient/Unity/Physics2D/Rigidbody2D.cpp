@@ -17,17 +17,16 @@ ADD_ATTRIBUTE(Rigidbody2D, ExecuteInEditMode)
 Rigidbody2D::~Rigidbody2D() {
     if (!body) { return; }
     auto list = body->GetFixtureList();
-    bool active = gameObject() ? gameObject()->activeInHierarchy() : false;
     while (list) {
         auto collider = dynamic_pointer_cast<Collider2D>(list->GetUserData().lock());
-        if (collider && active) {
-            collider->Apply(); //RigidBody is destroyed
-        } else {
-            body->DestroyFixture(list); //GameObject is destroyed
+        if (collider) {
+            collider->Refresh(); //RigidBody is destroyed
         }
 
         list = body->GetFixtureList();
     }
+
+    body->GetWorld()->DestroyBody(body);
 }
 
 void Rigidbody2D::Awake() {
@@ -40,6 +39,14 @@ void Rigidbody2D::Awake() {
     def.enabled = false;
 
     body = global.physics.world.CreateBody(&def);
+
+    auto colliders = gameObject()->GetComponents<Collider2D>();
+    for (auto &c : colliders) {
+        if (!c->attachedRigidbody) {
+            c->attachedRigidbody = static_pointer_cast<Rigidbody2D>(shared_from_this());
+            c->Refresh();
+        }
+    }
 }
 
 void Rigidbody2D::UnityOnActiveChange(bool b) {

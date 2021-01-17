@@ -29,5 +29,4 @@ void BoxCollider2D::Apply() {
     fixture = body->CreateFixture(&def);
 
     RecalculateMass();
-
 }

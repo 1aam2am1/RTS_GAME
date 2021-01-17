@@ -26,6 +26,12 @@ void Collider2D::RecalculateMass() {
     }
 }
 
+void Collider2D::Refresh() {
+    if (fixture) {
+        Apply();
+    }
+}
+
 void Collider2D::OnEnable() {
     if (fixture) {
         fixture->GetBody()->DestroyFixture(fixture);
@@ -34,7 +40,6 @@ void Collider2D::OnEnable() {
         GameApi::log(ERR.fmt("Dont enable enabled"));
     }
     Apply();
-
 }
 
 void Collider2D::OnDisable() {
@@ -44,5 +49,20 @@ void Collider2D::OnDisable() {
 
     } else {
         GameApi::log(ERR.fmt("Dont disable disabled"));
+    }
+}
+
+void Collider2D::OnDestroy() {
+    if (fixture) {
+        fixture->GetBody()->DestroyFixture(fixture);
+        fixture = nullptr;
+    }
+}
+
+Collider2D::~Collider2D() {
+    if (fixture) {
+        fixture->GetBody()->DestroyFixture(fixture);
+        fixture = nullptr;
+        GameApi::log(ERR.fmt("Fixture should be destroyed on OnDestroy()"));
     }
 }

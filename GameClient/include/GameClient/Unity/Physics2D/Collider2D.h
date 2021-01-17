@@ -16,6 +16,7 @@ public:
     /// The Rigidbody2D attached to the Collider2D.
     TPtr<Rigidbody2D> attachedRigidbody;
 
+    ~Collider2D() override;
 
 protected:
     friend class Rigidbody2D;
@@ -25,9 +26,13 @@ protected:
 
     void Awake() final;
 
+    void Refresh(); //Recreate fixture if created
+
     void OnEnable() final;
 
     void OnDisable() final;
+
+    void OnDestroy() final;
 
     b2Body *GetBody();
 
