@@ -23,6 +23,18 @@ public:
         window->Show();
     }
 
+#if UNITY_EDITOR
+
+    void OnStyleChange() override {
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    }
+
+    void OnStylePop() override {
+        ImGui::PopStyleVar();
+    }
+
+#endif
+
     void Update() override {
 #if UNITY_EDITOR
         auto name = imGuiName;
