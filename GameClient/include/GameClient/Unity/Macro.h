@@ -63,6 +63,14 @@ namespace {                                                                     
     });                                                                         \
 }
 
+#define EXPORT_ENUM(TYPE, ...)                                                  \
+namespace {                                                                     \
+    static int INTERNAL_NO_USE_CLASS_##TYPE = Initializer::add([](){            \
+        [[maybe_unused]] auto t = Enums::register_enum<TYPE>(#TYPE);            \
+        __VA_OPT__(t.setReflection(__VA_ARGS__);)                               \
+    });                                                                         \
+}
+
 #define ADD_ATTRIBUTE(TYPE, ...)                                                \
 namespace{                                                                      \
     static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){           \

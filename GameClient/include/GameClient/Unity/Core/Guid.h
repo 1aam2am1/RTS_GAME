@@ -27,7 +27,7 @@ namespace Unity {
 
         explicit operator std::string() const;
 
-        GUID &operator=(std::string str);
+        GUID &operator=(const std::string &str);
 
         constexpr bool operator==(const GUID &l) const = default;
 

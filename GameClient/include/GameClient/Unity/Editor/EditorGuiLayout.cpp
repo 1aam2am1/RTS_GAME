@@ -13,6 +13,7 @@
 #include <imgui-SFML.h>
 #include <imgui_stdlib.h>
 #include <GameClient/Unity/Core/Sprite.h>
+#include <Macro.h>
 
 static bool cleared = true;
 static std::map<ImGuiID, uint16_t> window_ob;
@@ -335,4 +336,29 @@ sf::Vector3f EditorGUILayout::Vector3Field(sf::Vector3f vec) {
     }
 
     return vec;
+}
+
+std::string EditorGUILayout::EnumField(std::string str, std::type_index type) {
+    auto reflection = Enums::getReflection(type);
+    std::string key = GetKey();
+
+    if (reflection.d.members.empty()) {
+        ImGui::TextDisabled("%s", str.data());
+        return str;
+    } else {
+        if (ImGui::BeginCombo(key.data(), str.data())) {
+            for (auto &&s : reflection.d.members) {
+                const bool is_selected = (s.second == str);
+                if (ImGui::Selectable(s.second.data(), is_selected))
+                    str = s.second;
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        return str;
+    }
 }

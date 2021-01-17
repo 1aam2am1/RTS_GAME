@@ -115,6 +115,23 @@ private:
     static std::map<std::type_index, int64_t> ext_priority;
 };
 
+class Enums {
+    struct Reflect;
+public:
+    template<typename T>
+    static auto register_enum(std::string_view str);
+
+    static Reflect getReflection(std::type_index type);
+
+private:
+    template<typename T>
+    struct Register;
+
+    struct Data {
+        std::vector<std::pair<uint64_t, std::string_view>> members;
+    };
+    static std::map<std::type_index, Data> reflection;
+};
 
 #include "MetaData.inl"
 

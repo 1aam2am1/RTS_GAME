@@ -163,6 +163,7 @@ set(SRC
         include/GameClient/Windows/GameSceneMenuGizmo.h
         include/GameClient/box2d/b2_user_settings.h
         include/GameClient/Unity/Physics2D/RigidbodyType2D.h
+        include/GameClient/Unity/Physics2D/RigidbodyType2D.cpp
         )
 
 add_executable(GameClient ${SRC})

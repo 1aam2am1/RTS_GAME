@@ -10,6 +10,7 @@ decltype(MetaData::reflection) MetaData::reflection;
 decltype(MetaData::name_type) MetaData::name_type;
 decltype(Importers::ext_importer) Importers::ext_importer;
 decltype(Importers::ext_priority) Importers::ext_priority;
+decltype(Enums::reflection) Enums::reflection;
 
 
 MetaData::Reflect::Reflect(std::string_view n, std::type_index t,
@@ -172,4 +173,32 @@ bool Importers::exists_importer(std::string_view str) {
     }
 
     return false;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+Enums::Reflect Enums::getReflection(std::type_index type) {
+    auto it = reflection.find(type);
+    if (it != reflection.end()) {
+        return Reflect{it->second};
+    }
+    static const Data empty{};
+
+    return Reflect{empty};
+}
+
+std::string_view Enums::Reflect::to_value(uint64_t i) {
+    auto it = std::find_if(d.members.begin(), d.members.end(), [&](auto &&p) { return p.first == i; });
+    if (it != d.members.end()) {
+        return it->second;
+    }
+    return "";
+}
+
+uint64_t Enums::Reflect::to_value(std::string_view name) {
+    auto it = std::find_if(d.members.begin(), d.members.end(), [&](auto &&p) { return p.second == name; });
+    if (it != d.members.end()) {
+        return it->first;
+    }
+    return 0;
 }

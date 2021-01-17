@@ -17,7 +17,7 @@ namespace Unity {
         return GameApi::to_hex(first) + GameApi::to_hex(second);
     }
 
-    GUID &GUID::operator=(std::string str) {
+    GUID &GUID::operator=(const std::string &str) {
         if (str.empty()) {
             first = 0;
             second = 0;

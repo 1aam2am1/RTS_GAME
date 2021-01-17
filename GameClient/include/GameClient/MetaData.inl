@@ -472,3 +472,41 @@ void Importers::register_importer(int64_t priority) {
                         priority));
     }
 }
+
+struct Enums::Reflect {
+    std::string_view to_value(uint64_t);
+
+    uint64_t to_value(std::string_view);
+
+    const Data &d;
+};
+
+template<typename T>
+struct Enums::Register {
+
+    void setReflection(std::initializer_list<std::pair<T, std::string_view>> l) {
+        std::vector<std::pair<uint64_t, std::string_view>> m;
+        m.reserve(l.size());
+        for (auto &&i : l) {
+            m.emplace_back(static_cast<uint64_t>(i.first), i.second);
+        }
+        d.members = std::move(m);
+    }
+
+    Data &d;
+};
+
+template<typename T>
+auto Enums::register_enum(std::string_view str) {
+    static_assert(std::is_enum<T>::value);
+    auto it = reflection.find(typeid(T));
+    if (it != reflection.end()) {
+        return Register < T > {it->second};
+    }
+
+    Data result;
+
+    auto[it2, b2] = reflection.emplace(typeid(T), result);
+
+    return Register < T > {it2->second};
+}

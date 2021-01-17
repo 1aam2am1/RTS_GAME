@@ -32,6 +32,8 @@ public:
     static sf::Vector3i Vector3Field(sf::Vector3i);
 
     static sf::Vector3f Vector3Field(sf::Vector3f);
+
+    static std::string EnumField(std::string value, std::type_index objType);
 };
 
 

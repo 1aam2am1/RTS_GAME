@@ -109,6 +109,25 @@ bool Editor::DrawDefaultInspector() {
                             dirty = true;
                             value = v2;
                         }
+                    } else if constexpr (std::is_same_v<type, nlohmann::json>) {
+                        std::type_index type = typeid(Object);
+                        auto it = types.find(name);
+                        if (it != types.end()) {
+                            type = it->second;
+                        }
+
+                        if (!Enums::getReflection(type).d.members.empty()) {
+                            auto v2 = EditorGUILayout::EnumField(value.template get<std::string>(), type);
+
+                            if (v2 != value) {
+                                dirty = true;
+                                value = v2;
+                            }
+                        } else {
+                            ImGuiContext &g = *GImGui;
+                            g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;
+                            ImGui::NewLine();
+                        }
                     } else {
                         ImGuiContext &g = *GImGui;
                         g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;
