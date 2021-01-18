@@ -116,6 +116,7 @@ void GlobalStaticVariables::Settings::Load() {
     if (s.contains("gravity")) { s.at("gravity").get_to(gravity); }
     if (s.contains("scene")) { s.at("scene").get_to(scene_path); }
     if (s.contains("gizmo")) { s.at("gizmo").get_to(gizmo); }
+    if (s.contains("orthographicSize")) { s.at("orthographicSize").get_to(old_orthographicSize); }
 }
 
 void GlobalStaticVariables::Settings::Save() {
@@ -128,6 +129,7 @@ void GlobalStaticVariables::Settings::Save() {
     s["gravity"] = gravity;
     s["scene"] = scene_path;
     s["gizmo"] = gizmo;
+    s["orthographicSize"] = old_orthographicSize;
 
     if (!GameApi::saveFullFile("settings.json", result.dump(2, ' ', true))) {
         GameApi::log(ERR.fmt("Can't save settings.json"));

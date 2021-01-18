@@ -21,6 +21,16 @@ public:
         WindowLayout::dockWindow(WindowLayout::Center, window);
         window->flags |= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
         window->Show();
+
+        if (global.rendering.m_game_imGuiName.empty())
+            global.rendering.m_game_imGuiName = window->imGuiName;
+    }
+
+
+    void OnDestroy() override {
+        if (global.rendering.m_game_imGuiName == imGuiName) {
+            global.rendering.m_game_imGuiName.clear();
+        }
     }
 
 #if UNITY_EDITOR
@@ -46,7 +56,7 @@ public:
             }
 
             if (s.x > 0 && s.y > 0)
-                global.m_target().create(s.x, s.y);
+                global.rendering.m_target().create(std::ceil(s.x), std::ceil(s.y));
         });
 #endif
     }
@@ -54,7 +64,7 @@ public:
     void OnGUI() override {
 #if UNITY_EDITOR
         DrawGameSceneGizmoMenu();
-        ImGui::Image(global.m_target().getTexture());
+        ImGui::Image(global.rendering.m_target().getTexture());
 #else
         //Target is RenderTexture therefore it is drown on main screen
 #endif

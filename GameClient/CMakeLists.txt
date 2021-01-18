@@ -167,7 +167,7 @@ set(SRC
         include/GameClient/ContactListener.cpp
         include/GameClient/ContactListener.h
         include/GameClient/Components/Emitter.cpp
-        )
+        include/GameClient/Windows/SceneWindow.h)
 
 add_executable(GameClient ${SRC})
 

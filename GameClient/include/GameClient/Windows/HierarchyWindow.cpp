@@ -5,6 +5,7 @@
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include "Macro.h"
+#include "SceneWindow.h"
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/WindowLayout.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
@@ -89,6 +90,10 @@ public:
                         if (ImGui::IsItemClicked(1)) {
                             ContextMenu::Init("GameObject");
                         }
+                    } else if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)) {
+                        clear_selection = false;
+                        auto scene = EditorWindow::GetWindow<SceneWindow>("", false);
+                        if (scene) { scene->position = d->transform()->localPosition; }
                     }
 
                     if (!activeSelf) {

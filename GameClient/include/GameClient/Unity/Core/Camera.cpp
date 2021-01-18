@@ -18,12 +18,13 @@ ADD_ATTRIBUTE(Camera, ExecuteInEditMode)
 
 Camera::Camera() : depth(
         [&](auto d) {
-            auto it = std::find_if(std::execution::par_unseq, global.m_draw_order.begin(), global.m_draw_order.end(),
+            auto it = std::find_if(std::execution::par_unseq, global.rendering.m_draw_order.begin(),
+                                   global.rendering.m_draw_order.end(),
                                    [this](auto &it) { return it.second.get() == this; });
-            if (it != global.m_draw_order.end()) { global.m_draw_order.erase(it); }
+            if (it != global.rendering.m_draw_order.end()) { global.rendering.m_draw_order.erase(it); }
 
             m_depth = d;
-            global.m_draw_order.emplace(m_depth, shared_from_this());
+            global.rendering.m_draw_order.emplace(m_depth, shared_from_this());
 
         }, [&]() { return m_depth; }) {
 }
@@ -33,12 +34,12 @@ Camera::~Camera() {
 }
 
 void Camera::Awake() {
-    global.m_cameras.emplace_back(shared_from_this());
-    global.m_draw_order.emplace(m_depth, shared_from_this());
+    global.rendering.m_cameras.emplace_back(shared_from_this());
+    global.rendering.m_draw_order.emplace(m_depth, shared_from_this());
 }
 
 TPtr<Camera> Camera::main() {
-    for (auto &c : global.m_cameras) {
+    for (auto &c : global.rendering.m_cameras) {
         if (c->enabled && c->tag.get() == "MainCamera")
             return c->shared_from_this();
     }
@@ -48,9 +49,9 @@ TPtr<Camera> Camera::main() {
 
 std::vector<TPtr<Camera>> Camera::allCameras() {
     std::vector<TPtr<Camera>> result;
-    result.reserve(global.m_cameras.size());
+    result.reserve(global.rendering.m_cameras.size());
 
-    for (auto &c : global.m_cameras) {
+    for (auto &c : global.rendering.m_cameras) {
         if (c->enabled)
             result.emplace_back(c->shared_from_this());
     }
@@ -59,7 +60,7 @@ std::vector<TPtr<Camera>> Camera::allCameras() {
 
 void Camera::Render() {
     auto position = transform()->localPosition.get();
-    sf::Vector2f size{global.m_target().getSize()};
+    sf::Vector2f size{global.rendering.m_target().getSize()};
     if (size.y != 0 && pixelRect.getSize().x != 0 && pixelRect.getSize().x != 0) {
         size.x = 2.f * orthographicSize * (size.x / size.y) * pixelRect.getSize().x;
         size.y = 2.f * orthographicSize * pixelRect.getSize().y;
@@ -71,11 +72,11 @@ void Camera::Render() {
     view.setViewport(pixelRect);
     view.setRotation(transform()->localRotation);
 
-    global.m_target().setView(view);
+    global.rendering.m_target().setView(view);
 
-    global.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
+    global.rendering.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
 
-    for (auto &it : global.m_render) {
+    for (auto &it : global.rendering.m_render) {
         if (it && it->m_onEnable && !it->forceRenderingOff)
             it->draw();
     }
@@ -84,7 +85,7 @@ void Camera::Render() {
     ///glDisable(GL_SCISSOR_TEST);
 
 #if UNITY_EDITOR
-    global.m_target().display(); //Display only in editor as window is displayed in main screen
+    global.rendering.m_target().display(); //Display only in editor as window is displayed in main screen
 #endif
 }
 

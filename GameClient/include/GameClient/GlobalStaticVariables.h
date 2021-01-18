@@ -65,21 +65,25 @@ struct GlobalStaticVariables {
 
     ~GlobalStaticVariables();
 
-    ///Camera
-    std::vector<TPtr<Camera>> m_cameras{};
-    std::multimap<float, TPtr<Camera>> m_draw_order{};
+    struct {
+        ///Camera
+        std::vector<TPtr<Camera>> m_cameras{};
+        std::multimap<float, TPtr<Camera>> m_draw_order{};
 
-    std::vector<TPtr<Renderer>> m_render{};
+        std::vector<TPtr<Renderer>> m_render{};
 #if UNITY_EDITOR
-private:
-    sf::RenderTexture m_real_target;
-public:
-    constexpr sf::RenderTexture &m_target() { return m_real_target; }
+    private:
+        sf::RenderTexture m_real_target;
+    public:
+        constexpr sf::RenderTexture &m_target() { return m_real_target; }
 
 #else
-    sf::RenderTarget* m_real_target = nullptr;
-    constexpr sf::RenderTarget& m_target(){return *m_real_target;}
+        sf::RenderTarget* m_real_target = nullptr;
+        constexpr sf::RenderTarget& m_target(){return *m_real_target;}
 #endif
+
+        std::string m_game_imGuiName{};
+    } rendering;
 
     struct {
         uint64_t max_id = 1; ///< Max used id
@@ -132,6 +136,7 @@ public:
         sf::Vector2f gravity = {0.f, -10.f};
         std::string scene_path{};
         bool gizmo = false;
+        float old_orthographicSize = 3;
 
     } settings;
 

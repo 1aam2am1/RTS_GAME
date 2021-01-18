@@ -2,13 +2,16 @@
 // Created by Michal_Marszalek on 08.12.2020.
 //
 
-#include <GameClient/Unity/Editor/EditorWindow.h>
-#include <GameClient/WindowLayout.h>
+#include "SceneWindow.h"
 #include "Macro.h"
-#include <imgui.h>
 #include <GameClient/GlobalStaticVariables.h>
-#include <imgui-SFML.h>
-#include <GameClient/Windows/GameSceneMenuGizmo.h>
+
+
+MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 5);
+
+#if UNITY_EDITOR
+INITIALIZE_FUNC(SceneWindow::Init());
+#endif
 
 struct DebugDraw : b2Draw {
     sf::Transform transform;
@@ -95,154 +98,137 @@ struct DebugDraw : b2Draw {
     }
 };
 
-class SceneWindow : public EditorWindow {
-public:
-
-    static void Init() {
-        // Get existing open window or if none, make a new one:
-        auto window = EditorWindow::GetWindow<SceneWindow>();
-        WindowLayout::dockWindow(WindowLayout::Center, window);
-        window->flags |= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
-        window->Show();
-    }
 
 #if UNITY_EDITOR
-    sf::Vector2f position = {0, 0}; // I'n World coordinates
-    float orthographicSize = 1; //Zoom
-    sf::RenderTexture texture;
 
-    void DrawCamera() {
-        //Code from Camera
-        const ImGuiWindow *window = ImGui::GetCurrentWindow();
+void SceneWindow::Awake() {
+    orthographicSize = global.settings.old_orthographicSize;
+}
 
-        sf::Vector2f size{window->ContentRegionRect.GetWidth(), window->ContentRegionRect.GetHeight()};
-        texture.create(size.x, size.y);
-        texture.clear(sf::Color::Black);
+void SceneWindow::DrawCamera() {
+    //Code from Camera
+    const ImGuiWindow *window = ImGui::GetCurrentWindow();
 
-        {
-            for (auto x = 0; x < size.x / 10; ++x) {
-                for (auto y = 0; y < size.y / 10; ++y) {
+    sf::Vector2f size{window->ContentRegionRect.GetWidth(), window->ContentRegionRect.GetHeight()};
+    texture.create(size.x, size.y);
+    texture.clear(sf::Color::Black);
 
-                }
+    {
+        for (auto x = 0; x < size.x / 10; ++x) {
+            for (auto y = 0; y < size.y / 10; ++y) {
+
             }
         }
-
-        if (size.y != 0) {
-            size.x = 2.f * orthographicSize * (size.x / size.y);
-            size.y = 2.f * orthographicSize;
-        } else {
-            return;
-        }
-
-        sf::View view({-position.x, -position.y}, size); //Here is - in pos.x
-
-        texture.setView(view);
-
-        for (auto &it : global.m_render) {
-            if (it && it->m_onEnable && !it->forceRenderingOff)
-                it->draw(&texture);
-        }
-
-        texture.display();
     }
 
-    void OnStyleChange() override {
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+    if (size.y != 0) {
+        size.x = 2.f * orthographicSize * (size.x / size.y);
+        size.y = 2.f * orthographicSize;
+    } else {
+        return;
     }
 
-    void OnStylePop() override {
-        ImGui::PopStyleVar();
+    sf::View view({position.x, -position.y}, size);
+
+    texture.setView(view);
+
+    for (auto &it : global.rendering.m_render) {
+        if (it && it->m_onEnable && !it->forceRenderingOff)
+            it->draw(&texture);
     }
+
+    texture.display();
+}
+
+void SceneWindow::OnStyleChange() {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+}
+
+void SceneWindow::OnStylePop() {
+    ImGui::PopStyleVar();
+}
 
 #endif
 
-    void OnGUI() override {
-        ///TODO: Has it own camera implementation
+void SceneWindow::OnGUI() {
+    ///TODO: Has it own camera implementation
 #if UNITY_EDITOR
-        DrawGameSceneGizmoMenu();
-        const auto pos = ImGui::GetCursorScreenPos();
-        const auto window = ImGui::GetCurrentWindow();
-        const auto size = window->ContentRegionRect.GetSize();
-        const ImVec2 origin = {pos.x + size.x / 2.f, pos.y + size.y / 2.f};
-        const auto cursor_pos = ImGui::GetCursorPos();
+    DrawGameSceneGizmoMenu();
+    const auto pos = ImGui::GetCursorScreenPos();
+    const auto window = ImGui::GetCurrentWindow();
+    const auto size = window->ContentRegionRect.GetSize();
+    const ImVec2 origin = {pos.x + size.x / 2.f, pos.y + size.y / 2.f};
+    const auto cursor_pos = ImGui::GetCursorPos();
 
-        /** Move/Select/... */
-        {
-            ImGuiIO &io = ImGui::GetIO();
-            ImGui::InvisibleButton("canvas", size,
-                                   ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-            const bool is_hovered = ImGui::IsItemHovered(); // Hovered
-            const bool is_active = ImGui::IsItemActive();   // Held
+    /** Move/Select/... */
+    {
+        ImGuiIO &io = ImGui::GetIO();
+        ImGui::InvisibleButton("canvas", size,
+                               ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        const bool is_hovered = ImGui::IsItemHovered(); // Hovered
+        const bool is_active = ImGui::IsItemActive();   // Held
 
-            if (is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-                //Select body
-            }
-
-            if (is_hovered) {
-                auto delta = io.MouseWheel * 0.2f * orthographicSize;
-                orthographicSize += delta;
-                if (orthographicSize <= 0.01f) { orthographicSize = 0.01f; }
-
-                ImVec2 from_origin = {io.MousePos.x - origin.x, io.MousePos.y - origin.y};
-
-                position.x += from_origin.x * 2.0f * (delta / window->ContentRegionRect.GetHeight());
-                position.y += from_origin.y * 2.0f * (delta / window->ContentRegionRect.GetHeight());
-
-            }
-
-            if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
-                position.x += io.MouseDelta.x * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
-                position.y += io.MouseDelta.y * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
-            }
-
-            /*
-            ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-            if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
-                ImGui::OpenPopupOnItemClick("context");*/
+        if (is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            //Select body
         }
 
-        ImGui::SetCursorPos(cursor_pos);
-        /** Drawing */
-        ImDrawList *draw = ImGui::GetWindowDrawList();
-        draw->ChannelsSplit(2);
+        if (is_hovered) {
+            auto delta = io.MouseWheel * 0.2f * orthographicSize;
+            orthographicSize += delta;
+            if (orthographicSize <= 0.01f) { orthographicSize = 0.01f; }
 
-        draw->ChannelsSetCurrent(0);
-        DrawCamera();
-        ImGui::Image(texture.getTexture());
+            ImVec2 from_origin = {io.MousePos.x - origin.x, io.MousePos.y - origin.y};
 
-        draw->ChannelsSetCurrent(1);
-        if (global.mis.draw_gizmo) {
-            sf::Transform transform;
+            position.x -= from_origin.x * 2.0f * (delta / window->ContentRegionRect.GetHeight());
+            position.y += from_origin.y * 2.0f * (delta / window->ContentRegionRect.GetHeight());
 
-            transform.translate(origin.x, origin.y);
-            transform.scale(texture.getSize().y / (2.f * orthographicSize),
-                            texture.getSize().y / (2.f * orthographicSize));
-
-            transform.translate(position);
-
-            transform.scale(1.f, -1.f);
-
-            //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
-
-            DebugDraw d{transform, draw};
-            d.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit);
-
-            global.physics.world.SetDebugDraw(&d);
-
-            global.physics.world.DebugDraw();
-
-            global.physics.world.SetDebugDraw(nullptr);
         }
 
-        draw->ChannelsMerge();
-#endif
+        if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
+            position.x -= io.MouseDelta.x * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
+            position.y += io.MouseDelta.y * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
+        }
+
+        /*
+        ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+        if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
+            ImGui::OpenPopupOnItemClick("context");*/
     }
 
-};
+    ImGui::SetCursorPos(cursor_pos);
+    /** Drawing */
+    ImDrawList *draw = ImGui::GetWindowDrawList();
+    draw->ChannelsSplit(2);
 
+    draw->ChannelsSetCurrent(0);
+    DrawCamera();
+    ImGui::Image(texture.getTexture());
 
-MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 5);
+    draw->ChannelsSetCurrent(1);
+    if (global.mis.draw_gizmo) {
+        sf::Transform transform;
 
-#if UNITY_EDITOR
-INITIALIZE_FUNC(SceneWindow::Init());
+        transform.translate(origin.x, origin.y);
+        transform.scale(texture.getSize().y / (2.f * orthographicSize),
+                        texture.getSize().y / (2.f * orthographicSize));
+
+        transform.translate(-position.x, position.y);
+
+        transform.scale(1.f, -1.f);
+
+        //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
+
+        DebugDraw d{transform, draw};
+        d.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit);
+
+        global.physics.world.SetDebugDraw(&d);
+
+        global.physics.world.DebugDraw();
+
+        global.physics.world.SetDebugDraw(nullptr);
+    }
+
+    draw->ChannelsMerge();
 #endif
+}
+

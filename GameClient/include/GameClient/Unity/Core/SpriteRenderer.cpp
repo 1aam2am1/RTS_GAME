@@ -14,12 +14,12 @@ ADD_ATTRIBUTE(SpriteRenderer, ExecuteInEditMode)
 
 void SpriteRenderer::Awake() {
     //TODO: Move to UnityUpdate
-    global.m_render.emplace_back(shared_from_this());
+    global.rendering.m_render.emplace_back(shared_from_this());
 }
 
 void SpriteRenderer::draw(sf::RenderTarget *target) {
     if (!sprite) { return; }
-    if (!target) { target = &global.m_target(); }
+    if (!target) { target = &global.rendering.m_target(); }
 
     auto position = transform()->localPosition.get();
 

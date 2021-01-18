@@ -215,7 +215,7 @@ void GameLoop::run() {
 
 
     ///Scene rendering
-    for (auto &camera : global.m_draw_order) {
+    for (auto &camera : global.rendering.m_draw_order) {
         if (camera.second && camera.second->isActiveAndEnabled()) {
             camera.second->Render();
         }
