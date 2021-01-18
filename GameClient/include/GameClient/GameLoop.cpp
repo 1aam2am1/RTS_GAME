@@ -220,8 +220,4 @@ void GameLoop::run() {
             camera.second->Render();
         }
     }
-
-    ///On Gui
-
-    ///Wait for end of frame
 }

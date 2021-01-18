@@ -137,6 +137,9 @@ public:
     /// Update is called every frame, if the MonoBehaviour is enabled.
     virtual void Update();
 
+    /// OnGUI is called for rendering and handling GUI events.
+    virtual void OnGUI();
+
 private:
     friend class GameObject;
 };

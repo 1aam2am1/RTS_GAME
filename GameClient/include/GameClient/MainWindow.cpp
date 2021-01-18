@@ -4,12 +4,15 @@
 
 #include "MainWindow.h"
 #include "MainThread.h"
+#include "GlobalStaticVariables.h"
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <SFML/Graphics.hpp>
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include <GameClient/WindowLayout.h>
+#include <Core/MonoBehaviour.h>
+#include <Core/Attributes.h>
 
 #if !(UNITY_EDITOR)
 #include <GameClient/GlobalStaticVariables.h>
@@ -89,6 +92,31 @@ void MainWindow::run() {
                     it = windows.erase(it);
                 }
             }
+        }
+
+        {
+            ///On Gui TODO: Change this for another context (context in context), do the same for ImGui Components
+            if (!global.rendering.m_game_imGuiName.empty()) {
+                auto w = ImGui::FindWindowByName(global.rendering.m_game_imGuiName.data());
+                if (w && w->Active) {
+                    if (ImGui::Begin(global.rendering.m_game_imGuiName.data())) {
+                        ImGui::SetCursorPos({0, 42});
+                        for (auto &object : global.scene.components) {
+                            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+                            if (mono && mono->isActiveAndEnabled() &&
+                                (Application::isPlaying() ||
+                                 Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
+                                mono->OnGUI();
+                            }
+                        }
+                    }
+
+                    ImGui::End();
+                }
+            }
+
+
+            ///Wait for end of frame
         }
 
         ImGui::SFML::Render(window);

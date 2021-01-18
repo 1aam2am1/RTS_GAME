@@ -131,3 +131,7 @@ void MonoBehaviour::Start() {
 void MonoBehaviour::Update() {
 
 }
+
+void MonoBehaviour::OnGUI() {
+
+}

@@ -187,6 +187,8 @@ void SceneWindow::OnGUI() {
         if (is_active && ImGui::IsMouseDragging(ImGuiMouseButton_Right)) {
             position.x -= io.MouseDelta.x * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
             position.y += io.MouseDelta.y * (2.f * orthographicSize) / window->ContentRegionRect.GetHeight();
+
+            ImGui::SetMouseCursor(7);
         }
 
         /*

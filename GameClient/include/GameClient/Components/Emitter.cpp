@@ -6,6 +6,7 @@
 #include <GameApi/GlobalLogSource.h>
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
+#include <imgui.h>
 
 class Emitter : public MonoBehaviour {
 public:
@@ -64,6 +65,12 @@ public:
 
     void Update() override {
         ///GameApi::log(INFO << "Update");
+    }
+
+    void OnGUI() override {
+        if (ImGui::Button("Click me")) {
+            GameApi::log(INFO << "OnGUI Click me");
+        }
     }
 };
 
