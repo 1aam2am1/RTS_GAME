@@ -9,7 +9,8 @@
 #include <GameClient/Unity/Core/Object.h>
 
 enum UnityAttributes {
-    ExecuteInEditMode = 1 << 0
+    ExecuteInEditMode = 1 << 0,
+    DisallowMultipleComponent = 1 << 1 //TODO: Make it inheritable
 };
 
 class Attributes {

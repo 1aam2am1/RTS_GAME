@@ -16,16 +16,20 @@ decltype(Enums::reflection) Enums::reflection;
 MetaData::Reflect::Reflect(std::string_view n, std::type_index t,
                            std::function<TPtr<Object>()> createInstance,
                            std::function<bool(Object *, Object *)> copyInstance,
+                           std::function<bool(Object *)> checkInstance,
                            const MetaData::flags_type &f) :
-        name(n), type(t), CreateInstance(std::move(createInstance)), CopyInstance(std::move(copyInstance)), flags(f) {}
+        name(n), type(t), CreateInstance(std::move(createInstance)), CopyInstance(std::move(copyInstance)),
+        CheckInstance(std::move(checkInstance)), flags(f) {}
 
 MetaData::ReflectFull::ReflectFull(std::string_view name, std::type_index type,
-                                   const std::function<TPtr<Object>()> &createInstance,
-                                   const std::function<bool(Object *, Object *)> &copyInstance,
+                                   std::function<TPtr<Object>()> createInstance,
+                                   std::function<bool(Object *, Object *)> copyInstance,
+                                   std::function<bool(Object *)> checkInstance,
                                    const MetaData::flags_type &flag,
                                    std::vector<std::pair<std::string_view, TU>> f,
                                    std::map<std::string_view, std::type_index> t) :
-        Reflect(name, type, createInstance, copyInstance, flag), getFields(std::move(f)), getTPtrType(std::move(t)) {}
+        Reflect(name, type, std::move(createInstance), std::move(copyInstance), std::move(checkInstance), flag),
+        getFields(std::move(f)), getTPtrType(std::move(t)) {}
 
 MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     auto object_reflection = getReflection(typeid(*ob));
@@ -33,19 +37,20 @@ MetaData::ReflectFull MetaData::getReflection(Object *ob) {
     std::vector<std::pair<std::string_view, MetaData::TU>> fields;
     std::map<std::string_view, std::type_index> types;
 
-    for (auto it: reflection) {
+    for (auto &&it: reflection) {
         if (it.second.check(ob)) {
-            for (auto mem: it.second.members) {
+            for (auto &&mem: it.second.members) {
                 fields.emplace_back(mem.first, mem.second(ob));
             }
-            for (auto mem: it.second.TPtr_type) {
+            for (auto &&mem: it.second.TPtr_type) {
                 types.emplace(mem.first, mem.second);
             }
         }
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, object_reflection.flags, fields, types};
+                                 object_reflection.CopyInstance, object_reflection.CheckInstance,
+                                 object_reflection.flags, fields, types};
 
     return result;
 }
@@ -56,19 +61,20 @@ MetaData::ReflectFull MetaData::getReflection(const Object *ob) {
     std::vector<std::pair<std::string_view, MetaData::TU>> fields;
     std::map<std::string_view, std::type_index> types;
 
-    for (auto it : reflection) {
+    for (auto &&it : reflection) {
         if (it.second.check(ob)) {
-            for (auto mem: it.second.c_members) {
+            for (auto &&mem: it.second.c_members) {
                 fields.emplace_back(mem.first, mem.second(ob));
             }
-            for (auto mem: it.second.TPtr_type) {
+            for (auto &&mem: it.second.TPtr_type) {
                 types.emplace(mem.first, mem.second);
             }
         }
     }
 
     MetaData::ReflectFull result{object_reflection.name, typeid(*ob), object_reflection.CreateInstance,
-                                 object_reflection.CopyInstance, object_reflection.flags, fields, types};
+                                 object_reflection.CopyInstance, object_reflection.CheckInstance,
+                                 object_reflection.flags, fields, types};
 
     return result;
 }
@@ -93,6 +99,7 @@ MetaData::Reflect MetaData::getReflection(std::type_index type) {
     std::string_view name;
     std::function<TPtr<Object>()> constructor;
     std::function<bool(Object *, Object *)> copy;
+    std::function<bool(Object *)> check;
     const MetaData::flags_type *flags = &empty_flag_reflection;
 
     auto object_reflection = reflection.find(type);
@@ -108,6 +115,7 @@ MetaData::Reflect MetaData::getReflection(std::type_index type) {
         }
 
         copy = object_reflection->second.copy;
+        check = object_reflection->second.check;
         flags = &object_reflection->second.flags;
     } else {
         constructor = [type]() -> TPtr<Object> {
@@ -129,9 +137,11 @@ MetaData::Reflect MetaData::getReflection(std::type_index type) {
             s += " don't have mapped copy function: use EXPORT_CLASS";
             throw std::runtime_error(s);
         };
+
+        check = [type](Object *o) { return typeid(o) == type; };
     }
 
-    MetaData::Reflect result{name, type, constructor, copy, *flags};
+    MetaData::Reflect result{name, type, constructor, copy, check, *flags};
 
     return result;
 }

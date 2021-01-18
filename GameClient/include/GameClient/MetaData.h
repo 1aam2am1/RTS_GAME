@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <string_view>
 #include <GameClient/TPtr.h>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SGBase.h>
 #include <SFML/Graphics/Color.hpp>
 #include <GameApi/IsInstance.h>
 #include <variant>
@@ -63,6 +63,7 @@ private:
 
     using TU = std::variant<
             FUNC_META_PAIR(int64_t),
+            FUNC_META_PAIR(float),
             FUNC_META_PAIR(double),
             FUNC_META_PAIR(std::string),
             FUNC_META_PAIR(bool),

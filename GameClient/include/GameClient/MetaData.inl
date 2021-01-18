@@ -1,4 +1,5 @@
 #include <cinttypes>
+#include <GameApi/IsBaseOfTemplate.h>
 
 struct MetaData::Reflect {
     const std::string_view name;
@@ -9,11 +10,14 @@ struct MetaData::Reflect {
 
     const std::function<bool(Object *, Object *)> CopyInstance;
 
+    const std::function<bool(Object *)> CheckInstance;
+
     const MetaData::flags_type &flags;
 
     Reflect(std::string_view name, std::type_index type,
             std::function<TPtr<Object>()> createInstance,
             std::function<bool(Object *, Object *)> copyInstance,
+            std::function<bool(Object *)> checkInstance,
             const MetaData::flags_type &flags);
 };
 
@@ -22,8 +26,9 @@ struct MetaData::ReflectFull : Reflect {
     const std::map<std::string_view, std::type_index> getTPtrType; //TODO: Remove if unnecessary
 
     ReflectFull(std::string_view name, std::type_index type,
-                const std::function<TPtr<Object>()> &createInstance,
-                const std::function<bool(Object *, Object *)> &copyInstance,
+                std::function<TPtr<Object>()> createInstance,
+                std::function<bool(Object *, Object *)> copyInstance,
+                std::function<bool(Object *)> checkInstance,
                 const MetaData::flags_type &flags,
                 std::vector<std::pair<std::string_view, MetaData::TU>> getFields,
                 std::map<std::string_view, std::type_index> getTPtrType);
@@ -33,9 +38,14 @@ template<typename T>
 struct MetaData::Register {
 
     template<typename Y>
-    void registerMemberForSerialize(std::string_view str, SetterGetter<Y> T::*ptr) {
+    requires requires{
+        requires is_base_of_template_v<Y, SGBase>;
+        requires std::is_assignable<TU &, std::pair<std::function<void(
+                typename Y::type)>, std::function<typename Y::type(void)>>>::value;
+    }
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
         auto func = [=](auto t) -> TU {
-            using type = Y;
+            using type = typename Y::type;
             std::function<void(type)> set;
             std::function<type()> get;
 
@@ -52,6 +62,34 @@ struct MetaData::Register {
         };
 
         add(str, func);
+    }
+
+    template<typename Y>
+    requires requires{
+        requires is_base_of_template_v<Y, SGBase>;
+        requires !std::is_assignable<TU &, std::pair<std::function<void(
+                typename Y::type)>, std::function<typename Y::type(void)>>>::value;
+    }
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(nlohmann::json)> set;
+            std::function<nlohmann::json()> get;
+
+            if constexpr (std::is_assignable<decltype(t->*ptr), decltype(t->*ptr)>::value) {
+                set = [=](nlohmann::json arg) { t->*ptr = arg.get<typename Y::type>(); };
+            }
+
+            get = [=]() -> nlohmann::json { return t->*ptr; };
+
+            return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+
+        d.TPtr_type.emplace_back(str, typeid(typename Y::type));
     }
 
     template<typename Y>
@@ -264,6 +302,7 @@ struct MetaData::Register {
         requires !std::is_assignable<TU &, std::pair<std::function<void(Y)>, std::function<Y(void)>>>::value;
         requires !(std::is_integral_v<Y> && (sizeof(Y) <= sizeof(int64_t)));
         requires !std::is_floating_point_v<Y>;
+        requires !is_base_of_template_v<Y, SGBase>;
     }
     void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
         auto func = [=](auto t) -> TU {
@@ -497,7 +536,7 @@ struct Enums::Register {
 };
 
 template<typename T>
-auto Enums::register_enum(std::string_view str) {
+auto Enums::register_enum(std::string_view) {
     static_assert(std::is_enum<T>::value);
     auto it = reflection.find(typeid(T));
     if (it != reflection.end()) {

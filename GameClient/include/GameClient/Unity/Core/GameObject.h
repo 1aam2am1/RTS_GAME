@@ -8,7 +8,7 @@
 
 #include <string>
 #include <GameClient/TPtr.h>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterGetterF.h>
 #include <GameClient/Unity/SceneManagement/Scene.h>
 #include <GameClient/Unity/Core/Application.h>
 #include <GameApi/has_field.h>
@@ -58,7 +58,7 @@ public:
     int64_t layer = 0;
 
     /// Scene that the GameObject is part of.
-    SetterGetter<TPtr<Scene>> scene;
+    SetterGetterF<TPtr<Scene>> scene;
 
     /// The tag of this game object.
     std::string tag; ///< TODO: Change for enum class with int and string Layers manager

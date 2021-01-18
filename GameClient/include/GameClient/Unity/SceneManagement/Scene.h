@@ -11,7 +11,7 @@
 #include <memory>
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/Object.h>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterGetterF.h>
 
 class GameObject;
 
@@ -50,7 +50,7 @@ public:
 
     /// Returns the name of the Scene that is currently active in the game or app.
     /// \note The name limits to 244 characters. The Scene name defaults to scene.
-    SetterGetter<std::string> name;
+    SetterGetterF<std::string> name;
 
     /// Returns the relative path of the Scene. Like: "Assets/MyScenes/MyScene.unity".
     std::string path();

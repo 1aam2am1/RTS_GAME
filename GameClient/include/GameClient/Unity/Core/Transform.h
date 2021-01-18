@@ -10,7 +10,9 @@
 #include "Component.h"
 #include "Quaternion.h"
 #include <GameClient/TPtr.h>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterEmitterP.h>
+
+class b2Body;
 
 /// Position, rotation and scale of an object
 class Transform final : public Component {
@@ -38,14 +40,14 @@ public:
     //sf::Vector3f localEulerAngles;
 
     /// Position of the transform relative to the parent transform.
-    SetterGetter<sf::Vector3f> localPosition;
+    SetterEmitterP<sf::Vector3f, Transform> localPosition;
 
     /// The rotation of the transform relative to the transform rotation of the parent.
-    SetterGetter<float> localRotation;
+    SetterEmitterP<float, Transform> localRotation;
     //Quaternion localRotation;
 
     /// The scale of the transform relative to the GameObjects parent.
-    SetterGetter<sf::Vector3f> localScale;
+    SetterEmitterP<sf::Vector3f, Transform> localScale;
 
     /// A Quaternion that stores the rotation of the Transform in world space.
     //Quaternion rotation;
@@ -56,7 +58,7 @@ public:
     /// The parent of the transform.
     /// \note Changing the parent will modify the parent-relative position, scale and rotation
     /// but keep the world space position, rotation and scale the same.
-    SetterGetter<TPtr<Transform>> parent;
+    SetterGetterF<TPtr<Transform>> parent;
 
     /// Returns the topmost transform in the hierarchy.
     /// \note This never returns null, if this Transform doesn't have a parent it returns itself.
@@ -145,11 +147,19 @@ private:
     std::vector<TPtr<Transform>> children{};
     TPtr<Transform> m_parent{};
 
-    sf::Vector3f m_localPosition;
-    sf::Vector3f m_localScale{1.f, 1.f, 1.f};
-    float m_localRotation;
-
     void UnityOnActiveChange(bool) override {};
+
+    friend class Rigidbody2D;
+
+    friend class Collider2D;
+
+    friend class GameLoop;
+
+    void OnPositionChange();
+
+    b2Body *m_physics_root = nullptr;
+    uint32_t m_colliders = 0;
+    bool m_dirty_registered = false;
 };
 
 

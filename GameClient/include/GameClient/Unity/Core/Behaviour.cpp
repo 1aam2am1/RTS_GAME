@@ -7,7 +7,7 @@
 
 EXPORT_CLASS(Behaviour, ("m_enabled", enabled))
 
-Behaviour::Behaviour() : enabled(true) {}
+Behaviour::Behaviour() : enabled(this, &Behaviour::setEnable, true) {}
 
 bool Behaviour::isActiveAndEnabled() const {
     return enabled && gameObject()->activeInHierarchy();
@@ -23,4 +23,9 @@ void Behaviour::UnityOnActiveChange(bool b) {
         m_onEnable = false;
         OnDisable();
     }
+}
+
+void Behaviour::setEnable() {
+    if (m_unityAwakeed)
+        UnityOnActiveChange(enabled);
 }

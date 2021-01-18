@@ -71,22 +71,19 @@ struct DebugDraw : b2Draw {
     }
 
     void DrawTransform(const b2Transform &xf) override {
-        const float k_axisScale = [&]() {
-            auto vec = transform.transformPoint(0.4, 0);
-            return std::sqrt(vec.x * vec.x + vec.y * vec.y);
-        }();
+        const float k_axisScale = 0.4;
 
         ImColor red(1.0f, 0.0f, 0.0f);
         ImColor green(0.0f, 1.0f, 0.0f);
         ImVec2 p1{transform.transformPoint(xf.p.x, xf.p.y)};
         ImVec2 p2;
 
-        p2.x = p1.x + k_axisScale * xf.q.GetXAxis().x;
-        p2.y = p1.y + k_axisScale * xf.q.GetXAxis().y;
+        p2 = transform.transformPoint(xf.p.x + k_axisScale * xf.q.GetXAxis().x,
+                                      xf.p.y + k_axisScale * xf.q.GetXAxis().y);
         list->AddLine(p1, p2, red);
 
-        p2.x = p1.x + k_axisScale * xf.q.GetYAxis().x;
-        p2.y = p1.y + k_axisScale * xf.q.GetYAxis().y;
+        p2 = transform.transformPoint(xf.p.x + k_axisScale * xf.q.GetYAxis().x,
+                                      xf.p.y + k_axisScale * xf.q.GetYAxis().y);
         list->AddLine(p1, p2, green);
     }
 
@@ -223,10 +220,12 @@ public:
 
             transform.translate(position);
 
+            transform.scale(1.f, -1.f);
+
             //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
 
             DebugDraw d{transform, draw};
-            d.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit);
+            d.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit);
 
             global.physics.world.SetDebugDraw(&d);
 

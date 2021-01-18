@@ -10,6 +10,9 @@
 #include <Core/MonoBehaviour.h>
 #include <Core/Attributes.h>
 #include <Editor/AssetDatabase.h>
+#include <GameClient/Unity/Core/Transform.h>
+#include <box2d/box2d.h>
+#include <numbers>
 
 #if UNITY_EDITOR
 extern bool Application_isPlaying;
@@ -17,6 +20,49 @@ extern bool Application_isPlaying;
 
 void GameLoop::run() {
     Time::m_unscaled_deltaTime = deltaClock.restart().asSeconds();
+
+    static const auto synchronize_transform_to_box2d = []() {
+        decltype(global.physics.transform_dirty) copy;
+        std::swap(copy, global.physics.transform_dirty);
+
+        for (auto &&t : copy) {
+            if (t) {
+                if (t->m_physics_root) { //RigidBody2d
+                    b2Vec2 pos = {t->localPosition().x, t->localPosition().y};
+                    float angle = t->localRotation * std::numbers::pi / 180.f;
+                    if (t->m_physics_root->GetPosition() != pos || t->m_physics_root->GetAngle() != angle) {
+                        t->m_physics_root->SetTransform(pos, angle);
+                        t->m_physics_root->SetAwake(true);
+                    }
+                } else { //Colliders
+                    for (auto &&c: t->gameObject()->GetComponents<Collider2D>()) {
+                        c->Refresh(); //TODO: Make it faster
+                    }
+                }
+                t->m_dirty_registered = false;
+            }
+        }
+        copy.clear();
+        assert(global.physics.transform_dirty.empty());
+        std::swap(copy, global.physics.transform_dirty); //Declared memory back
+    };
+
+    static const auto synchronize_transform_from_box2d = []() {
+        global.physics.transform_lock = true;
+        auto list = global.physics.world.GetBodyList();
+        while (list) {
+            auto t = dynamic_pointer_cast<Transform>(list->GetUserData().lock());
+            if (t) {
+                t->localPosition = sf::Vector3f{list->GetPosition().x, list->GetPosition().y,
+                                                t->localPosition().z};
+                t->localRotation = list->GetAngle() * 180.0f / std::numbers::pi;
+            }
+
+            list = list->GetNext();
+        }
+        global.physics.transform_lock = false;
+        assert(global.physics.transform_dirty.empty());
+    };
 
 #if UNITY_EDITOR
     if (EditorApplication::isPlaying != isPlaying) {
@@ -124,14 +170,16 @@ void GameLoop::run() {
                 }
             }
 
-            /// TODO: !!!!!!! for transform update b2World
+            synchronize_transform_to_box2d();
 
             //global.physics.world.SetContactListener()
             global.physics.world.Step(Time::fixedDeltaTime, 10, 8);
 
-            /// TODO: !!!!!!! for transform update world
+            synchronize_transform_from_box2d();
 
             /// On collision on trigger
+        } else {
+            synchronize_transform_to_box2d(); //gizmo
         }
 
         //If my elapsed frame time is bigger than should break.

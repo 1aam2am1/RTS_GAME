@@ -3,22 +3,24 @@
 //
 
 #include "Transform.h"
+#include "Attributes.h"
 #include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Serialization/to_json.h>
 
-EXPORT_CLASS(Transform, m_localPosition, m_localRotation, m_localScale, ("m_parent", parent), children);
+EXPORT_CLASS(Transform, ("m_localPosition", localPosition), ("m_localRotation", localRotation),
+             ("m_localScale", localScale), ("m_parent", parent), children);
+ADD_ATTRIBUTE(Transform, ExecuteInEditMode)
 
 Transform::Transform() :
-        localPosition([&](auto p) { m_localPosition = p; }, [&]() { return m_localPosition; }),
-        localRotation([&](auto r) { m_localRotation = r; }, [&]() { return m_localRotation; }),
-        localScale([&](auto s) { m_localScale = s; }, [&]() { return m_localScale; }),
+        localPosition(this, &Transform::OnPositionChange),
+        localRotation(this, &Transform::OnPositionChange, 0),
+        localScale(this, &Transform::OnPositionChange, 1.f, 1.f, 1.f),
         parent([&](auto t) {
             SetParent(t, true);
-        }, [&]() { return m_parent; }),
-        m_localRotation(0) {
+        }, [&]() { return m_parent; }) {
 
 }
 
@@ -97,10 +99,18 @@ void Transform::DetachChildren() {
     children.clear();
 
     auto &root = global.scene.data[gameObject()->scene.get()->id].root;
-    for (auto it : old_children) {
+    for (auto &&it : old_children) {
         if (!it->m_parent) { continue; }
 
         it->m_parent = nullptr;
         root.emplace_back(it->gameObject());
+    }
+}
+
+void Transform::OnPositionChange() {
+    if (m_unityAwakeed && (m_physics_root || m_colliders) && !global.physics.transform_lock && !m_dirty_registered) {
+        //Add to Transform vector box2d
+        m_dirty_registered = true;
+        global.physics.transform_dirty.emplace_back(static_pointer_cast<Transform>(shared_from_this()));
     }
 }

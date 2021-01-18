@@ -149,6 +149,16 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
         }
     }
 
+    if (Attributes::CheckCustomAttribute(result, DisallowMultipleComponent)) {
+        auto reflection = MetaData::getReflection(result.get());
+
+        for (auto c : components) {
+            if (reflection.CheckInstance(c.get())) {
+                return c;
+            }
+        }
+    }
+
     //TODO: Check meta if there is flag only one and then check if there exists
     components.emplace_back(result);
 

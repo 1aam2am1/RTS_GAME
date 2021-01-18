@@ -8,7 +8,7 @@
 
 #include "Object.h"
 #include <GameClient/TPtr.h>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterGetterF.h>
 #include <GameClient/Unity/Core/GameObject.h>
 
 class Transform;
@@ -25,7 +25,7 @@ public:
     [[nodiscard]] TPtr<GameObject> gameObject() const;
 
     /// The tag of this game object.
-    SetterGetter<std::string> tag;
+    SetterGetterF<std::string> tag;
 
     /// The Transform attached to this GameObject.
     TPtr<Transform> transform();

@@ -57,6 +57,7 @@ public:
         auto components = d->GetComponents<Component>();
         for (auto &c : components) {
             ImGui::PushID(c.get());
+            bool destroy = false;
 
             auto reflection = MetaData::getReflection(c.get());
 
@@ -66,7 +67,7 @@ public:
 
             if (ImGui::BeginPopupContextItem()) {
                 if (ImGui::MenuItem("Remove")) {
-                    Object::DestroyImmediate(c);
+                    destroy = true;
                 }
 
                 ImGui::EndPopup();
@@ -76,8 +77,8 @@ public:
 
             auto it = std::find_if(reflection.getFields.begin(), reflection.getFields.end(),
                                    [](auto &&it) { return it.first == "m_enabled"; });
-            if (it != reflection.getFields.end() && it->second.index() == 3) {
-                auto set_get = std::get<3>(it->second);
+            if (it != reflection.getFields.end() && it->second.index() == 4) {
+                auto set_get = std::get<4>(it->second);
                 bool enabled = set_get.second();
                 dirty = ImGui::Checkbox("##behaviour", &enabled);
 
@@ -99,7 +100,12 @@ public:
                 TPtr<Editor> editor;
                 Editor::CreateCachedEditor(c, editor, reflection.type);
 
-                editor->OnInspectorGUI();
+                if (editor)
+                    editor->OnInspectorGUI();
+            }
+
+            if (destroy) {
+                Object::DestroyImmediate(c);
             }
 
             ImGui::PopID();

@@ -21,6 +21,8 @@ public:
 protected:
     friend class Rigidbody2D;
 
+    friend class GameLoop;
+
     // Apply fixture to body
     virtual void Apply() = 0;
 

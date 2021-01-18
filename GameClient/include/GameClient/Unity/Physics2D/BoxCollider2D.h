@@ -12,14 +12,18 @@
 class BoxCollider2D : public Collider2D {
 public:
 
+    BoxCollider2D();
+
     /// The width and height of the rectangle.
     /// These values are specified relative to a center point, so the distance from the center to the left edge is actually width/2.
-    sf::Vector2f size{1.f, 1.f};
+    SetterEmitterP<sf::Vector2f, BoxCollider2D> size;
 
     /// The local offset of the collider geometry.
-    sf::Vector2f offset{};
+    SetterEmitterP<sf::Vector2f, BoxCollider2D> offset;
 protected:
     void Apply() override;
+
+    void ChangeSize();
 };
 
 

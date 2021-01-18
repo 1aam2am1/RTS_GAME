@@ -31,14 +31,20 @@ set(SRC
         include/GameApi/Synchronized/Lock.h
         include/GameApi/Signal.h
         include/GameApi/overload.h
-        include/GameApi/SetterGetter.h
+        include/GameApi/SGBase.h
+        include/GameApi/SetterEmitterP.h
+        include/GameApi/SetterEmitterF.h
+        include/GameApi/SetterGetterF.h
+        include/GameApi/SetterGetterP.h
         include/GameApi/Compiler.cpp
         include/GameApi/Compiler.h
         include/GameApi/HashCombine.h
         include/GameApi/IsInstance.h
         include/GameApi/function_traits.h
         include/GameApi/has_field.h
-        include/GameApi/Char8TStringLiteral.h)
+        include/GameApi/Char8TStringLiteral.h
+        include/GameApi/IsBaseOfTemplate.h
+        )
 
 configure_file(include/GameApi/Config.h.in ${CMAKE_CURRENT_BINARY_DIR}/Config.h @ONLY)
 

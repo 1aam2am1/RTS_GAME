@@ -18,6 +18,7 @@
 #include <GameClient/Unity/Core/Guid.h>
 #include <Editor/OneGuidFile.h>
 #include <box2d/box2d.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 namespace fs = std::filesystem;
 
@@ -103,8 +104,11 @@ public:
 
 
     struct {
-        b2World world{{0.f, 10.f}};
-        b2Body *worldBody;
+        b2World world{{0.f, -10.f}};
+        b2Body *worldBody = nullptr;
+
+        std::vector<TPtr<Transform>> transform_dirty{};
+        bool transform_lock = false;
     } physics;
 
     struct Settings {
@@ -121,7 +125,7 @@ public:
         float timeScale = 1;
         float maximumDeltaTime = 1.f / 5.f;
         float fixedDeltaTime = 0.02;
-        sf::Vector2f gravity = {0.f, 10.f};
+        sf::Vector2f gravity = {0.f, -10.f};
         std::string scene_path{};
         bool gizmo = false;
 

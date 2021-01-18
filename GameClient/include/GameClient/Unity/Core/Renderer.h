@@ -20,7 +20,7 @@ public:
     bool forceRenderingOff;
 
     /// Renderer's order within a sorting layer.
-    SetterGetter<int64_t> sortingOrder;
+    SetterGetterF<int64_t> sortingOrder;
 
 private:
     friend class Camera;

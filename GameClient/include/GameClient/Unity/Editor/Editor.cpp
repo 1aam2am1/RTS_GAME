@@ -52,6 +52,8 @@ bool Editor::DrawDefaultInspector() {
                     ImGui::SetNextItemWidth(-FLT_MIN);
                     if constexpr (std::is_same_v<type, int64_t>) {
                         dirty = ImGui::InputScalar(key.data(), ImGuiDataType_S64, &value, nullptr, nullptr);
+                    } else if constexpr (std::is_same_v<type, float>) {
+                        dirty = ImGui::InputScalar(key.data(), ImGuiDataType_Float, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, double>) {
                         dirty = ImGui::InputScalar(key.data(), ImGuiDataType_Double, &value, nullptr, nullptr);
                     } else if constexpr (std::is_same_v<type, std::string>) {

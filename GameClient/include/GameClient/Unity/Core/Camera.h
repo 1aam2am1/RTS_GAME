@@ -54,7 +54,7 @@ public:
 
     /// Camera's depth in the camera rendering order.
     /// \note Cameras with lower depth are rendered before cameras with higher depth.
-    SetterGetter<double> depth;
+    SetterGetterF<double> depth;
 
     /// Render the camera manually.
     void Render();

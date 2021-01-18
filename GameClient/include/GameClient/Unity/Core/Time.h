@@ -5,7 +5,7 @@
 #ifndef RTS_GAME_TIME_H
 #define RTS_GAME_TIME_H
 
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterGetterF.h>
 
 class Time {
 public:

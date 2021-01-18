@@ -7,6 +7,7 @@
 
 
 #include "Component.h"
+#include <GameApi/SetterEmitterP.h>
 
 /// Behaviours are Components that can be enabled or disabled.
 class Behaviour : public Component {
@@ -14,7 +15,7 @@ public:
     Behaviour();
 
     /// Enabled Behaviours are Updated, disabled Behaviours are not.
-    bool enabled;
+    SetterEmitterP<bool, Behaviour> enabled;
 
     /// Has the Behaviour had active and enabled called?
     /// \note A GameObject can be active or not active. Similarly, a script can be enabled or disabled.
@@ -33,6 +34,8 @@ private:
     bool m_onEnable = false;
 
     void UnityOnActiveChange(bool b) override;
+
+    void setEnable();
 };
 
 

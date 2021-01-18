@@ -13,16 +13,18 @@
 
 class Rigidbody2D : public Component {
 public:
+    Rigidbody2D();
+
     ~Rigidbody2D();
 
     /// The physical behaviour type of the Rigidbody2D.
-    RigidbodyType2D bodyType;
+    SetterEmitterP<RigidbodyType2D, Rigidbody2D> bodyType;
 
     /// Mass of the Rigidbody.
-    float mass = 1.f;
+    SetterEmitterP<float, Rigidbody2D> mass;
 
     /// The rigidBody rotational inertia.
-    float inertia = 0.f;
+    SetterEmitterP<float, Rigidbody2D> inertia;
 
 protected:
     void Awake() override;
@@ -33,6 +35,8 @@ private:
     b2Body *body = nullptr;
 
     void UnityOnActiveChange(bool) override;
+
+    void ChangeBody();
 };
 
 

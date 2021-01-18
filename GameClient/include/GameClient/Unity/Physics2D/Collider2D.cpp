@@ -3,6 +3,7 @@
 //
 
 #include <GameClient/GlobalStaticVariables.h>
+#include <GameClient/Unity/Core/Transform.h>
 #include "Collider2D.h"
 
 b2Body *Collider2D::GetBody() {
@@ -15,20 +16,25 @@ b2Body *Collider2D::GetBody() {
 
 void Collider2D::Awake() {
     attachedRigidbody = GetComponent<Rigidbody2D>();
+    transform()->m_colliders++;
 }
 
 void Collider2D::RecalculateMass() {
     if (attachedRigidbody) {
         b2MassData mass;
         mass.mass = attachedRigidbody->mass;
+        mass.center = {0, 0};
         mass.I = attachedRigidbody->inertia;
         attachedRigidbody->body->SetMassData(&mass);
     }
 }
 
 void Collider2D::Refresh() {
-    if (fixture) {
+    if (fixture && transform()) {
         Apply();
+    } else if (!transform()) {
+        fixture->GetBody()->DestroyFixture(fixture);
+        fixture = nullptr;
     }
 }
 
@@ -48,7 +54,8 @@ void Collider2D::OnDisable() {
         fixture = nullptr;
 
     } else {
-        GameApi::log(ERR.fmt("Dont disable disabled"));
+        if (transform()) //transform() == nullptr => Destroy on Refresh from Rigidbody2D
+            GameApi::log(ERR.fmt("Dont disable disabled"));
     }
 }
 
@@ -57,6 +64,7 @@ void Collider2D::OnDestroy() {
         fixture->GetBody()->DestroyFixture(fixture);
         fixture = nullptr;
     }
+    if (auto t = transform()) { t->m_colliders--; }
 }
 
 Collider2D::~Collider2D() {

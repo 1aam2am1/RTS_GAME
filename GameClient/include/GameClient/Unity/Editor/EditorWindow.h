@@ -8,7 +8,7 @@
 
 #include <GameClient/Unity/Core/ScriptableObject.h>
 #include <SFML/Graphics/Rect.hpp>
-#include <GameApi/SetterGetter.h>
+#include <GameApi/SetterGetterF.h>
 #include <list>
 #include <typeindex>
 #include <GameApi/GlobalLogSource.h>
@@ -38,7 +38,7 @@ public:
 
     /// The desired position of the window in screen space.
     /// \attention Setting this value will undock the window if it is docked.
-    SetterGetter<sf::FloatRect> position;
+    SetterGetterF<sf::FloatRect> position;
 
     /// The GUIContent used for drawing the title of EditorWindows.
     std::string titleContent;
