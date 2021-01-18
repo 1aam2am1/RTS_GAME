@@ -82,6 +82,11 @@ SceneData::~SceneData() {
     }
 }
 
+
+GlobalStaticVariables::GlobalStaticVariables() noexcept {
+    physics.world.SetContactListener(&physics.listener);
+}
+
 GlobalStaticVariables::~GlobalStaticVariables() {
     assert(scene.data.size() == 0);
 
@@ -89,6 +94,9 @@ GlobalStaticVariables::~GlobalStaticVariables() {
     for (auto &it : scene.components) {
         assert(it.expired());
     }
+
+    physics.world.SetContactListener(nullptr);
+    assert(physics.listener.empty()); //On Enter == On Exit
 }
 
 void GlobalStaticVariables::Settings::Load() {

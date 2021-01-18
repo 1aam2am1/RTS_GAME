@@ -108,16 +108,16 @@ void MonoBehaviour::OnTransformParentChanged() {
 
 }
 
-void MonoBehaviour::OnTriggerEnter2D(const Collider2D &other) {
-    UNUSED(other);
+void MonoBehaviour::OnTriggerEnter2D(TPtr<const Collider2D>) {
+
 }
 
-void MonoBehaviour::OnTriggerExit2D(const Collider2D &other) {
-    UNUSED(other);
+void MonoBehaviour::OnTriggerExit2D(TPtr<const Collider2D>) {
+
 }
 
-void MonoBehaviour::OnTriggerStay2D(const Collider2D &other) {
-    UNUSED(other);
+void MonoBehaviour::OnTriggerStay2D(TPtr<const Collider2D>) {
+
 }
 
 void MonoBehaviour::OnValidate() {

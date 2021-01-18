@@ -25,12 +25,14 @@
 // User data
 
 struct Object;
+struct Transform;
+struct Collider2D;
 
 /// You can define this to inject whatever data you want in b2Body
-typedef std::weak_ptr<Object> b2BodyUserData;
+typedef std::weak_ptr<Transform> b2BodyUserData;
 
 /// You can define this to inject whatever data you want in b2Fixture
-typedef std::weak_ptr<Object> b2FixtureUserData;
+typedef std::weak_ptr<Collider2D> b2FixtureUserData;
 
 /// You can define this to inject whatever data you want in b2Joint
 typedef std::weak_ptr<Object> b2JointUserData;

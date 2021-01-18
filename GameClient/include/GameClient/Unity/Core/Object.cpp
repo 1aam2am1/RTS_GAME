@@ -63,7 +63,8 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
 
         if (auto component = dynamic_cast<Component *>(obj.get())) {
             component->UnityOnActiveChange(false);
-            component->OnDestroy();
+            if (component->m_unityAwakeed)
+                component->OnDestroy();
         } else if (auto scriptableOb = dynamic_cast<ScriptableObject *>(obj.get())) {
             scriptableOb->OnDestroy();
         }

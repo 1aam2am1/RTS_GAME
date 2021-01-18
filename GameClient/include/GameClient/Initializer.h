@@ -9,11 +9,11 @@
 
 class Initializer {
 public:
-    static int add(std::function<void()> f);
+    static int add(std::function<void()> f) noexcept;
 
     static void initialize();
 
-    static int d_add(std::function<void()> f);
+    static int d_add(std::function<void()> f) noexcept;
 
     static void uninitialize();
 };

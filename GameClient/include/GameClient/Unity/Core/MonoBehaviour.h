@@ -116,15 +116,15 @@ public:
 
     /// Sent when another object enters a trigger collider attached to this object (2D physics only).
     /// \param other The other Collider2D involved in this collision.
-    virtual void OnTriggerEnter2D(const Collider2D &other);
+    virtual void OnTriggerEnter2D(TPtr<const Collider2D> other);
 
     /// Sent when another object leaves a trigger collider attached to this object (2D physics only).
     /// \param other The other Collider2D involved in this collision.
-    virtual void OnTriggerExit2D(const Collider2D &other);
+    virtual void OnTriggerExit2D(TPtr<const Collider2D> other);
 
     /// Sent each frame where another object is within a trigger collider attached to this object (2D physics only).
     /// \param other The other Collider2D involved in this collision.
-    virtual void OnTriggerStay2D(const Collider2D &other);
+    virtual void OnTriggerStay2D(TPtr<const Collider2D> other);
 
     /// This function is called when the script is loaded or a value is changed in the Inspector (Called in the editor only).
     /// \details You can use this to ensure that when you modify data in an editor,

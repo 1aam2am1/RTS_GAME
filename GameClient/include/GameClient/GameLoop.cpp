@@ -3,6 +3,7 @@
 //
 
 #include "GameLoop.h"
+#include "GlobalStaticVariables.h"
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Editor/EditorApplication.h>
 #include <Core/Time.h>
@@ -172,12 +173,12 @@ void GameLoop::run() {
 
             synchronize_transform_to_box2d();
 
-            //global.physics.world.SetContactListener()
             global.physics.world.Step(Time::fixedDeltaTime, 10, 8);
 
             synchronize_transform_from_box2d();
 
-            /// On collision on trigger
+            global.physics.listener.Call(); //=> On Enter, Update velocity, Stay, On Exit
+            global.physics.listener.Update(); //=> To_Stay => Stay
         } else {
             synchronize_transform_to_box2d(); //gizmo
         }
@@ -198,7 +199,7 @@ void GameLoop::run() {
         auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
         if (mono && mono->isActiveAndEnabled() &&
             (Application::isPlaying() || Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
-            mono->Update(); //TODO: Call only when something happened
+            mono->Update(); //TODO: Call only when something happened in editor mode
         }
     }
 

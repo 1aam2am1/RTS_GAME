@@ -164,6 +164,9 @@ set(SRC
         include/GameClient/box2d/b2_user_settings.h
         include/GameClient/Unity/Physics2D/RigidbodyType2D.h
         include/GameClient/Unity/Physics2D/RigidbodyType2D.cpp
+        include/GameClient/ContactListener.cpp
+        include/GameClient/ContactListener.h
+        include/GameClient/Components/Emitter.cpp
         )
 
 add_executable(GameClient ${SRC})

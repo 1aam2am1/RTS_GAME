@@ -19,6 +19,7 @@
 #include <Editor/OneGuidFile.h>
 #include <box2d/box2d.h>
 #include <GameClient/Unity/Core/Transform.h>
+#include "ContactListener.h"
 
 namespace fs = std::filesystem;
 
@@ -60,6 +61,8 @@ struct FileTime {
 };
 
 struct GlobalStaticVariables {
+    GlobalStaticVariables() noexcept;
+
     ~GlobalStaticVariables();
 
     ///Camera
@@ -104,6 +107,7 @@ public:
 
 
     struct {
+        ContactListener listener;
         b2World world{{0.f, -10.f}};
         b2Body *worldBody = nullptr;
 

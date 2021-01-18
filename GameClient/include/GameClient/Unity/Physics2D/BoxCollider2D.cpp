@@ -40,7 +40,8 @@ void BoxCollider2D::Apply() {
     }
 
 
-    def.userData = static_cast<std::enable_shared_from_this<Object> *>(this)->shared_from_this();
+    def.userData = std::static_pointer_cast<Collider2D>(
+            static_cast<std::enable_shared_from_this<Object> *>(this)->shared_from_this());
     def.shape = &shape;
 
     auto body = GetBody(); //Body of attached body or world body

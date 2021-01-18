@@ -4,22 +4,28 @@
 
 #include "Initializer.h"
 #include <list>
+#include <Macro.h>
 
 static auto &get_data() {
     static std::pair<bool, std::list<std::function<void()>>> result{false, {}};
     return result;
 }
 
-static auto &get_uint__data() {
+static auto &get_uint_data() {
     static std::pair<bool, std::list<std::function<void()>>> result{false, {}};
     return result;
 }
 
-int Initializer::add(std::function<void()> f) {
+int Initializer::add(std::function<void()> f) noexcept {
     auto &r = get_data();
     if (r.first) {
-        f();
-        return 1;
+        try {
+            f();
+            return 1;
+        }
+        EXCEPTION_PRINT
+
+        return 2;
     } else {
         r.second.emplace_back(f);
         return 0;
@@ -35,11 +41,16 @@ void Initializer::initialize() {
     r.second.clear();
 }
 
-int Initializer::d_add(std::function<void()> f) {
-    auto &r = get_uint__data();
+int Initializer::d_add(std::function<void()> f) noexcept {
+    auto &r = get_uint_data();
     if (r.first) {
-        f();
-        return 1;
+        try {
+            f();
+            return 1;
+        }
+        EXCEPTION_PRINT
+
+        return 2;
     } else {
         r.second.emplace_back(f);
         return 0;
@@ -47,7 +58,7 @@ int Initializer::d_add(std::function<void()> f) {
 }
 
 void Initializer::uninitialize() {
-    auto &r = get_uint__data();
+    auto &r = get_uint_data();
     r.first = true;
     for (auto &it: r.second) {
         if (it)it();
