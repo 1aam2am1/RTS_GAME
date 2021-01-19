@@ -221,7 +221,7 @@ void SceneWindow::OnGUI() {
         //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
 
         DebugDraw d{transform, draw};
-        d.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit | b2Draw::e_centerOfMassBit);
+        d.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/ | b2Draw::e_centerOfMassBit);
 
         global.physics.world.SetDebugDraw(&d);
 

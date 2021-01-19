@@ -63,8 +63,12 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
 
         if (auto component = dynamic_cast<Component *>(obj.get())) {
             component->UnityOnActiveChange(false);
-            if (component->m_unityAwakeed)
+            if (component->m_unityAwakeed) {
                 component->OnDestroy();
+            }
+            if (auto go = component->gameObject()) {
+                std::erase_if(go->components, [&](auto &&c) { return c.get() == component; });
+            }
         } else if (auto scriptableOb = dynamic_cast<ScriptableObject *>(obj.get())) {
             scriptableOb->OnDestroy();
         }

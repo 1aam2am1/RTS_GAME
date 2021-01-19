@@ -20,7 +20,12 @@ private:
 
     bool isPlaying = false;
     bool isPaused = false;
-    std::string loaded_scene_path;
+
+    struct {
+        uint64_t old_id = 0;
+        std::string name{};
+        std::string path{};
+    } old_scene;
 };
 
 

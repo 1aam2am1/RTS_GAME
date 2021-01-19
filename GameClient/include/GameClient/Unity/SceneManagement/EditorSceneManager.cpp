@@ -24,9 +24,6 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         if (!scene) {
             GameApi::log(ERR.fmt("Scene %s don't exists", scenePath.data()));
             return std::shared_ptr<Scene>{new Scene(0)};
-        } else {
-            if (scenePath != "Assets/_U.unity")
-                playModeStartScene = dynamic_pointer_cast<SceneAsset>(scene);
         }
     }
 
@@ -182,7 +179,7 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
             result["objects"] = serializer.Serialize(c);
         }
 
-        bool ret = GameApi::saveFullFile(dstScenePath, result.dump(2, ' ', true));
+        bool ret = GameApi::saveFullFile(p.generic_string(), result.dump(2, ' ', true));
 
         if (ret) {
             MainThread::Invoke([]() {

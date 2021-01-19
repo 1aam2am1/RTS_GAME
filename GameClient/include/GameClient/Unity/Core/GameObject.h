@@ -151,6 +151,8 @@ private:
 
     friend class GameLoop;
 
+    friend class Object;
+
     TPtr<Scene> m_scene{};
 
     mutable std::vector<TPtr<Component>> components;

@@ -73,36 +73,45 @@ void GameLoop::run() {
         //TODO: -- Change saving directory, save id of editing gameobject to try resume editor settings before and after play
         Application_isPlaying = EditorApplication::isPlaying && !EditorApplication::isPaused;
         if (isPlaying) {
-            //load default scene or active one
-            if (!SceneManager::GetActiveScene()->isValid()) {
+
+            //Save old scene and save path to reload it.
+            old_scene.path = global.scene.data[global.scene.active_scene].path;
+            old_scene.name = global.scene.data[global.scene.active_scene].name;
+            old_scene.old_id = global.scene.active_scene;
+            EditorSceneManager::SaveScene(SceneManager::GetActiveScene(), "Assets/_U.unity", true);
+
+
+            //What to load?
+            std::string to_load;
+            if (EditorSceneManager::playModeStartScene) {
+                to_load = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+            } else {
+                to_load = "Assets/_U.unity";
+            }
+
+            //Load scene
+            auto scene = EditorSceneManager::OpenScene(to_load);
+            if (!scene->isValid()) {
                 EditorApplication::isPlaying = false;
                 isPlaying = false;
             } else {
-
-                loaded_scene_path = global.scene.data[global.scene.active_scene].path;
-                if (AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get()).empty()) {
-                    if (!loaded_scene_path.empty()) {
-                        EditorSceneManager::SaveScene(SceneManager::GetActiveScene());
-                    } else {
-                        loaded_scene_path = "Assets/_U.unity";
-                        EditorSceneManager::SaveScene(SceneManager::GetActiveScene(), loaded_scene_path);
-                    }
-                } else {
-                    EditorSceneManager::SaveScene(SceneManager::GetActiveScene());
-                    loaded_scene_path = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+                if (global.scene.data[global.scene.active_scene].name == "_U") {
+                    global.scene.data[global.scene.active_scene].name = old_scene.name;
                 }
-
-
-                EditorSceneManager::OpenScene(loaded_scene_path);
-
-                global.settings.Apply();
             }
+
+            global.settings.Apply();
         } else {
             //Load old scene
-            EditorSceneManager::OpenScene(loaded_scene_path);
-            if (global.scene.data[global.scene.active_scene].path == "Assets/_U.unity") {
-                global.scene.data[global.scene.active_scene].path.clear();
-                global.scene.data[global.scene.active_scene].name = "Scene";
+            if (EditorSceneManager::OpenScene("Assets/_U.unity")) {
+                global.scene.data[global.scene.active_scene].path = old_scene.path;
+                global.scene.data[global.scene.active_scene].name = old_scene.name;
+
+                auto new_s = global.scene.data.extract(global.scene.active_scene);
+                new_s.key() = old_scene.old_id;
+                global.scene.data.insert(std::move(new_s));
+                global.scene.active_scene = old_scene.old_id;
+
                 AssetDatabase::DeleteAsset("Assets/_U.unity");
                 //fs::remove("Assets/_U.unity"); //Clear after yourself
                 //fs::remove("Assets/_U.unity.meta");
