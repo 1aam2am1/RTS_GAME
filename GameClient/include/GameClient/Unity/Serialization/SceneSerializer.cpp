@@ -5,7 +5,6 @@
 #include <Macro.h>
 #include <Editor/AssetDatabase.h>
 #include "SceneSerializer.h"
-#include "GameClient/Unity/Core/Guid.h"
 
 std::pair<GUIDFileIDPack, bool> SceneSerializer::serialize_node_callback(TPtr<const Object> ptr) {
     GUIDFileIDPack pack;

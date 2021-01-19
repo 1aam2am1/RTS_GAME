@@ -11,6 +11,7 @@
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <GameClient/Windows/GameSceneMenuGizmo.h>
+#include <SFML/Graphics/RenderTexture.hpp>
 
 class SceneWindow : public EditorWindow {
 public:

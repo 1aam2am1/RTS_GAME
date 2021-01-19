@@ -5,7 +5,7 @@
 #ifndef RTS_GAME_CONTACTLISTENER_H
 #define RTS_GAME_CONTACTLISTENER_H
 
-#include <box2d/box2d.h>
+#include <box2d/b2_world_callbacks.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <GameClient/Unity/Physics2D/Collision2D.h>

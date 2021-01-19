@@ -5,7 +5,6 @@
 #ifndef RTS_GAME_MONOBEHAVIOUR_H
 #define RTS_GAME_MONOBEHAVIOUR_H
 
-#include <functional>
 #include <GameClient/Unity/Yield/Coroutine.h>
 #include <GameClient/Unity/Physics2D/Collider2D.h>
 #include <GameClient/Unity/Physics2D/Joint2D.h>

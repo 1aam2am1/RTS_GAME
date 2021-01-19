@@ -53,9 +53,6 @@ public:
     /// Save all open Scenes.
     /// \return Returns true if all open Scenes are successfully saved.
     static bool SaveOpenScenes();
-
-protected:
-    static std::unordered_set<uint64_t> dirty;
 };
 
 

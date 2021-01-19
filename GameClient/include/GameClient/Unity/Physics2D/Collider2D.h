@@ -7,8 +7,11 @@
 
 
 #include <GameClient/Unity/Core/Behaviour.h>
-#include <box2d/box2d.h>
 #include "Rigidbody2D.h"
+
+class b2Body;
+
+class b2Fixture;
 
 class Collider2D : public Behaviour {
 public:

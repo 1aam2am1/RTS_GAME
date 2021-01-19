@@ -5,7 +5,6 @@
 #ifndef RTS_GAME_ASSETDATABASE_H
 #define RTS_GAME_ASSETDATABASE_H
 
-#include <vector>
 #include <string_view>
 #include <string>
 #include <GameClient/Unity/Core/Texture2D.h>

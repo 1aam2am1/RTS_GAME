@@ -4,14 +4,12 @@
 
 #include "Camera.h"
 #include <GameClient/GlobalStaticVariables.h>
-#include <SFML/Graphics/CircleShape.hpp>
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
-#include <GameClient/Unity/Editor/Selection.h>
-#include <SFML/OpenGL.hpp>
 #include <execution>
 #include <GameClient/Unity/Core/Attributes.h>
 #include <GameClient/Unity/Serialization/to_json.h>
+#include "Renderer.h"
 
 ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize, pixelRect)
 ADD_ATTRIBUTE(Camera, ExecuteInEditMode)

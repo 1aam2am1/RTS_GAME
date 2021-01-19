@@ -2,6 +2,8 @@
 // Created by Michal_Marszalek on 28.09.2020.
 //
 
+#include <GameClient/WindowLayout.h>
+#include <GameClient/Unity/Editor/AssetDatabase.h>
 #include "AssetWindow.h"
 #include "Macro.h"
 #include <Editor/Menu.h>

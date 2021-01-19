@@ -3,7 +3,8 @@
 //
 
 #include <GameClient/GlobalStaticVariables.h>
-#include <GameClient/Unity/Core/Transform.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_fixture.h>
 #include "Collider2D.h"
 
 b2Body *Collider2D::GetBody() {

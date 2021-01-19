@@ -4,6 +4,7 @@
 
 #include "JsonSerializer.h"
 #include <GameClient/MetaData.h>
+#include <GameClient/Unity/Macro.h>
 #include "ISerializationCallbackReceiver.h"
 
 

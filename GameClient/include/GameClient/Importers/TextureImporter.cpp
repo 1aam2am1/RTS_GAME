@@ -6,6 +6,8 @@
 #include <GameClient/Unity/Serialization/to_json.h>
 #include "TextureImporter.h"
 #include <filesystem>
+#include <GameClient/Unity/Core/Texture2D.h>
+#include <GameClient/Unity/Core/Sprite.h>
 
 namespace fs = std::filesystem;
 

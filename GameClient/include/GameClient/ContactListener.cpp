@@ -5,6 +5,9 @@
 #include "ContactListener.h"
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/TPtr.h>
+#include <box2d/b2_contact.h>
+#include <box2d/b2_fixture.h>
+#include <box2d/b2_body.h>
 
 auto to_collision = [](b2Contact *o) {
     std::pair<Collision2D, Collision2D> p;

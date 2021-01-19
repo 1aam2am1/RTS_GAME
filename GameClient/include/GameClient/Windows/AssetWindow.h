@@ -7,8 +7,6 @@
 
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
-#include <GameClient/WindowLayout.h>
-#include <GameClient/Unity/Editor/AssetDatabase.h>
 
 class AssetWindow : public EditorWindow {
 public:

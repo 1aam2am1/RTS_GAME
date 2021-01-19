@@ -15,7 +15,7 @@
 
 namespace fs = std::filesystem;
 
-decltype(EditorSceneManager::dirty) EditorSceneManager::dirty;
+static std::unordered_set<uint64_t> dirty;
 decltype(EditorSceneManager::playModeStartScene) EditorSceneManager::playModeStartScene;
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {

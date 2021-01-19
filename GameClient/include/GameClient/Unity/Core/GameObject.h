@@ -10,7 +10,6 @@
 #include <GameClient/TPtr.h>
 #include <GameApi/SetterGetterF.h>
 #include <GameClient/Unity/SceneManagement/Scene.h>
-#include <GameApi/has_field.h>
 #include <typeindex>
 
 class Component;

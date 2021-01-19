@@ -7,9 +7,9 @@
 
 
 #include <Core/Component.h>
-#include <box2d/box2d.h>
 #include <GameClient/Unity/Physics2D/RigidbodyType2D.h>
 
+class b2Body;
 
 class Rigidbody2D : public Component {
 public:

@@ -6,6 +6,9 @@
 #include <GameClient/Unity/Serialization/to_json.h>
 #include <Editor/Menu.h>
 #include <Core/Attributes.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_fixture.h>
+#include <box2d/b2_polygon_shape.h>
 
 
 ADD_COMPONENT_MENU(BoxCollider2D, size, offset)

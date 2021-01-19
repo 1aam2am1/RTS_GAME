@@ -3,7 +3,6 @@
 //
 
 #include "Scene.h"
-#include "SceneManager.h"
 #include <GameClient/GlobalStaticVariables.h>
 
 Scene::Scene(uint64_t id) : id(id), name([&](auto s) { if (isValid()) global.scene.data[id].name = s; },

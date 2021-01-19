@@ -3,7 +3,6 @@
 //
 
 #include "Component.h"
-#include <GameClient/Unity/Core/GameObject.h>
 #include <GameClient/Unity/Core/Transform.h>
 
 Component::Component() :

@@ -7,8 +7,6 @@
 
 #include <GameClient/Unity/Editor/AssetImporter.h>
 #include <GameClient/Unity/Macro.h>
-#include <GameClient/Unity/Core/Texture2D.h>
-#include <GameClient/Unity/Core/Sprite.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 
 

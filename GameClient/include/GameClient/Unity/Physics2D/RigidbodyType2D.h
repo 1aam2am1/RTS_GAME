@@ -5,7 +5,7 @@
 #ifndef RTS_GAME_RIGIDBODYTYPE2D_H
 #define RTS_GAME_RIGIDBODYTYPE2D_H
 
-#include <box2d/box2d.h>
+#include <box2d/b2_body.h>
 #include <nlohmann/json.hpp>
 
 enum class RigidbodyType2D {

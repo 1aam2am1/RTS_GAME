@@ -5,6 +5,9 @@
 #include "SceneWindow.h"
 #include "Macro.h"
 #include <GameClient/GlobalStaticVariables.h>
+#include <box2d/b2_draw.h>
+#include <imgui.h>
+#include <imgui_internal.h>
 
 
 MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 5);

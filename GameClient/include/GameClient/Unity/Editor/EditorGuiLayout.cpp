@@ -5,14 +5,12 @@
 #include "EditorGuiLayout.h"
 #include <GameClient/Unity/Core/Object.h>
 #include <GameClient/Unity/Editor/DragAndDrop.h>
-#include <GameApi/Compiler.h>
 #include <GameClient/MainThread.h>
 #include <map>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui-SFML.h>
 #include <imgui_stdlib.h>
-#include <GameClient/Unity/Core/Sprite.h>
 #include <Macro.h>
 
 static bool cleared = true;

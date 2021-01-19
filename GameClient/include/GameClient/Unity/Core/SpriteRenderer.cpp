@@ -5,7 +5,6 @@
 #include "SpriteRenderer.h"
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
-#include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Core/Attributes.h>
 

@@ -12,7 +12,6 @@
 #include <typeindex>
 #include <cstdint>
 #include <string>
-#include <Macro.h>
 
 
 class JsonSerializer {

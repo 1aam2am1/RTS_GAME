@@ -17,11 +17,14 @@
 #include <Core/Renderer.h>
 #include <GameClient/Unity/Core/Guid.h>
 #include <Editor/OneGuidFile.h>
-#include <box2d/box2d.h>
-#include <GameClient/Unity/Core/Transform.h>
+#include <box2d/b2_world.h>
 #include "ContactListener.h"
 
 namespace fs = std::filesystem;
+
+class b2Body;
+
+class Transform;
 
 class SceneData {
 public:

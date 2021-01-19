@@ -3,6 +3,7 @@
 //
 
 #include "AudioImporter.h"
+#include <GameClient/Unity/Audio/AudioClip.h>
 
 EXPORT_IMPORTER(AudioImporter, (".wav", ".ogg", ".flac", ".mp3", -220))
 

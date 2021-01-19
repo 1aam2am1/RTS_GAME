@@ -4,7 +4,6 @@
 
 #include "Guid.h"
 #include <GameApi/BasicString.h>
-#include <functional>
 #include <chrono>
 #include <atomic>
 #include <random>

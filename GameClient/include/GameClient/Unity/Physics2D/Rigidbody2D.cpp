@@ -5,11 +5,12 @@
 #include <Macro.h>
 #include <GameClient/GlobalStaticVariables.h>
 #include "Rigidbody2D.h"
-#include "Collider2D.h"
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Physics2D/Collider2D.h>
 #include <numbers>
 #include <Core/Attributes.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_fixture.h>
 
 ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia)
 ADD_ATTRIBUTE(Rigidbody2D, ExecuteInEditMode, DisallowMultipleComponent)

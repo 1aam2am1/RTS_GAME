@@ -6,7 +6,6 @@
 #define RTS_GAME_MAINTHREAD_H
 
 #include <functional>
-#include <GameClient/Unity/Core/Object.h>
 
 class MainThread {
 public:

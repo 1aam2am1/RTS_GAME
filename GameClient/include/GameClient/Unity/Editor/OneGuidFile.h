@@ -10,6 +10,7 @@
 #include <GameClient/TPtr.h>
 #include <GameClient/Unity/Core/Object.h>
 #include <GameClient/Unity/Editor/AssetImporter.h>
+#include <unordered_set>
 
 class AssetImportContext;
 

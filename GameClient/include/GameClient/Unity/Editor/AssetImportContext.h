@@ -8,7 +8,6 @@
 #include <GameClient/Unity/Core/Object.h>
 #include <GameClient/Unity/Core/Texture2D.h>
 #include <GameClient/Unity/Core/Guid.h>
-#include <unordered_set>
 
 class OneGUIDFile;
 

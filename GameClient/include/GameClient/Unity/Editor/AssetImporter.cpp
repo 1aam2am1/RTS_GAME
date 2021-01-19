@@ -8,11 +8,9 @@
 #include "EditorUtility.h"
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/MetaData.h>
-#include <filesystem>
 #include <GameClient/Unity/Editor/OneGuidFile.h>
 #include <GameClient/GlobalStaticVariables.h>
 
-namespace fs = std::filesystem;
 
 EXPORT_CLASS(AssetImporter, ("m_userData", userData))
 
