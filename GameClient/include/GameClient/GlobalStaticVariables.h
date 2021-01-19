@@ -145,6 +145,8 @@ struct GlobalStaticVariables {
 
     struct {
         bool draw_gizmo = false;
+
+        std::vector<std::function<void()>> before_draw;
     } mis;
 };
 

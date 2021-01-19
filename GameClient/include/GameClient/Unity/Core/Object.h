@@ -42,7 +42,7 @@ public:
     /// Actual object destruction is always delayed until after the current Update loop, but is always done before rendering.
     /// \param obj The object to destroy.
     /// \param t The optional amount of time to delay before destroying the object.
-    static void Destroy(Object *obj, float t = 0.f);
+    static void Destroy(TPtr<Object> obj, float t = 0.f);
 
     /// Destroys the object obj immediately. You are strongly recommended to use Destroy instead.
     /// \details This function should only be used when writing editor code since the delayed destruction will never be

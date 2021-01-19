@@ -222,6 +222,16 @@ void GameLoop::run() {
         }
     }
 
+    ///Delete objects
+    {
+        if (Application::isPlaying()) {
+            decltype(global.mis.before_draw) copy;
+            std::swap(copy, global.mis.before_draw);
+            for (auto &&c : copy) {
+                c();
+            }
+        }
+    }
 
     ///Scene rendering
     for (auto &camera : global.rendering.m_draw_order) {

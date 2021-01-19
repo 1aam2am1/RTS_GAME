@@ -8,6 +8,7 @@
 
 #include <SFML/System/Clock.hpp>
 #include <string>
+#include <functional>
 
 
 class GameLoop {

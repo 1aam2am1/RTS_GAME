@@ -4,9 +4,11 @@
 
 #include "Object.h"
 #include "ScriptableObject.h"
+#include "Time.h"
 #include <GameClient/Unity/Macro.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/MainThread.h>
+#include <GameClient/GlobalStaticVariables.h>
 
 EXPORT_CLASS(Object, ("m_Name", name));
 
@@ -78,4 +80,15 @@ void Object::DestroyImmediate(TPtr<Object> obj, bool allowDestroyingAssets) {
         MainThread::Invoke([memory_release]() {});
 
     }
+}
+
+void Object::Destroy(TPtr<Object> obj, float t) {
+    if (obj)
+        global.mis.before_draw.emplace_back([obj, t]() mutable {
+            t -= Time::deltaTime();
+            if (t <= 0.f) { DestroyImmediate(obj, false); }
+            else {
+                Destroy(obj);
+            }
+        });
 }
