@@ -4,28 +4,59 @@
 
 #include "Behaviour.h"
 #include <GameClient/Unity/Macro.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 EXPORT_CLASS(Behaviour, ("m_enabled", enabled))
 
 Behaviour::Behaviour() : enabled(this, &Behaviour::setEnable, true) {}
 
 bool Behaviour::isActiveAndEnabled() const {
-    return enabled && gameObject()->activeInHierarchy();
+    if (gameObject())
+        return enabled && m_gameObjectCacheEnabled;
+
+    return enabled;
 }
 
 void Behaviour::UnityOnActiveChange(bool b) {
-    if (b && enabled && !m_onEnable) {
-        m_onEnable = true;
+    m_gameObjectCacheEnabled = b;
+
+    if (b && enabled && !m_en) {
+        m_en = true;
         OnEnable();
     }
 
-    if (!(b && enabled) && m_onEnable) {
-        m_onEnable = false;
+    if (!(b && enabled) && m_en) {
+        m_en = false;
         OnDisable();
     }
 }
 
 void Behaviour::setEnable() {
-    if (m_unityAwakeed)
-        UnityOnActiveChange(enabled);
+    //Was Awake, Game Object Active and change
+    if (!m_unityAwakeed) { return; }
+
+    if (m_gameObjectCacheEnabled && enabled && !m_en) {
+        m_en = true;
+        OnEnable();
+    }
+
+    if (!(m_gameObjectCacheEnabled && enabled) && m_en) {
+        m_en = false;
+        OnDisable();
+    }
+}
+
+void Behaviour::UnityUpdate() {
+    if (isActiveAndEnabled())
+        Update();
+}
+
+void Behaviour::UnityLateUpdate() {
+    if (isActiveAndEnabled())
+        LateUpdate();
+}
+
+void Behaviour::UnityFixedUpdate() {
+    if (isActiveAndEnabled())
+        FixedUpdate();
 }

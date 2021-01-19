@@ -96,3 +96,7 @@ void Camera::OnEnable() {
 void Camera::OnDisable() {
 
 }
+
+void Camera::Update() {
+
+}

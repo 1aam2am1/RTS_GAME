@@ -108,6 +108,7 @@ void Transform::DetachChildren() {
 }
 
 void Transform::OnPositionChange() {
+    localRotation.t -= 360.0f * floorf(localRotation.t / 360.0f);
     if (m_unityAwakeed && (m_physics_root || m_colliders) && !global.physics.transform_lock && !m_dirty_registered) {
         //Add to Transform vector box2d
         m_dirty_registered = true;

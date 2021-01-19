@@ -87,6 +87,7 @@ private:
 
     TPtr<GameObject> m_gameObject{};
 
+    TPtr<Transform> m_transform{};
 protected:
     //TODO:: Make it private in MonoBehaviour
 

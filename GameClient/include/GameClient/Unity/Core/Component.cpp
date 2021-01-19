@@ -19,10 +19,7 @@ TPtr<GameObject> Component::gameObject() const {
 }
 
 TPtr<Transform> Component::transform() {
-    if (m_gameObject)
-        return m_gameObject->transform();
-
-    return {};
+    return m_transform;
 }
 
 bool Component::CompareTag(std::string_view t) const noexcept {

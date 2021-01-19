@@ -167,7 +167,16 @@ set(SRC
         include/GameClient/ContactListener.cpp
         include/GameClient/ContactListener.h
         include/GameClient/Components/Emitter.cpp
-        include/GameClient/Windows/SceneWindow.h)
+        include/GameClient/Windows/SceneWindow.h
+        include/GameClient/Unity/Audio/AudioSource.cpp
+        include/GameClient/Unity/Audio/AudioSource.h
+        include/GameClient/Unity/Audio/AudioClip.cpp
+        include/GameClient/Unity/Audio/AudioClip.h
+        include/GameClient/Unity/Audio/AudioListener.cpp
+        include/GameClient/Unity/Audio/AudioListener.h
+        include/GameClient/Importers/AudioImporter.cpp
+        include/GameClient/Importers/AudioImporter.h
+        )
 
 add_executable(GameClient ${SRC})
 
@@ -180,7 +189,7 @@ set_target_properties(GameClient PROPERTIES
 target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:UNITY_EDITOR>)
 #target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:_GLIBCXX_DEBUG>)
 
-target_link_libraries(GameClient sfml-network sfml-graphics)
+target_link_libraries(GameClient sfml-network sfml-graphics sfml-audio)
 target_link_libraries(GameClient ImGui)
 target_link_libraries(GameClient box2d)
 target_link_libraries(GameClient GameAPI)

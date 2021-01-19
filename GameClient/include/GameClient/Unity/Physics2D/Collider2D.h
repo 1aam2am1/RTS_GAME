@@ -42,6 +42,8 @@ protected:
     b2Fixture *fixture = nullptr;
 
     void RecalculateMass();
+
+    void Update() override {};
 };
 
 

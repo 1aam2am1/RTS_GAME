@@ -159,12 +159,13 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
         }
     }
 
-    //TODO: Check meta if there is flag only one and then check if there exists
     components.emplace_back(result);
 
-    //TODO: !!! Awake of Component when game running !!!
     IM_ASSERT(result->m_gameObject == nullptr);
     result->m_gameObject = static_pointer_cast<GameObject>(shared_from_this());
+    IM_ASSERT(result->m_transform == nullptr);
+    result->m_transform = transform();
+
 
     if (!m_scene) { return result; } //this is prefab, don't call Awake or Start
 

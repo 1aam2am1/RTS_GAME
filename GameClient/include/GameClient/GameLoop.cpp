@@ -174,9 +174,9 @@ void GameLoop::run() {
             global.physics.world.ClearForces();
 
             for (auto &object : global.scene.components) {
-                auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-                if (mono && mono->isActiveAndEnabled()) {
-                    mono->FixedUpdate();
+                auto beh = dynamic_pointer_cast<Behaviour>(object);
+                if (beh) {
+                    beh->UnityFixedUpdate();
                 }
             }
 
@@ -205,20 +205,20 @@ void GameLoop::run() {
 
     ///Update
     for (auto &object : global.scene.components) {
-        auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-        if (mono && mono->isActiveAndEnabled() &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
-            mono->Update(); //TODO: Call only when something happened in editor mode
+        auto beh = dynamic_pointer_cast<Behaviour>(object);
+        if (beh &&
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
+            beh->UnityUpdate(); //TODO: Call only when something happened in editor mode
         }
     }
 
 
     ///Late Update
     for (auto &object : global.scene.components) {
-        auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-        if (mono && mono->isActiveAndEnabled() &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
-            mono->LateUpdate(); //TODO: Call only when something happened
+        auto beh = dynamic_pointer_cast<Behaviour>(object);
+        if (beh &&
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
+            beh->UnityLateUpdate(); //TODO: Call only when something happened
         }
     }
 

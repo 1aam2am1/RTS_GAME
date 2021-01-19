@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include <GameClient/Unity/Macro.h>
+#include <GameClient/Unity/Core/Transform.h>
 
 EXPORT_CLASS(Renderer, ("m_enabled", enabled), forceRenderingOff, sortingOrder)
 

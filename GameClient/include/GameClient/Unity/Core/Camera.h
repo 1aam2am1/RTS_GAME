@@ -68,6 +68,8 @@ protected:
     void OnEnable() override;
 
     void OnDisable() override;
+
+    void Update() override;
 };
 
 

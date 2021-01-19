@@ -24,9 +24,11 @@
 
 // User data
 
-struct Object;
-struct Transform;
-struct Collider2D;
+class Object;
+
+class Transform;
+
+class Collider2D;
 
 /// You can define this to inject whatever data you want in b2Body
 typedef std::weak_ptr<Transform> b2BodyUserData;

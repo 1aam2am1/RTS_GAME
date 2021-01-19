@@ -30,10 +30,25 @@ protected:
     /// This function is called when the behaviour becomes disabled.
     virtual void OnDisable() = 0;
 
-private:
-    bool m_onEnable = false;
+    virtual void Update() = 0;
 
-    void UnityOnActiveChange(bool b) override;
+    virtual void LateUpdate() {}
+
+    virtual void FixedUpdate() {}
+
+private:
+    friend class GameLoop;
+
+    bool m_gameObjectCacheEnabled = false;
+    bool m_en = false;
+
+    void UnityOnActiveChange(bool b) final;
+
+    void UnityUpdate();
+
+    void UnityLateUpdate();
+
+    void UnityFixedUpdate();
 
     void setEnable();
 };
