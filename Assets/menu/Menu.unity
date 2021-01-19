@@ -1,0 +1,207 @@
+{
+  "objects": [
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 5,
+              "guid": "0"
+            }
+          },
+          {
+            "Camera": {
+              "backgroundColor": {
+                "alpha": 255,
+                "blue": 19,
+                "green": 19,
+                "red": 21
+              },
+              "depth": 0.0,
+              "m_Name": "",
+              "m_enabled": true,
+              "orthographicSize": 2.0,
+              "pixelRect": {
+                "height": 1.0,
+                "width": 1.0,
+                "x": 0.0,
+                "y": 0.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 6,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "MainCamera",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 1,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 7,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 7647508768320676402,
+                "guid": "0da8ab95600216ab243b6cbfffd8f25d"
+              }
+            },
+            "__Node_id": {
+              "fileID": 8,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Background",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 2,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 9,
+              "guid": "0"
+            }
+          },
+          {
+            "AudioSource": {
+              "clip": {
+                "fileID": 0,
+                "guid": "3aa08a3060070fc6a2c948339b909863"
+              },
+              "loop": true,
+              "m_Name": "",
+              "m_enabled": true,
+              "playOnAwake": true,
+              "volume": 1.0
+            },
+            "__Node_id": {
+              "fileID": 10,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Music",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 3,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 11,
+              "guid": "0"
+            }
+          },
+          {
+            "MenuPlayGame": {
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 12,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Menu",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 4,
+        "guid": "0"
+      }
+    }
+  ]
+}

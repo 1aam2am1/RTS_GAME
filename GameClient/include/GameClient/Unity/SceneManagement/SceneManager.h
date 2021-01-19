@@ -7,13 +7,10 @@
 
 #include <SceneManagement/Scene.h>
 #include <string_view>
-#include <memory>
 #include <GameClient/Unity/Yield/AsyncOperation.h>
-#include <GameClient/Unity/Core/GameObject.h>
-#include <GameClient/Unity/Core/Component.h>
-#include <map>
 #include <GameClient/TPtr.h>
 
+class GameObject;
 
 /// Scene management at run-time.
 class SceneManager {

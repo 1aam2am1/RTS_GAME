@@ -10,6 +10,7 @@
 #include <imgui_internal.h>
 #include <SFML/Graphics.hpp>
 #include <GameClient/Unity/Editor/EditorWindow.h>
+#include <GameClient/Unity/Core/Application.h>
 #include <GameClient/WindowLayout.h>
 #include <Core/MonoBehaviour.h>
 #include <Core/Attributes.h>

@@ -176,6 +176,7 @@ set(SRC
         include/GameClient/Unity/Audio/AudioListener.h
         include/GameClient/Importers/AudioImporter.cpp
         include/GameClient/Importers/AudioImporter.h
+        include/GameClient/Components/MenuPlayGame.cpp
         )
 
 add_executable(GameClient ${SRC})

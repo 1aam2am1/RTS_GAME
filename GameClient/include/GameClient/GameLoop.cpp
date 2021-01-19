@@ -3,9 +3,9 @@
 //
 
 #include "GameLoop.h"
-#include "GlobalStaticVariables.h"
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Editor/EditorApplication.h>
+#include <GameClient/Unity/Core/Application.h>
 #include <Core/Time.h>
 #include <SceneManagement/EditorSceneManager.h>
 #include <Core/MonoBehaviour.h>

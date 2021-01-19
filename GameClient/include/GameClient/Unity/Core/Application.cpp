@@ -13,4 +13,15 @@ bool Application::isPlaying() {
     return Application_isPlaying;
 }
 
+#else
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <GameClient/GlobalStaticVariables.h>
 #endif
+
+void Application::Quit() {
+#if UNITY_EDITOR
+    EditorApplication::isPlaying = false;
+#else
+    reinterpret_cast<sf::RenderWindow *>(global.m_real_target)->close();
+#endif
+}

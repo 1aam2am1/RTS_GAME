@@ -117,6 +117,13 @@ CONTEXT_MENU(Component, #TYPE, [](){                        \
     }                                                       \
 })
 
+#define ADD_USER_COMPONENT(TYPE, ...)                       \
+EXPORT_CLASS(TYPE, __VA_ARGS__)                             \
+CONTEXT_MENU(Component, "User/" #TYPE, [](){                \
+    if (Selection::activeGameObject) {                      \
+        Selection::activeGameObject->AddComponent<TYPE>();  \
+    }                                                       \
+})
 
 /// Mark a ScriptableObject-derived type to be automatically listed in the Assets/Create submenu,
 /// so that instances of the type can be easily created and stored in the project as ".asset" files.

@@ -4,8 +4,8 @@
 
 #include <GameClient/Unity/Editor/EditorWindow.h>
 #include "Macro.h"
+#include <GameClient/Unity/Core/Application.h>
 #include <GameClient/Unity/Editor/Editor.h>
-#include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/WindowLayout.h>
 #include <Editor/AssetDatabase.h>
 

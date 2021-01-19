@@ -26,6 +26,7 @@ public:
     static constexpr bool isEditor = false;
 #endif
 
+    static void Quit();
 };
 
 
