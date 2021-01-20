@@ -16,12 +16,43 @@
 #include <Core/Attributes.h>
 
 #if !(UNITY_EDITOR)
+
 #include <GameClient/GlobalStaticVariables.h>
+
 #endif
 
 MainWindow::MainWindow(const Argv_options &options) {
-    window.create(sf::VideoMode{options.getOptions().size.x, options.getOptions().size.y}, "RTS_GAME",
-                  sf::Style::Default, sf::ContextSettings{0, 0, 0, 2, 1});
+    auto o = options.getOptions();
+    if (o.size.x <= 0 || o.size.y <= 0) {
+        o.size = global.settings.window.size;
+        if (o.size.x <= 0 || o.size.y <= 0) {
+            o.size.x = 1200;
+            o.size.y = 800;
+        }
+    }
+    if (o.fps < 0) {
+        o.fps = global.settings.window.fps;
+        if (o.fps < 0) { o.fps = 0; }
+    }
+    if (global.settings.window.antialiasing > 8) {
+        global.settings.window.antialiasing = 8;
+    }
+
+    {
+        auto style = sf::Style::Titlebar | sf::Style::Close;
+        if (global.settings.window.fullscreen) {
+            style |= sf::Style::Fullscreen;
+        }
+        if (global.settings.window.auto_size) {
+            style |= sf::Style::Resize;
+        }
+        sf::ContextSettings context{0, 0, 0, 2, 1};
+        context.antialiasingLevel = global.settings.window.antialiasing;
+
+        window.create(sf::VideoMode{o.size.x, o.size.y}, "RTS_GAME",
+                      style, context);
+
+    }
 
     ImGui::SFML::Init(window);
 
@@ -33,13 +64,10 @@ MainWindow::MainWindow(const Argv_options &options) {
     ImGui::GetStyle().WindowRounding = 0;
     ImGui::GetStyle().TabRounding = 0;
 
-    window.setFramerateLimit(options.getOptions().fps);
+    window.setFramerateLimit(o.fps);
 
     lastEvents.reserve(16);
 
-#if !(UNITY_EDITOR)
-    global.m_real_target = &window;
-#endif
     global.rendering.m_window = &window;
 }
 
@@ -96,30 +124,8 @@ void MainWindow::run() {
             }
         }
 
-        {
-            ///On Gui TODO: Change this for another context (context in context), do the same for ImGui Components
-            if (!global.rendering.m_game_imGuiName.empty()) {
-                auto w = ImGui::FindWindowByName(global.rendering.m_game_imGuiName.data());
-                if (w && w->Active) {
-                    if (ImGui::Begin(global.rendering.m_game_imGuiName.data())) {
-                        ImGui::SetCursorPos({0, 42});
-                        for (auto &object : global.scene.components) {
-                            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
-                            if (mono && mono->isActiveAndEnabled() &&
-                                (Application::isPlaying() ||
-                                 Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
-                                mono->OnGUI();
-                            }
-                        }
-                    }
-
-                    ImGui::End();
-                }
-            }
-
-
-            ///Wait for end of frame
-        }
+        ///On Gui TODO: Change this for another context (context in context), do the same for ImGui Components
+        ///Wait for end of frame
 
         ImGui::SFML::Render(window);
         window.display();

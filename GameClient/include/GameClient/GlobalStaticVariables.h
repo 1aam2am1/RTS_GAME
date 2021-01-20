@@ -75,16 +75,11 @@ struct GlobalStaticVariables {
         std::multimap<float, TPtr<Camera>> m_draw_order{};
 
         std::vector<TPtr<Renderer>> m_render{};
-#if UNITY_EDITOR
+
     private:
         sf::RenderTexture m_real_target;
     public:
         constexpr sf::RenderTexture &m_target() { return m_real_target; }
-
-#else
-        sf::RenderTarget* m_real_target = nullptr;
-        constexpr sf::RenderTarget& m_target(){return *m_real_target;}
-#endif
 
         std::string m_game_imGuiName{};
 
@@ -144,6 +139,13 @@ struct GlobalStaticVariables {
         bool gizmo = false;
         float old_orthographicSize = 3;
 
+        struct {
+            bool fullscreen = false;
+            sf::Vector2u size = {1200, 800};
+            bool auto_size = true;
+            uint32_t fps = 120;
+            uint32_t antialiasing = 0;
+        } window;
     } settings;
 
     struct {

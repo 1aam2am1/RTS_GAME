@@ -12,7 +12,8 @@ ADD_ATTRIBUTE(AudioListener, DisallowMultipleComponent)
 
 static std::vector<TPtr<AudioListener>> listener;
 decltype(AudioListener::pause) AudioListener::pause = false;
-decltype(AudioListener::volume) AudioListener::volume = 1.0f;
+decltype(AudioListener::volume) AudioListener::volume{[](auto v) { sf::Listener::setGlobalVolume(v * 100.f); },
+                                                      []() { return sf::Listener::getGlobalVolume() / 100.0f; }};
 
 void AudioListener::OnEnable() {
     auto it = std::find_if(listener.begin(), listener.end(), [](auto &&p) { return !p.expired(); });

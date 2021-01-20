@@ -11,6 +11,9 @@
 #include <imgui_internal.h>
 #include <GameClient/MainThread.h>
 #include <GameClient/Windows/GameSceneMenuGizmo.h>
+#include <Core/MonoBehaviour.h>
+#include <Core/Application.h>
+#include <Core/Attributes.h>
 
 class GameWindow : public EditorWindow {
 public:
@@ -18,8 +21,14 @@ public:
     static void Init() {
         // Get existing open window or if none, make a new one:
         auto window = EditorWindow::GetWindow<GameWindow>();
+#if UNITY_EDITOR
         WindowLayout::dockWindow(WindowLayout::Center, window);
         window->flags |= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollbar;
+#else
+        window->flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        window->flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar;
+        window->flags |= ImGuiWindowFlags_NoBackground;
+#endif
         window->Show();
 
         if (global.rendering.m_game_imGuiName.empty())
@@ -33,20 +42,27 @@ public:
         }
     }
 
-#if UNITY_EDITOR
-
     void OnStyleChange() override {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+#if !(UNITY_EDITOR)
+        ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->GetWorkPos());
+        ImGui::SetNextWindowSize(viewport->GetWorkSize());
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+#endif
     }
 
     void OnStylePop() override {
         ImGui::PopStyleVar();
+#if !(UNITY_EDITOR)
+        ImGui::PopStyleVar(2);
+#endif
     }
 
-#endif
-
     void Update() override {
-#if UNITY_EDITOR
+
         auto name = imGuiName;
         MainThread::Invoke([name]() {
             ImVec2 s{};
@@ -58,24 +74,28 @@ public:
             if (s.x > 0 && s.y > 0)
                 global.rendering.m_target().create(std::ceil(s.x), std::ceil(s.y));
         });
-#endif
+
     }
 
     void OnGUI() override {
 #if UNITY_EDITOR
         DrawGameSceneGizmoMenu();
-        ImGui::Image(global.rendering.m_target().getTexture());
-#else
-        //Target is RenderTexture therefore it is drown on main screen
 #endif
+
+        ImGui::Image(global.rendering.m_target().getTexture());
+
+        ImGui::SetCursorPos({0, 42});
+        for (auto &object : global.scene.components) {
+            auto mono = dynamic_pointer_cast<MonoBehaviour>(object);
+            if (mono && mono->isActiveAndEnabled() &&
+                (Application::isPlaying() ||
+                 Attributes::CheckCustomAttribute(mono, ExecuteInEditMode))) {
+                mono->OnGUI();
+            }
+        }
     }
 
 protected:
-#if !(UNITY_EDITOR)
-    void drawGui() override {
-        //static_assert(false, "Run in full window mode");
-    }
-#endif
 };
 
 

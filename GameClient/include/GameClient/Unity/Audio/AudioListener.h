@@ -15,7 +15,7 @@ public:
     static bool pause;
 
     ///  Controls the game sound volume (0.0 to 1.0).
-    static float volume;
+    static SetterGetterF<float> volume;
 
 protected:
     void OnEnable() override;

@@ -92,8 +92,10 @@ public:
                         }
                     } else if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)) {
                         clear_selection = false;
+#if UNITY_EDITOR
                         auto scene = EditorWindow::GetWindow<SceneWindow>("", false);
                         if (scene) { scene->position = d->transform()->localPosition; }
+#endif
                     }
 
                     if (!activeSelf) {

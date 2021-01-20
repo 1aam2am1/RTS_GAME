@@ -117,6 +117,14 @@ void GlobalStaticVariables::Settings::Load() {
     if (s.contains("scene")) { s.at("scene").get_to(scene_path); }
     if (s.contains("gizmo")) { s.at("gizmo").get_to(gizmo); }
     if (s.contains("orthographicSize")) { s.at("orthographicSize").get_to(old_orthographicSize); }
+
+    if (s.contains("window") && s.is_object()) {
+        if (s.contains("fullscreen")) { s.at("fullscreen").get_to(window.fullscreen); }
+        if (s.contains("size")) { s.at("size").get_to(window.fullscreen); }
+        if (s.contains("auto_size")) { s.at("auto_size").get_to(window.auto_size); }
+        if (s.contains("fps")) { s.at("fps").get_to(window.fps); }
+        if (s.contains("antialiasing")) { s.at("antialiasing").get_to(window.antialiasing); }
+    }
 }
 
 void GlobalStaticVariables::Settings::Save() {
@@ -130,6 +138,12 @@ void GlobalStaticVariables::Settings::Save() {
     s["scene"] = scene_path;
     s["gizmo"] = gizmo;
     s["orthographicSize"] = old_orthographicSize;
+
+    s["window"]["fullscreen"] = window.fullscreen;
+    s["window"]["size"] = window.size;
+    s["window"]["auto_size"] = window.auto_size;
+    s["window"]["fps"] = window.fps;
+    s["window"]["antialiasing"] = window.antialiasing;
 
     if (!GameApi::saveFullFile("settings.json", result.dump(2, ' ', true))) {
         GameApi::log(ERR.fmt("Can't save settings.json"));

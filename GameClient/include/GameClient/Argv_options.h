@@ -14,9 +14,9 @@ public:
     bool process(int argc, char **argv);
 
     struct Options {
-        sf::Vector2u size = {1200, 800};
+        sf::Vector2u size = {0, 0};
         bool version = false;
-        uint32_t fps = 120;
+        int32_t fps = -1;
     };
 
     [[nodiscard]] const Options &getOptions() const;

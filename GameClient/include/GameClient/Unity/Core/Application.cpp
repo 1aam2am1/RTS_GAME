@@ -22,7 +22,7 @@ void Application::Quit() {
 #if UNITY_EDITOR
     EditorApplication::isPlaying = false;
 #else
-    if(global.m_window)
-        global.m_window->close();
+    if(global.rendering.m_window)
+        global.rendering.m_window->close();
 #endif
 }

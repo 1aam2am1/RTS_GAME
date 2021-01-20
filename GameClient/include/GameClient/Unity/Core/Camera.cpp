@@ -66,6 +66,7 @@ void Camera::Render() {
         return;
     }
 
+    auto old = global.rendering.m_target().getView();
     sf::View view({position.x, -position.y}, size);
     view.setViewport(pixelRect);
     view.setRotation(transform()->localRotation);
@@ -81,6 +82,8 @@ void Camera::Render() {
 
 
     ///glDisable(GL_SCISSOR_TEST);
+
+    global.rendering.m_target().setView(old);
 
 #if UNITY_EDITOR
     global.rendering.m_target().display(); //Display only in editor as window is displayed in main screen
