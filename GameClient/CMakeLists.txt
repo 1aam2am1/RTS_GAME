@@ -178,6 +178,7 @@ set(SRC
         include/GameClient/Importers/AudioImporter.h
         include/GameClient/Components/MenuPlayGame.cpp
         include/GameClient/Windows/GameSceneMenuGizmo.cpp
+        include/GameClient/Components/SettingsGameWindow.cpp
         )
 
 add_executable(GameClient ${SRC})
