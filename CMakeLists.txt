@@ -27,6 +27,7 @@ endmacro()
 macro(copy_deps_dll T)
     add_custom_command(TARGET ${T} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+            -DCMAKE_SIZEOF_VOID_P=${CMAKE_SIZEOF_VOID_P}
             -P ${PROJECT_SOURCE_DIR}/CCopyDLL.cmake)
 endmacro()
 

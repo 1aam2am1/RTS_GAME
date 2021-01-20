@@ -14,14 +14,47 @@ public:
         ImGuiStyle &style = ImGui::GetStyle();
         const auto window = ImGui::GetCurrentWindow();
         const auto size = window->ContentRegionRect.GetSize();
-/*
-        auto place_on_center = [&](auto str) {
-            auto is = ImGui::CalcTextSize(str).x + style.ItemSpacing.x;
-            ImGui::SetCursorPos({(size.x - is) / 2, ImGui::GetCursorPos().y + 20.f});
-            return ImGui::Button(str);
-        };*/
 
-        ImGui::SetCursorPos({0, (size.y - 120.0f) / 2.0f});
+        ImVec2 c_size{350, 200};
+        ImGui::SetCursorPos({(size.x - c_size.x) / 2.0f, (size.y - c_size.y) / 2.0f});
+        if (ImGui::BeginChild("##settings", c_size, false,
+                              ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration)) {
+            ImGui::Text("Settings");
+
+            if (ImGui::BeginTable("##s", 2)) {
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+                ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthStretch, 1);
+
+                ImGui::TableNextColumn();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Antialiasing");
+                ImGui::TableNextColumn();
+                //antyaliasing levels
+                ImGui::TableNextColumn();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Fullscreen");
+                ImGui::TableNextColumn();
+                //full levels
+                ImGui::TableNextColumn();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Resolution");
+                ImGui::TableNextColumn();
+                //full levels
+                ImGui::TableNextColumn();
+
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Volume");
+                ImGui::TableNextColumn();
+                //volume levels
+
+                ImGui::EndTable();
+            }
+        }
+
+        ImGui::EndChild();
     }
 };
 

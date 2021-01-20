@@ -22,6 +22,7 @@ void Application::Quit() {
 #if UNITY_EDITOR
     EditorApplication::isPlaying = false;
 #else
-    reinterpret_cast<sf::RenderWindow *>(global.m_real_target)->close();
+    if(global.m_window)
+        global.m_window->close();
 #endif
 }

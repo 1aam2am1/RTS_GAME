@@ -40,6 +40,7 @@ MainWindow::MainWindow(const Argv_options &options) {
 #if !(UNITY_EDITOR)
     global.m_real_target = &window;
 #endif
+    global.rendering.m_window = &window;
 }
 
 MainWindow::~MainWindow() {

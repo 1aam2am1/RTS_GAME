@@ -18,6 +18,7 @@
 #include <GameClient/Unity/Core/Guid.h>
 #include <Editor/OneGuidFile.h>
 #include <box2d/b2_world.h>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include "ContactListener.h"
 
 namespace fs = std::filesystem;
@@ -86,6 +87,8 @@ struct GlobalStaticVariables {
 #endif
 
         std::string m_game_imGuiName{};
+
+        sf::RenderWindow *m_window = nullptr;
     } rendering;
 
     struct {
