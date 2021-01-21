@@ -55,6 +55,8 @@ struct DebugDraw : b2Draw {
         ImVec2 position{transform.transformPoint(center.x, center.y)};
         ImColor c(color.r, color.g, color.b, color.a);
 
+        auto p = transform.transformPoint(radius, 0) - transform.transformPoint(0, 0);
+        radius = std::sqrt(p.x * p.x + p.y * p.y);
         list->AddCircle(position, radius, c);
     }
 
@@ -63,6 +65,8 @@ struct DebugDraw : b2Draw {
         ImColor c(color.r, color.g, color.b, 60.f / 255.f);
         ImVec2 endPoint{transform.transformPoint(center.x + radius * axis.x, center.y + radius * axis.y)};
 
+        auto p = transform.transformPoint(radius, 0) - transform.transformPoint(0, 0);
+        radius = std::sqrt(p.x * p.x + p.y * p.y);
         list->AddCircleFilled(position, radius, c);
         c.Value.w = 1.f;
         list->AddLine(position, endPoint, c);

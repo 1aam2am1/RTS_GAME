@@ -56,6 +56,7 @@ public:
 
         auto components = d->GetComponents<Component>();
         for (auto &c : components) {
+            if (!d) { return; }
             ImGui::PushID(c.get());
             bool destroy = false;
 

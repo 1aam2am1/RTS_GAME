@@ -7,7 +7,6 @@
 
 
 #include "Collider2D.h"
-#include <SFML/System/Vector2.hpp>
 
 class BoxCollider2D : public Collider2D {
 public:
@@ -18,12 +17,14 @@ public:
     /// These values are specified relative to a center point, so the distance from the center to the left edge is actually width/2.
     SetterEmitterP<sf::Vector2f, BoxCollider2D> size;
 
-    /// The local offset of the collider geometry.
-    SetterEmitterP<sf::Vector2f, BoxCollider2D> offset;
 protected:
     void Apply() override;
 
+    void Destroy() override;
+
     void ChangeSize();
+
+    b2Fixture *fixture = nullptr;
 };
 
 

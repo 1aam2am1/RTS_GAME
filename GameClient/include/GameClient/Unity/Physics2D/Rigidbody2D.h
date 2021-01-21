@@ -32,6 +32,8 @@ protected:
 private:
     friend class Collider2D;
 
+    void RecalculateMass();
+
     b2Body *body = nullptr;
 
     void UnityOnActiveChange(bool) override;

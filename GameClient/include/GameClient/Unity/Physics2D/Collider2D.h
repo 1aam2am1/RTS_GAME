@@ -8,6 +8,7 @@
 
 #include <GameClient/Unity/Core/Behaviour.h>
 #include "Rigidbody2D.h"
+#include <SFML/System/Vector2.hpp>
 
 class b2Body;
 
@@ -15,9 +16,13 @@ class b2Fixture;
 
 class Collider2D : public Behaviour {
 public:
+    Collider2D();
 
     /// The Rigidbody2D attached to the Collider2D.
     TPtr<Rigidbody2D> attachedRigidbody;
+
+    /// The local offset of the collider geometry.
+    SetterEmitterP<sf::Vector2f, Collider2D> offset;
 
     ~Collider2D() override;
 
@@ -28,6 +33,8 @@ protected:
 
     // Apply fixture to body
     virtual void Apply() = 0;
+
+    virtual void Destroy() = 0;
 
     void Awake() final;
 
@@ -41,12 +48,9 @@ protected:
 
     b2Body *GetBody();
 
-    //Fixture of this body
-    b2Fixture *fixture = nullptr;
+    void Update() override {};
 
     void RecalculateMass();
-
-    void Update() override {};
 };
 
 

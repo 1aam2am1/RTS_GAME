@@ -71,13 +71,17 @@ void Rigidbody2D::UnityOnActiveChange(bool b) {
     body->SetEnabled(b);
 }
 
+void Rigidbody2D::RecalculateMass() {
+    if (!body) { return; }
+
+    b2MassData m;
+    m.mass = mass;
+    m.center = {0, 0};
+    m.I = inertia;
+    body->SetMassData(&m);
+}
+
 void Rigidbody2D::ChangeBody() {
     if (inertia < 0.f) { inertia.t = 0.f; }
-    if (body) {
-        b2MassData m;
-        m.mass = mass;
-        m.center = {0, 0};
-        m.I = inertia;
-        body->SetMassData(&m);
-    }
+    RecalculateMass();
 }

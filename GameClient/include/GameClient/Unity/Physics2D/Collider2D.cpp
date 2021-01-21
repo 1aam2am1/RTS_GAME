@@ -6,6 +6,13 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
 #include "Collider2D.h"
+#include <GameClient/Unity/Macro.h>
+
+EXPORT_CLASS(Collider2D, offset)
+
+Collider2D::Collider2D() : offset(this, &Collider2D::Refresh, 0.f, 0.f) {
+
+}
 
 b2Body *Collider2D::GetBody() {
     if (attachedRigidbody) {
@@ -20,58 +27,32 @@ void Collider2D::Awake() {
     transform()->m_colliders++;
 }
 
-void Collider2D::RecalculateMass() {
-    if (attachedRigidbody) {
-        b2MassData mass;
-        mass.mass = attachedRigidbody->mass;
-        mass.center = {0, 0};
-        mass.I = attachedRigidbody->inertia;
-        attachedRigidbody->body->SetMassData(&mass);
-    }
-}
-
 void Collider2D::Refresh() {
-    if (fixture && transform()) {
+    if (isActiveAndEnabled() && transform()) {
         Apply();
     } else if (!transform()) {
-        fixture->GetBody()->DestroyFixture(fixture);
-        fixture = nullptr;
+        Destroy();
     }
 }
 
 void Collider2D::OnEnable() {
-    if (fixture) {
-        fixture->GetBody()->DestroyFixture(fixture);
-        fixture = nullptr;
-
-        GameApi::log(ERR.fmt("Dont enable enabled"));
-    }
     Apply();
 }
 
 void Collider2D::OnDisable() {
-    if (fixture) {
-        fixture->GetBody()->DestroyFixture(fixture);
-        fixture = nullptr;
-
-    } else {
-        if (transform()) //transform() == nullptr => Destroy on Refresh from Rigidbody2D
-            GameApi::log(ERR.fmt("Dont disable disabled"));
-    }
+    Destroy();
 }
 
 void Collider2D::OnDestroy() {
-    if (fixture) {
-        fixture->GetBody()->DestroyFixture(fixture);
-        fixture = nullptr;
-    }
+    Destroy();
     if (auto t = transform()) { t->m_colliders--; }
 }
 
+void Collider2D::RecalculateMass() {
+    if (attachedRigidbody)
+        attachedRigidbody->RecalculateMass();
+}
+
 Collider2D::~Collider2D() {
-    if (fixture) {
-        fixture->GetBody()->DestroyFixture(fixture);
-        fixture = nullptr;
-        GameApi::log(ERR.fmt("Fixture should be destroyed on OnDestroy()"));
-    }
+
 }

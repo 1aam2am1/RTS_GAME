@@ -20,6 +20,7 @@
 #include <GameApi/IsInstance.h>
 #include <variant>
 #include <SFML/Graphics/Rect.hpp>
+#include <GameClient/Unity/Serialization/to_json.h>
 
 class MetaData {
     struct Reflect;
