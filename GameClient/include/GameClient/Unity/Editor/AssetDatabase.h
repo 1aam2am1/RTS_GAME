@@ -80,7 +80,7 @@ public:
     static void ImportAsset(std::string path, ImportAssetOptions options = ImportAssetOptions::Default);
 
     /// Returns the first asset object of type type at given path assetPath.
-    static TPtr<Object> LoadAssetAtPath(std::string assetPath, std::type_info type);
+    static TPtr<Object> LoadAssetAtPath(std::string assetPath, const std::type_info &type);
 
     /// Returns the main asset object at assetPath.
     static TPtr<Object> LoadMainAssetAtPath(std::string assetPath);

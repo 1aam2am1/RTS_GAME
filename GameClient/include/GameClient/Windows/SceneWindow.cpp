@@ -21,7 +21,7 @@ struct DebugDraw : b2Draw {
     ImDrawList *list;
 
     DebugDraw(sf::Transform t, ImDrawList *l) : transform(t), list(l) {}
-
+//TODO: Clip
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
         std::vector<ImVec2> points;
         points.reserve(vertexCount);

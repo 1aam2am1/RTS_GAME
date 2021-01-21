@@ -43,6 +43,7 @@ public:
     std::string path{};
     std::vector<TPtr<GameObject>> root{};
     std::vector<TPtr<Component>> new_components{}; //To Start
+    decltype(new_components) new_components_copy{}; //Used in loop std::swap()
 
     std::vector<TPtr<Component>> loading_awake{}; //used when loading
 

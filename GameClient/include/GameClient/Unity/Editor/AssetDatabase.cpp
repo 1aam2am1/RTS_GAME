@@ -393,7 +393,7 @@ void AssetDatabase::ImportAsset(std::string assetPath, ImportAssetOptions option
     ImportAssetGlobal(assetPath, options);
 }
 
-TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, std::type_info type) {
+TPtr<Object> AssetDatabase::LoadAssetAtPath(std::string assetPath, const std::type_info &type) {
     auto one = ImportAssetGlobal(assetPath, ImportAssetOptions::Default);
     if (one.first.empty()) { return {}; }
 

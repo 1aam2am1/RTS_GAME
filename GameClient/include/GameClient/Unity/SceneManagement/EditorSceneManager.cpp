@@ -120,6 +120,10 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
                 AssetDatabase::Refresh(); //TODO: Delete this when implemented auto refresh
             });
             if (!saveAsCopy) {
+                if (global.scene.data[scene->id].path.empty()) {
+                    global.scene.data[scene->id].path = std::string{dstScenePath};
+                    global.scene.data[scene->id].name = p.stem().generic_string();
+                }
                 dirty.erase(scene->id);
             }
         }

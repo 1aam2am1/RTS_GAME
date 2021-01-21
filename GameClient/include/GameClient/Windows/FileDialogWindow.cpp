@@ -152,7 +152,9 @@ void FileDialogWindow::OnGUI() {
     ImGui::InputTextWithHint("##File_name", "Type a name...", &selected);
 
     if (ImGui::Checkbox("Show Hidden Files and Folders", &hidden)) {
+        auto s = selected;
         files_ls();
+        selected = s;
     }
     ImGui::SameLine();
 

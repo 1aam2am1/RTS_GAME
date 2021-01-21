@@ -26,13 +26,36 @@ public:
         ImGui::SetCursorPos({0, (size.y - 120.0f) / 2.0f});
 
         if (place_on_center("Play")) {
-
+            ImGui::OpenPopup("###play");
         }
         if (place_on_center("Settings")) {
             SceneManager::LoadScene("Assets/menu/Settings.unity");
         }
         if (place_on_center("Exit")) {
             Application::Quit();
+        }
+
+        if (ImGui::BeginPopup("###play", ImGuiWindowFlags_AlwaysAutoResize)) {
+            auto width = ImGui::CalcTextSize("Single").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+
+            ImGui::SetNextItemWidth(width);
+            if (ImGui::Button("Single")) {
+                SceneManager::LoadScene("Assets/menu/Play.unity");
+            }
+
+            ImGui::SetNextItemWidth(width);
+            ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+            if (ImGui::Button("Multi")) {
+
+            }
+            ImGui::PopItemFlag();
+
+            ImGui::SetNextItemWidth(width);
+            if (ImGui::Button("Exit")) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
     }
 };

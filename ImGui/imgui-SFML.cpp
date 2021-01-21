@@ -816,7 +816,7 @@ namespace {
                               (int) (pcmd->ClipRect.z - pcmd->ClipRect.x),
                               (int) (pcmd->ClipRect.w - pcmd->ClipRect.y));
                     glDrawElements(GL_TRIANGLES, (GLsizei) pcmd->ElemCount,
-                                   GL_UNSIGNED_SHORT, idx_buffer);
+                                   sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer);
                 }
                 idx_buffer += pcmd->ElemCount;
             }

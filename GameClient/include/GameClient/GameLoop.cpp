@@ -143,8 +143,10 @@ void GameLoop::run() {
     {
         for (auto &scene: global.scene.data) {
             if (!scene.second.isLoaded) [[unlikely]] { continue; };
+            scene.second.new_components_copy.clear();
+            std::swap(scene.second.new_components, scene.second.new_components_copy);
 
-            for (auto &object : scene.second.new_components) {
+            for (auto &object : scene.second.new_components_copy) {
                 if (object) [[likely]] {
                     if (object->gameObject()->activeInHierarchy() &&
                         (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
@@ -153,11 +155,11 @@ void GameLoop::run() {
 
                         global.scene.components.emplace_back(object);
                         object = nullptr;
+                    } else {
+                        scene.second.new_components.emplace_back(object);
                     }
                 }
             }
-            std::erase_if(scene.second.new_components, [](auto ob) { return ob.expired(); });
-            //TODO: Garbage collect new_components nullptr objects
         }
     }
 
