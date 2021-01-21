@@ -12,6 +12,7 @@
 #include <GameClient/MainThread.h>
 #include <GameClient/Unity/Core/Transform.h>
 #include <GameClient/GlobalStaticVariables.h>
+#include <GameClient/SceneLoader.h>
 
 namespace fs = std::filesystem;
 
@@ -260,4 +261,21 @@ SceneManager::SceneP SceneManager::GetActiveScene() {
         global.scene.data[global.scene.active_scene].isLoaded = true;
     }
     return std::shared_ptr<Scene>(new Scene(global.scene.active_scene));
+}
+
+void SceneManager::LoadScene(std::string_view sceneName, SceneManager::LoadSceneMode mode) {
+    std::string scenePath{sceneName};
+
+    MainThread::Invoke([scenePath, mode]() {
+        auto new_id = global.scene.max_id++;
+        {
+            auto &data = global.scene.data[new_id];
+            data.isLoaded = false;
+            data.path = scenePath;
+            data.name = fs::path(scenePath).stem().generic_string();
+            data.buildIndex = -1;
+        }
+
+        SceneLoader::LoadSceneFull(new_id, scenePath, mode == LoadSceneMode::Single, false);
+    });
 }

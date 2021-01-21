@@ -149,9 +149,6 @@ public:
 
     ///Add a delegate to this to get notifications when a Scene has unloaded.
     static sigslot::signal<SceneP> sceneUnloaded;
-
-protected:
-    //static bool LoadSceneFull(Data &data, std::string_view path);
 };
 
 

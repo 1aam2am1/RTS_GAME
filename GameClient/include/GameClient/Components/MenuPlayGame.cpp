@@ -8,6 +8,7 @@
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
+#include <GameClient/Unity/SceneManagement/SceneManager.h>
 
 class MenuPlayGame : public MonoBehaviour {
 public:
@@ -28,7 +29,7 @@ public:
 
         }
         if (place_on_center("Settings")) {
-
+            SceneManager::LoadScene("Assets/menu/Settings.unity");
         }
         if (place_on_center("Exit")) {
             Application::Quit();

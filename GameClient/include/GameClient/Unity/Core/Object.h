@@ -58,9 +58,8 @@ public:
     /// \details The load of a new Scene destroys all current Scene objects.
     /// Call Object.DontDestroyOnLoad to preserve an Object during level loading.
     /// If the target Object is a component or GameObject, Unity also preserves all of the Transform’s children.
-    /// Object.DontDestroyOnLoad does not return a value.
     /// \param target An Object not destroyed on Scene change.
-    static void DontDestroyOnLoad(Object target);
+    static void DontDestroyOnLoad(TPtr<Object> target);
 
     /// Returns the first active loaded object of Type type.
     /// \tparam T The type of object to find.

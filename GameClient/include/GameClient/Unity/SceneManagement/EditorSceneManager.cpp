@@ -12,6 +12,7 @@
 #include <GameClient/Unity/Core/Transform.h>
 #include <Core/Attributes.h>
 #include <Editor/EditorApplication.h>
+#include <GameClient/SceneLoader.h>
 
 namespace fs = std::filesystem;
 
@@ -36,74 +37,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         data.buildIndex = -1;
     }
 
-    {
-        global.scene.on_load_active_id[std::this_thread::get_id()] = new_id;
-        std::shared_ptr<int> lock((int *) 1,
-                                  [](auto) { global.scene.on_load_active_id.erase(std::this_thread::get_id()); });
-
-        try {
-            auto str = GameApi::readFullFile(scenePath);
-            auto json = nlohmann::json::parse(str);
-
-            {
-                SceneSerializer serializer;
-                std::vector<TPtr<>> result;
-
-                serializer.Deserialize(result, json["objects"]);
-            }
-            //creation of gameobjects adds them to the scene
-
-            std::function<void(const TPtr<GameObject> &)> fix = [&fix](const TPtr<GameObject> &go) {
-                if (!go) { return; }
-
-                decltype(go->components) copy = std::move(go->components);
-                go->components.clear();
-
-                for (auto &c : copy) {
-                    go->AddComponent(c);
-                }
-
-                for (int i = 0; i < go->transform()->childCount(); ++i) {
-                    auto child = go->transform()->GetChild(i);
-                    fix(child);
-                }
-            };
-
-            for (auto &ob : global.scene.data[new_id].root) {
-                fix(ob);
-            }
-
-            global.scene.data[new_id].isLoaded = true;
-            for (auto &ob : global.scene.data[new_id].loading_awake) {
-                assert(ob->gameObject()->activeInHierarchy());
-                if (EditorApplication::isPlaying || Attributes::CheckCustomAttribute(ob, ExecuteInEditMode)) {
-                    ob->UnityAwake();
-                    global.scene.data[new_id].new_components.emplace_back(ob); //To Start()
-                }
-            }
-            global.scene.data[new_id].loading_awake.clear();
-            for (auto &ob : global.scene.data[new_id].new_components) {
-                ob->UnityOnActiveChange(true); //OnEnable()
-            }
-
-        } catch (const std::exception &e) {
-            global.scene.data.erase(new_id);
-            GameApi::log(ERR.fmt("%s", e.what()));
-            return std::shared_ptr<Scene>{new Scene(0)};
-        }
-    }
-
-    if (mode == OpenSceneMode::Single) {
-        auto copy = global.scene.data.extract(new_id);
-        auto old = std::move(global.scene.data);
-        global.scene.data.clear();
-
-        global.scene.data.insert(std::move(copy));
-        global.scene.active_scene = new_id;
-
-        MainThread::Invoke([old]() {}); //< Here delete old data, as this can be called from update,
-        // by inexperienced user we save him, by deleting objects in new frame
-    }
+    SceneLoader::LoadSceneFull(new_id, scenePath, mode == OpenSceneMode::Single, true);
 
     return std::shared_ptr<Scene>{new Scene(new_id)};
 }

@@ -10,6 +10,7 @@
 #include <GameClient/GlobalStaticVariables.h>
 #include <SFML/Window.hpp>
 #include <Audio/AudioListener.h>
+#include <SceneManagement/SceneManager.h>
 
 class SettingsGameWindow : public MonoBehaviour {
 public:
@@ -217,7 +218,7 @@ public:
                 ImGui::TableNextColumn();
 
                 if (ImGui::Button("Exit")) {
-                    ///TODO: Load main screen
+                    SceneManager::LoadScene("Assets/menu/Menu.unity");
                 }
 
                 ImGui::EndTable();

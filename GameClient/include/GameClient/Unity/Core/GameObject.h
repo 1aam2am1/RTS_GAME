@@ -145,7 +145,7 @@ public:
 private:
     friend class SceneManager;
 
-    friend class EditorSceneManager;
+    friend class SceneLoader;
 
     friend class GameLoop;
 

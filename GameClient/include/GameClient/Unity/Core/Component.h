@@ -79,9 +79,7 @@ private:
 
     friend class GameLoop;
 
-    friend class EditorSceneManager;
-
-    friend class SceneManager;
+    friend class SceneLoader;
 
     friend class Object;
 

@@ -179,7 +179,7 @@ set(SRC
         include/GameClient/Components/MenuPlayGame.cpp
         include/GameClient/Windows/GameSceneMenuGizmo.cpp
         include/GameClient/Components/SettingsGameWindow.cpp
-        )
+        include/GameClient/SceneLoader.cpp include/GameClient/SceneLoader.h)
 
 add_executable(GameClient ${SRC})
 

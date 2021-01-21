@@ -92,3 +92,9 @@ void Object::Destroy(TPtr<Object> obj, float t) {
             }
         });
 }
+
+void Object::DontDestroyOnLoad(TPtr<Object> target) {
+    auto go = dynamic_pointer_cast<GameObject>(target);
+    if (go)
+        global.scene.dont_destroy.emplace_back(go);
+}

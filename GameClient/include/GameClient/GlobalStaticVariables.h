@@ -94,6 +94,8 @@ struct GlobalStaticVariables {
         std::unordered_map<std::thread::id, uint64_t> on_load_active_id{};
 
         std::vector<TPtr<Component>> components{}; //< Global components that are running
+
+        std::vector<TPtr<GameObject>> dont_destroy{}; //< Don't destroy theses on load
     } scene;
 
     struct AssetDatabaseData {
