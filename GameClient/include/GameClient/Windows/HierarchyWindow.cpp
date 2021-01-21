@@ -11,6 +11,7 @@
 #include <GameClient/Unity/SceneManagement/SceneManager.h>
 #include <imgui.h>
 #include <GameClient/GlobalStaticVariables.h>
+#include <Editor/DragAndDrop.h>
 
 class HierarchyWindow : public EditorWindow {
 public:
@@ -80,7 +81,12 @@ public:
                     }
 
                     open = ImGui::TreeNodeEx(key.data(), node_flags);
-                    if ((ImGui::IsItemClicked(1) || ImGui::IsItemClicked()) && !ImGui::IsMouseDoubleClicked(0)) {
+                    auto clicked = (ImGui::IsMouseReleased(0) || ImGui::IsMouseReleased(1)) && ImGui::IsItemHovered();
+                    auto double_clicked =
+                            ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None);
+                    auto dragging = ImGui::IsMouseDragging(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None);
+
+                    if (clicked && !dragging) {
                         Selection::activeGameObject = d;
                         Selection::activeObject = d;
                         Selection::activeTransform = d->transform();
@@ -90,13 +96,24 @@ public:
                         if (ImGui::IsItemClicked(1)) {
                             ContextMenu::Init("GameObject");
                         }
-                    } else if (ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered(ImGuiHoveredFlags_None)) {
+                    }
+                    if (double_clicked) {
                         clear_selection = false;
 #if UNITY_EDITOR
                         auto scene = EditorWindow::GetWindow<SceneWindow>("", false);
                         if (scene) { scene->position = d->transform()->localPosition; }
 #endif
                     }
+                    if (dragging && !DragAndDrop::IsDragging()) {
+                        DragAndDrop::PrepareStartDrag();
+
+                        DragAndDrop::SetGenericData("GAMEOBJECT", d);
+                        auto components = d->GetComponents<Component>();
+                        std::copy(components.begin(), components.end(), back_inserter(DragAndDrop::objectReferences));
+
+                        DragAndDrop::StartDrag(d->name);
+                    }
+
 
                     if (!activeSelf) {
                         ImGui::PopStyleColor();

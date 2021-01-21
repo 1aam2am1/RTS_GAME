@@ -11,8 +11,9 @@ EXPORT_CLASS(Behaviour, ("m_enabled", enabled))
 Behaviour::Behaviour() : enabled(this, &Behaviour::setEnable, true) {}
 
 bool Behaviour::isActiveAndEnabled() const {
-    if (gameObject())
+    if (gameObject()) [[likely]] {
         return enabled && m_gameObjectCacheEnabled;
+    }
 
     return enabled;
 }

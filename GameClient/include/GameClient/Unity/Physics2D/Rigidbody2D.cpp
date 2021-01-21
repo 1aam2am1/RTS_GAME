@@ -12,12 +12,14 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
 
-ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia)
+ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia, drag, angularDrag)
 ADD_ATTRIBUTE(Rigidbody2D, ExecuteInEditMode, DisallowMultipleComponent)
 
 Rigidbody2D::Rigidbody2D() : bodyType(this, &Rigidbody2D::ChangeBody, RigidbodyType2D::Dynamic),
                              mass(this, &Rigidbody2D::ChangeBody, 1.f),
-                             inertia(this, &Rigidbody2D::ChangeBody, 0.1f) {}
+                             inertia(this, &Rigidbody2D::ChangeBody, 0.1f),
+                             angularDrag(this, &Rigidbody2D::ChangeBody, 0.5f),
+                             drag(this, &Rigidbody2D::ChangeBody, 0.5f) {}
 
 Rigidbody2D::~Rigidbody2D() {
     if (!body) { return; }
@@ -84,4 +86,22 @@ void Rigidbody2D::RecalculateMass() {
 void Rigidbody2D::ChangeBody() {
     if (inertia < 0.f) { inertia.t = 0.f; }
     RecalculateMass();
+
+    if (body) {
+        body->SetLinearDamping(drag);
+        body->SetAngularDamping(angularDrag);
+    }
 }
+
+void Rigidbody2D::AddForce(sf::Vector2f force, ForceMode2D mode) {
+    if (body)
+        switch (mode) {
+            case Force:
+                body->ApplyForceToCenter({force.x, force.y}, true);
+                break;
+            case Impulse:
+                body->ApplyLinearImpulse({force.x, force.y}, {0, 0}, true);
+        }
+
+}
+

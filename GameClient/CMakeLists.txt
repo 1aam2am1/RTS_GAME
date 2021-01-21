@@ -182,6 +182,10 @@ set(SRC
         include/GameClient/SceneLoader.cpp
         include/GameClient/SceneLoader.h
         include/GameClient/Components/GenerateWorld.cpp
+        include/GameClient/Components/Resource.cpp
+        include/GameClient/Components/Resource.h
+        include/GameClient/Components/ShipAi.cpp
+        include/GameClient/Components/ShipAi.h
         )
 
 add_executable(GameClient ${SRC})

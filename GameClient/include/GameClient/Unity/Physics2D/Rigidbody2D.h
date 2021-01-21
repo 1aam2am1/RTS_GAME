@@ -8,6 +8,7 @@
 
 #include <Core/Component.h>
 #include <GameClient/Unity/Physics2D/RigidbodyType2D.h>
+#include <SFML/System/Vector2.hpp>
 
 class b2Body;
 
@@ -25,6 +26,19 @@ public:
 
     /// The rigidBody rotational inertia.
     SetterEmitterP<float, Rigidbody2D> inertia;
+
+    /// Coefficient of angular drag.
+    SetterEmitterP<float, Rigidbody2D> angularDrag;
+
+    /// Coefficient of drag.
+    SetterEmitterP<float, Rigidbody2D> drag;
+
+    enum ForceMode2D {
+        Force, ///<	Add a force to the Rigidbody2D, using its mass.
+        Impulse, ///<	Add an instant force impulse to the rigidbody2D, using its mass.
+    };
+
+    void AddForce(sf::Vector2f force, ForceMode2D mode = Force);
 
 protected:
     void Awake() override;
