@@ -128,6 +128,7 @@ void AssetWindow::display_files() {
 
         bool clicked = ImGui::Button(objects[n].data(), button_sz);
         bool double_clicked = ImGui::IsMouseDoubleClicked(0) && ImGui::IsItemHovered();
+        bool right_clicked = ImGui::IsMouseClicked(1) && ImGui::IsItemHovered();
 
 
         if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0) && !DragAndDrop::IsDragging()) {
@@ -160,6 +161,11 @@ void AssetWindow::display_files() {
             Selection::activeObject = main;
         }
 
+        if (right_clicked) {
+            ImGui::OpenPopup("###things");
+            things = AssetDatabase::LoadAllAssetsAtPath(root + "/" + objects[n]);
+        }
+
         if (double_clicked) {
             AssetDatabase::OpenAsset(AssetDatabase::LoadMainAssetAtPath(root + "/" + objects[n]));
         }
@@ -169,6 +175,43 @@ void AssetWindow::display_files() {
                                button_sz.x; // Expected position if next button was on same line
         if (n + 1 < objects.size() && next_button_x2 < window_visible_x2)
             ImGui::SameLine();
+    }
+
+    if (ImGui::BeginPopup("###things")) {
+        for (auto &t : things) {
+            if (!t) { continue; }
+            auto clicked = ImGui::Button((GameApi::demangle(typeid(*t.get()).name()) + ": " + t->name + "##" +
+                                          GameApi::to_string(t.get())).data());
+
+            if (clicked) {
+                Unity::GUID guid;
+                Unity::fileID id;
+                if (!AssetDatabase::TryGetGUIDAndLocalFileIdentifier(t, guid, id)) { continue; }
+
+                Selection::assetGUIDs.clear();
+                Selection::assetGUIDs.emplace_back(guid);
+
+                Selection::activeGameObject = dynamic_pointer_cast<GameObject>(t);
+                if (Selection::activeGameObject) {
+                    Selection::activeTransform = Selection::activeGameObject->transform();
+                } else {
+                    Selection::activeTransform = nullptr;
+                }
+                Selection::activeObject = t;
+            }
+
+            if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0) && !DragAndDrop::IsDragging()) {
+                DragAndDrop::PrepareStartDrag();
+
+                DragAndDrop::SetGenericData("OBJECT", t);
+
+                DragAndDrop::paths.emplace_back(AssetDatabase::GetAssetPath(t.get()));
+
+                DragAndDrop::StartDrag(t->name);
+            }
+        }
+
+        ImGui::EndPopup();
     }
 
     ImGui::EndChild();

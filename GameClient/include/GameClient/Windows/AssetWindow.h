@@ -24,6 +24,7 @@ private:
     std::string search_string;
 
     std::vector<std::string> objects;
+    std::vector<TPtr<>> things;
     std::string root;
 
     bool start = false;
