@@ -32,7 +32,6 @@ std::string GetKey() {
 
 TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool allowSceneObjects) {
     std::string name;
-    bool dirty = false;
     std::string key = GetKey();
 
     if (value) {
@@ -52,30 +51,29 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
         }
         if (ImGui::IsMouseReleased(0) && DragAndDrop::IsDragging()) {
             DragAndDrop::AcceptDrag();
-            value = DragAndDrop::GetGenericData("OBJECT");
-            dirty = true;
-        }
-    }
-    if (dirty) {
-        /*if (objType == typeid(Sprite) && typeid(*value.get()) == typeid(Texture2D)) {
-            auto t = static_pointer_cast<Texture2D>(value);
+            auto new_value = DragAndDrop::GetGenericData("OBJECT");
 
-            return Sprite::Create(t, sf::FloatRect{0, 0,
-                                                   static_cast<float>(t->t0.getSize().x),
-                                                   static_cast<float>(t->t0.getSize().y)});
-        }*/
+            auto reflection = MetaData::getReflection(objType);
+            if (new_value && reflection.CheckInstance(new_value.get())) {
+                return new_value;
+            }
 
-        if (value && objType == typeid(*value)) {
+            for (auto &it: DragAndDrop::objectReferences) {
+                if (reflection.CheckInstance(it.get())) {
+                    return it;
+                }
+            }
+
             return value;
         }
-
-        for (auto &it: DragAndDrop::objectReferences) {
-            if (objType == typeid(*it)) {
-                return it;
-            }
-        }
     }
-    return TPtr<>();
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem) &&
+        ImGui::IsMouseDoubleClicked(1)) {
+
+        return {};
+    }
+
+    return value;
 }
 
 sf::FloatRect EditorGUILayout::RectField(sf::FloatRect rect) {

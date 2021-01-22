@@ -108,10 +108,12 @@ void GameLoop::run() {
                 global.scene.data[global.scene.active_scene].path = old_scene.path;
                 global.scene.data[global.scene.active_scene].name = old_scene.name;
 
-                auto new_s = global.scene.data.extract(global.scene.active_scene);
-                new_s.key() = old_scene.old_id;
-                global.scene.data.insert(std::move(new_s));
-                global.scene.active_scene = old_scene.old_id;
+                //Is dirty?
+                auto it = global.scene.dirty.find(old_scene.old_id);
+                if (it != global.scene.dirty.end()) {
+                    global.scene.dirty.erase(it);
+                    global.scene.dirty.insert(global.scene.active_scene);
+                }
 
                 AssetDatabase::DeleteAsset("Assets/_U.unity");
                 //fs::remove("Assets/_U.unity"); //Clear after yourself
@@ -245,6 +247,7 @@ void GameLoop::run() {
     }
 
     ///Scene rendering
+    global.rendering.m_target().clear();
     for (auto &camera : global.rendering.m_draw_order) {
         if (camera.second && camera.second->isActiveAndEnabled()) {
             camera.second->Render();

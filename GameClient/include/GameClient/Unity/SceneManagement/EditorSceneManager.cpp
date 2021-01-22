@@ -16,7 +16,6 @@
 
 namespace fs = std::filesystem;
 
-static std::unordered_set<uint64_t> dirty;
 decltype(EditorSceneManager::playModeStartScene) EditorSceneManager::playModeStartScene;
 
 SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, EditorSceneManager::OpenSceneMode mode) {
@@ -67,7 +66,7 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
 bool EditorSceneManager::MarkSceneDirty(SceneManager::SceneP scene) {
     auto it = global.scene.data.find(scene->id);
     if (it != global.scene.data.end()) {
-        dirty.emplace(it->first);
+        global.scene.dirty.emplace(it->first);
         return true;
     }
     return false;
@@ -124,7 +123,7 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
                     global.scene.data[scene->id].path = std::string{dstScenePath};
                     global.scene.data[scene->id].name = p.stem().generic_string();
                 }
-                dirty.erase(scene->id);
+                global.scene.dirty.erase(scene->id);
             }
         }
 

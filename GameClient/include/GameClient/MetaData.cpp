@@ -138,7 +138,7 @@ MetaData::Reflect MetaData::getReflection(std::type_index type) {
             throw std::runtime_error(s);
         };
 
-        check = [type](Object *o) { return typeid(o) == type; };
+        check = [type](Object *o) { return typeid(*o) == type; };
     }
 
     MetaData::Reflect result{name, type, constructor, copy, check, *flags};

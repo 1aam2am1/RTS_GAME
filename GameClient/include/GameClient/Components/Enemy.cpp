@@ -7,14 +7,4 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
 
-ADD_USER_COMPONENT(Enemy)
-
-void Enemy::Update() {
-    if (other_enemy == nullptr) {
-        GameApi::log(CRIT << "Someone have won");
-        Application::Quit();
-    }
-
-    /// TODO: Ai min-max
-
-}
+EXPORT_CLASS(Enemy, cell, needed)

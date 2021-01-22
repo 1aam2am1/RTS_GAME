@@ -157,6 +157,8 @@ private:
 
     void OnPositionChange();
 
+    void OnDestroy() override;
+
     b2Body *m_physics_root = nullptr;
     uint32_t m_colliders = 0;
     bool m_dirty_registered = false;

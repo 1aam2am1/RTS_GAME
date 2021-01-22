@@ -25,6 +25,7 @@ Transform::Transform() :
 }
 
 Transform::~Transform() {
+    OnDestroy();
     for (auto &c: children)
         DestroyImmediate(c);
 }
@@ -67,7 +68,7 @@ void Transform::SetParent(const TPtr<Transform> &new_parent, bool worldPositionS
     if (m_parent) {
         auto it = std::find_if(m_parent->children.begin(), m_parent->children.end(),
                                [&](auto &it) {
-                                   return new_parent == it;
+                                   return this == it.get();
                                });
         if (it != m_parent->children.end()) {
             m_parent->children.erase(it);
@@ -113,5 +114,18 @@ void Transform::OnPositionChange() {
         //Add to Transform vector box2d
         m_dirty_registered = true;
         global.physics.transform_dirty.emplace_back(static_pointer_cast<Transform>(shared_from_this()));
+    }
+}
+
+void Transform::OnDestroy() {
+    if (m_parent) {
+        auto it = std::find_if(m_parent->children.begin(), m_parent->children.end(),
+                               [&](auto &it) {
+                                   return this == it.get();
+                               });
+        if (it != m_parent->children.end()) {
+            m_parent->children.erase(it);
+        }
+        m_parent = nullptr;
     }
 }

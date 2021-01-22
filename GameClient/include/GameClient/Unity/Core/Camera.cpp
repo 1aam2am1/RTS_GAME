@@ -9,6 +9,7 @@
 #include <execution>
 #include <GameClient/Unity/Core/Attributes.h>
 #include <GameClient/Unity/Serialization/to_json.h>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include "Renderer.h"
 
 ADD_COMPONENT_MENU(Camera, depth, backgroundColor, orthographicSize, pixelRect)
@@ -66,14 +67,27 @@ void Camera::Render() {
         return;
     }
 
-    auto old = global.rendering.m_target().getView();
+    {
+        global.rendering.m_target().setView(global.rendering.m_target().getDefaultView());
+        auto s = pixelRect.getSize();
+        s.x = std::clamp(s.x, 0.f, 1.f);
+        s.y = std::clamp(s.y, 0.f, 0.f);
+        sf::RectangleShape shape({global.rendering.m_target().getSize().x * s.x,
+                                  global.rendering.m_target().getSize().y * s.y});
+
+        shape.setPosition(global.rendering.m_target().getSize().x * pixelRect.left,
+                          global.rendering.m_target().getSize().y * pixelRect.top);
+
+        shape.setFillColor(backgroundColor);
+        global.rendering.m_target().draw(shape, sf::BlendNone);
+        //global.rendering.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
+    }
+
     sf::View view({position.x, -position.y}, size);
     view.setViewport(pixelRect);
     view.setRotation(transform()->localRotation);
 
     global.rendering.m_target().setView(view);
-
-    global.rendering.m_target().clear(backgroundColor);//TODO: Clear only pixelRect
 
     for (auto &it : global.rendering.m_render) {
         if (it && it->m_onEnable && !it->forceRenderingOff)
@@ -83,7 +97,6 @@ void Camera::Render() {
 
     ///glDisable(GL_SCISSOR_TEST);
 
-    global.rendering.m_target().setView(old);
 
 #if UNITY_EDITOR
     global.rendering.m_target().display(); //Display only in editor as window is displayed in main screen

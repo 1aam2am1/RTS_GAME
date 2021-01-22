@@ -10,6 +10,7 @@
 #include <GameApi/BasicString.h>
 #include <Core/Time.h>
 #include <Editor/AssetDatabase.h>
+#include <csignal>
 
 GlobalStaticVariables global;
 
@@ -73,11 +74,15 @@ SceneData::~SceneData() {
 
         /** We don't need this asserts but to check everything is working */
         for (auto &it : new_components) {
-            assert(it.expired());
+            if (!it.expired()) {
+                raise(SIGINT);
+            }
         }
 
         for (auto &it : loading_awake) {
-            assert(it.expired());
+            if (!it.expired()) {
+                raise(SIGINT);
+            }
         }
     }
 }

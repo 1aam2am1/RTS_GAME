@@ -36,6 +36,10 @@ public:
         if (!target) {
             GetTarget();
         }
+
+        if (!parent) {
+            Destroy(transform());
+        }
     };
 
     void FixedUpdate() override {

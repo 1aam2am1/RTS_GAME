@@ -14,14 +14,19 @@
 class Enemy : public MonoBehaviour {
 public:
     mono_state cell = mono_state::resource;
-    std::map<ResourceType, float> needed;
+    std::map<ResourceType, float> needed = {{ResourceType::food,  0.5f},
+                                            {ResourceType::metal, 0.5f},
+                                            {ResourceType::water, 0.5f}};
 
-private:
+protected:
     TPtr<Base> baze;
     std::vector<TPtr<ShipAi>> ships;
 
     TPtr<Enemy> other_enemy;
 
+    void Update() override = 0;
+
+protected:
     void Start() {
         baze = GetComponent<Base>();
         auto ob = FindObjectsOfType<Enemy>();
@@ -32,8 +37,6 @@ private:
             }
         }
     }
-
-    void Update() override;
 };
 
 #endif //RTS_GAME_ENEMY_H

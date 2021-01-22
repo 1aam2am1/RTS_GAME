@@ -86,7 +86,7 @@ bool Editor::DrawDefaultInspector() {
                         }
 
                         auto v2 = EditorGUILayout::ObjectField(value, type, true);
-                        if (v2) {
+                        if (v2 != value) {
                             dirty = true;
                             value = v2;
                         }

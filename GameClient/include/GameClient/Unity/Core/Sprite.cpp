@@ -2,7 +2,10 @@
 // Created by Michal_Marszalek on 02.11.2020.
 //
 
+#include <Macro.h>
 #include "Sprite.h"
+
+EXPORT_CLASS(Sprite)
 
 Sprite::Sprite() {
     texture.on_change.connect([&](auto) {

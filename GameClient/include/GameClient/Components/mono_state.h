@@ -8,10 +8,10 @@
 #include <nlohmann/json.hpp>
 
 enum class mono_state {
-    wait,
-    attack,
-    flee,
-    resource
+    wait = 0,
+    attack = 1,
+    flee = 2,
+    resource = 3
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(mono_state,

@@ -17,8 +17,13 @@ public:
     TPtr<SpriteRenderer> block;
 
     void Start() override {
-        camera = FindObjectOfType<Camera>();
-
+        auto vec = GetComponents<Camera>();
+        for (auto &&v : vec) {
+            if (v && v->name.empty()) {
+                camera = v;
+                break;
+            }
+        }
     }
 
     float x = 0;
@@ -35,7 +40,7 @@ public:
 
         x = 0;
         y = 0;
-        if (!ImGui::IsWindowHovered(0)) {
+        if (!ImGui::IsWindowHovered(0) && !ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
             return;
         }
 

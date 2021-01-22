@@ -6,4 +6,4 @@
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 
-ADD_USER_COMPONENT(Base)
+ADD_USER_COMPONENT(Base, resources)

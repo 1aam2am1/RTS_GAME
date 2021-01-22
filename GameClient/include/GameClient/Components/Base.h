@@ -7,12 +7,13 @@
 
 
 #include <Core/MonoBehaviour.h>
+#include "Resource.h"
 
 class Base : public MonoBehaviour {
 public:
-    float resources[3]; //ResourceType
-
-
+    std::map<ResourceType, float> resources = {{ResourceType::food,  100},
+                                               {ResourceType::metal, 200},
+                                               {ResourceType::water, 100}};
 };
 
 
