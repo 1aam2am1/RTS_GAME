@@ -1301,7 +1301,7 @@ void ImDrawList::AddCircle(const ImVec2 &center, float radius, ImU32 col, int nu
     // Obtain segment count
     if (num_segments <= 0) {
         // Automatic segment count
-        const int radius_idx = (int) radius - 1;
+        const int radius_idx = (int) std::ceil(radius) - 1;
         if (radius_idx < IM_ARRAYSIZE(_Data->CircleSegmentCounts))
             num_segments = _Data->CircleSegmentCounts[radius_idx]; // Use cached value
         else
@@ -1327,7 +1327,7 @@ void ImDrawList::AddCircleFilled(const ImVec2 &center, float radius, ImU32 col, 
     // Obtain segment count
     if (num_segments <= 0) {
         // Automatic segment count
-        const int radius_idx = (int) radius - 1;
+        const int radius_idx = (int) std::ceil(radius) - 1;
         if (radius_idx < IM_ARRAYSIZE(_Data->CircleSegmentCounts))
             num_segments = _Data->CircleSegmentCounts[radius_idx]; // Use cached value
         else

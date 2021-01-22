@@ -15,21 +15,27 @@
 
 class GenerateWorld : public MonoBehaviour {
 public:
+    int x = 60;
+    int y = 32;
+    int volume = 300;
+
     void Awake() override {}
 
     void Update() override {}
 
     void Start() override {
         std::random_device rd;
-        std::uniform_int_distribution<> distrib(-50, 50);
+        std::uniform_int_distribution<> distribx(-x, x);
+        std::uniform_int_distribution<> distriby(-y, y);
+        std::uniform_int_distribution<> distribt(0, 3000);
 
         auto sprite = dynamic_pointer_cast<Sprite>(AssetDatabase::LoadAssetAtPath("Assets/32x32.png", typeid(Sprite)));
 //600 100 100
-        for (uint32_t i = 0; i < 300; ++i) {
+        for (int i = 0; i < volume; ++i) {
             auto go = newGameObject("Asteroid " + GameApi::to_string(i));
             sf::Vector3f p;
-            p.x = distrib(rd);
-            p.y = distrib(rd);
+            p.x = distribx(rd);
+            p.y = distriby(rd);
 
             go->transform()->SetParent(transform(), true);
             go->transform()->localPosition = p;
@@ -38,10 +44,10 @@ public:
             go->AddComponent<SpriteRenderer>()->sprite = sprite;
             go->AddComponent<CircleCollider2D>()->radius = 0.3;
             auto r = go->AddComponent<Resource>();
-            r->type = static_cast<ResourceType>(distrib(rd) % 3);
-            r->volume = (distrib(rd) % 3000) + 300;
+            r->type = static_cast<ResourceType>(distribt(rd) % 3);
+            r->volume = distribt(rd) + 300;
         }
     }
 };
 
-ADD_USER_COMPONENT(GenerateWorld)
+ADD_USER_COMPONENT(GenerateWorld, x, y, volume)

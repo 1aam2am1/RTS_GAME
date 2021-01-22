@@ -23,6 +23,8 @@ void AudioSource::Play() {
     if (!clip) { return; }
     if (!isActiveAndEnabled()) { return; }
 
+    clip->load();
+
     playing.setBuffer(clip->buffer);
     playing.play();
 }
@@ -38,6 +40,7 @@ void AudioSource::UnPause() {
 
 void AudioSource::Awake() {
     if (playOnAwake) {
+        clip->load();
         playing.setBuffer(clip->buffer);
         disabled = true;
     }

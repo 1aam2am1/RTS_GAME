@@ -27,6 +27,12 @@ private:
     friend class AudioImporter;
 
     sf::SoundBuffer buffer;
+
+    void load();
+
+    bool loaded = false;
+
+    std::string path;
 };
 
 

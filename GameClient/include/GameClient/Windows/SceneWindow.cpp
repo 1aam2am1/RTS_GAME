@@ -19,8 +19,32 @@ INITIALIZE_FUNC(SceneWindow::Init());
 struct DebugDraw : b2Draw {
     sf::Transform transform;
     ImDrawList *list;
+    int i = 1;
+    const ImVec2 size;
+    const ImVec2 cursor_pos;
 
-    DebugDraw(sf::Transform t, ImDrawList *l) : transform(t), list(l) {}
+    DebugDraw(sf::Transform t) : transform(t), size(ImGui::GetCurrentWindow()->ContentRegionRect.GetSize()),
+                                 cursor_pos(ImGui::GetCursorPos()) {
+        ImGui::SetItemAllowOverlap();
+        ImGui::BeginChild(i, size, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground);
+        list = ImGui::GetWindowDrawList();
+    }
+
+    ~DebugDraw() {
+        ImGui::EndChild();
+    }
+
+    void Check() {
+        if (list->_VtxCurrentIdx >= (1 << 15)) {
+            ImGui::EndChild();
+            ImGui::SetCursorPos(cursor_pos);
+            ++i;
+            ImGui::SetItemAllowOverlap();
+            ImGui::BeginChild(i, size, ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground);
+            list = ImGui::GetWindowDrawList();
+        }
+    }
+
 //TODO: Clip
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
         std::vector<ImVec2> points;
@@ -34,6 +58,8 @@ struct DebugDraw : b2Draw {
         ImColor c(color.r, color.g, color.b, color.a);
 
         list->AddPolyline(points.data(), points.size(), c, true, 1.f);
+
+        Check();
     }
 
     void DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) override {
@@ -49,6 +75,8 @@ struct DebugDraw : b2Draw {
         list->AddConvexPolyFilled(points.data(), points.size(), c);
         c.Value.w = 1.f;
         list->AddPolyline(points.data(), points.size(), c, true, 1.f);
+
+        Check();
     }
 
     void DrawCircle(const b2Vec2 &center, float radius, const b2Color &color) override {
@@ -58,6 +86,8 @@ struct DebugDraw : b2Draw {
         auto p = transform.transformPoint(radius, 0) - transform.transformPoint(0, 0);
         radius = std::sqrt(p.x * p.x + p.y * p.y);
         list->AddCircle(position, radius, c);
+
+        Check();
     }
 
     void DrawSolidCircle(const b2Vec2 &center, float radius, const b2Vec2 &axis, const b2Color &color) override {
@@ -70,6 +100,8 @@ struct DebugDraw : b2Draw {
         list->AddCircleFilled(position, radius, c);
         c.Value.w = 1.f;
         list->AddLine(position, endPoint, c);
+
+        Check();
     }
 
     void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color) override {
@@ -78,6 +110,8 @@ struct DebugDraw : b2Draw {
         ImColor c(color.r, color.g, color.b, color.a);
 
         list->AddLine(position1, position2, c);
+
+        Check();
     }
 
     void DrawTransform(const b2Transform &xf) override {
@@ -95,6 +129,8 @@ struct DebugDraw : b2Draw {
         p2 = transform.transformPoint(xf.p.x + k_axisScale * xf.q.GetYAxis().x,
                                       xf.p.y + k_axisScale * xf.q.GetYAxis().y);
         list->AddLine(p1, p2, green);
+
+        Check();
     }
 
     void DrawPoint(const b2Vec2 &p, float size, const b2Color &color) override {
@@ -102,6 +138,8 @@ struct DebugDraw : b2Draw {
         ImColor c(color.r, color.g, color.b, color.a);
 
         list->AddCircleFilled(position, size, c);
+
+        Check();
     }
 };
 
@@ -167,9 +205,42 @@ void SceneWindow::OnGUI() {
     const ImVec2 origin = {pos.x + size.x / 2.f, pos.y + size.y / 2.f};
     const auto cursor_pos = ImGui::GetCursorPos();
 
+    /** Drawing */
+    DrawCamera();
+    ImGui::SetItemAllowOverlap();
+    ImGui::Image(texture.getTexture());
+    ImGui::SetCursorPos(cursor_pos);
+
+    if (global.mis.draw_gizmo) {
+        sf::Transform transform;
+
+        transform.translate(origin.x, origin.y);
+        transform.scale(texture.getSize().y / (2.f * orthographicSize),
+                        texture.getSize().y / (2.f * orthographicSize));
+
+        transform.translate(-position.x, position.y);
+
+        transform.scale(1.f, -1.f);
+
+        //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
+
+        DebugDraw d{transform};
+        d.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/ | b2Draw::e_centerOfMassBit);
+
+        global.physics.world.SetDebugDraw(&d);
+
+        global.physics.world.DebugDraw();
+
+        global.physics.world.SetDebugDraw(nullptr);
+    }
+
+    ImGui::SetCursorPos(cursor_pos);
     /** Move/Select/... */
     {
         ImGuiIO &io = ImGui::GetIO();
+        ImGui::SetItemAllowOverlap();
+        ImGui::BeginChild("###hehe", size);
+
         ImGui::InvisibleButton("canvas", size,
                                ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
         const bool is_hovered = ImGui::IsItemHovered(); // Hovered
@@ -202,42 +273,9 @@ void SceneWindow::OnGUI() {
         ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
         if (ImGui::IsMouseReleased(ImGuiMouseButton_Right) && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
             ImGui::OpenPopupOnItemClick("context");*/
+
+        ImGui::EndChild();
     }
-
-    ImGui::SetCursorPos(cursor_pos);
-    /** Drawing */
-    ImDrawList *draw = ImGui::GetWindowDrawList();
-    draw->ChannelsSplit(2);
-
-    draw->ChannelsSetCurrent(0);
-    DrawCamera();
-    ImGui::Image(texture.getTexture());
-
-    draw->ChannelsSetCurrent(1);
-    if (global.mis.draw_gizmo) {
-        sf::Transform transform;
-
-        transform.translate(origin.x, origin.y);
-        transform.scale(texture.getSize().y / (2.f * orthographicSize),
-                        texture.getSize().y / (2.f * orthographicSize));
-
-        transform.translate(-position.x, position.y);
-
-        transform.scale(1.f, -1.f);
-
-        //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
-
-        DebugDraw d{transform, draw};
-        d.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/ | b2Draw::e_centerOfMassBit);
-
-        global.physics.world.SetDebugDraw(&d);
-
-        global.physics.world.DebugDraw();
-
-        global.physics.world.SetDebugDraw(nullptr);
-    }
-
-    draw->ChannelsMerge();
 #endif
 }
 

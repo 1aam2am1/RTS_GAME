@@ -10,7 +10,7 @@
 #include <GameClient/Unity/Physics2D/Joint2D.h>
 #include <GameClient/Unity/Physics2D/Collision2D.h>
 #include "Behaviour.h"
-
+//TODO: Mark these functions as possible and check if there is overloading of them if exists mark flag, to add to containers...
 /// MonoBehaviour is the base class from which every Unity script derives.
 class MonoBehaviour : public Behaviour {
 public:
