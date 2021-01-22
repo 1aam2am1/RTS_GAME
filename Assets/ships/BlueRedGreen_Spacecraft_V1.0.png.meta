@@ -14,12 +14,43 @@
         },
         "pixelsPerUnit": 32,
         "rect": {
-          "height": 96,
-          "width": 96,
+          "height": 32,
+          "width": 32,
           "x": 0,
           "y": 0
         }
-      }
+      },
+      {
+              "id": 15024732907312285944,
+              "name": "",
+              "pivot": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "pixelsPerUnit": 32,
+              "rect": {
+                "height": 32,
+                "width": 32,
+                "x": 0,
+                "y": 32
+              }
+            },
+            {
+                    "id": 15024732907312285943,
+                    "name": "",
+                    "pivot": {
+                      "x": 0.5,
+                      "y": 0.5
+                    },
+                    "pixelsPerUnit": 32,
+                    "rect": {
+                      "height": 32,
+                      "width": 32,
+                      "x": 0,
+                      "y": 64
+                    }
+                  }
+
     ]
   },
   "__Node_id": {

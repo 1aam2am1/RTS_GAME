@@ -44,7 +44,8 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
     ImGui::InputText(key.data(), &name);
     ImGui::PopItemFlag();
     if (ImGui::IsItemHovered(
-            ImGuiHoveredFlags_AllowWhenDisabled | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem)) {
+            ImGuiHoveredFlags_AllowWhenDisabled | ImGuiHoveredFlags_AllowWhenBlockedByActiveItem |
+            ImGuiHoveredFlags_AllowWhenBlockedByPopup)) {
         if (DragAndDrop::IsDragging()/* && DragAndDrop::GetGenericData("OBJECT")*/) {
             DragAndDrop::visualMode = DragAndDrop::Link;
             //TODO: Make it better, type and so on

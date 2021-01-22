@@ -96,11 +96,6 @@ void Camera::Render() {
 
 
     ///glDisable(GL_SCISSOR_TEST);
-
-
-#if UNITY_EDITOR
-    global.rendering.m_target().display(); //Display only in editor as window is displayed in main screen
-#endif
 }
 
 void Camera::OnEnable() {

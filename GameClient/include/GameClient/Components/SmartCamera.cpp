@@ -40,10 +40,12 @@ public:
 
         x = 0;
         y = 0;
+#if UNITY_EDITOR
+        //Error on last place.
         if (!ImGui::IsWindowHovered(0) && !ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
             return;
         }
-
+#endif
         mouse.x -= window->ContentRegionRect.Min.x;
         mouse.y -= window->ContentRegionRect.Min.y;
 

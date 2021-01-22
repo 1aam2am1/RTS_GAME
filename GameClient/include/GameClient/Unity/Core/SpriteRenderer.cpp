@@ -27,7 +27,7 @@ void SpriteRenderer::draw(sf::RenderTarget *target) {
     pixelsPerUnit = 1.0 / pixelsPerUnit;
 
     states.transform.translate(position.x, -position.y);
-    states.transform.rotate(transform()->localRotation);
+    states.transform.rotate(-transform()->localRotation);
 
     states.transform.scale(transform()->localScale.get().x * pixelsPerUnit,
                            transform()->localScale.get().y * pixelsPerUnit);

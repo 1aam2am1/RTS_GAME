@@ -196,6 +196,7 @@ set(SRC
         include/GameClient/Components/UserControls.cpp
         include/GameClient/Components/AiEnemy.cpp
         include/GameClient/Components/AiEnemy.h
+        include/GameClient/Editors/SpriteEditor.cpp
         )
 
 add_executable(GameClient ${SRC})

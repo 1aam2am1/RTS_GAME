@@ -253,7 +253,7 @@ void SceneWindow::OnGUI() {
         if (is_hovered) {
             auto delta = io.MouseWheel * 0.2f * orthographicSize;
             orthographicSize += delta;
-            if (orthographicSize <= 0.01f) { orthographicSize = 0.01f; }
+            if (orthographicSize <= 0.1f) { orthographicSize = 0.1f; }
 
             ImVec2 from_origin = {io.MousePos.x - origin.x, io.MousePos.y - origin.y};
 

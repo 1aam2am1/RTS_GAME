@@ -8,15 +8,18 @@
 #include "Enemy.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <Core/Camera.h>
 
 
 class UserControls : public Enemy {
 public:
 
     float upper = 90.0f;
+    TPtr<Transform> camera;
 
     void Start() override {
         Enemy::Start();
+        camera = FindObjectOfType<Camera>()->transform();
     }
 
     void Update() override {}
@@ -86,31 +89,41 @@ public:
         }
 
 
-        ImGui::SetCursorPos({upper, size.y - upper - 25});
+        ImGui::SetCursorPos({upper, size.y + window->ContentRegionRect.Min.y - upper - 90});
         ImGui::BeginChild("###create", {size.x - 2.0f * upper, 120});
 
-        if (ImGui::Button("Attack Ship", {200, 45})) {
+        float button_size_x = 200;
+        if ((size.x - 2.0f * upper) < 400) {
+            button_size_x = (size.x - 2.0f * upper) / 2.0f;
+        }
+
+        if (ImGui::Button("Attack Ship", {button_size_x, 45})) {
 
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Resource Ship", {200, 45})) {
+        if (ImGui::Button("Resource Ship", {button_size_x, 45})) {
 
         }
 
 
-        if (ImGui::Button("Attack Shipyard", {200, 45})) {
+        if (ImGui::Button("Attack Shipyard", {button_size_x, 45})) {
 
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Resource Shipyard", {200, 45})) {
+        if (ImGui::Button("Resource Shipyard", {button_size_x, 45})) {
 
         }
 
         ImGui::EndChild();
+
+        auto text_size = ImGui::CalcTextSize("X: -300 Y: +300");
+        ImGui::SetCursorPos({ImGui::GetStyle().FramePadding.x,
+                             ImGui::GetWindowContentRegionMax().y - text_size.y - ImGui::GetStyle().FramePadding.y});
+        ImGui::Text("X: %.1f Y: %.1f", camera->localPosition().x, camera->localPosition().y);
 
         ImGui::PopStyleColor();
     }

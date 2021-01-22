@@ -253,4 +253,5 @@ void GameLoop::run() {
             camera.second->Render();
         }
     }
+    global.rendering.m_target().display();
 }
