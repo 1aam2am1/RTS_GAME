@@ -23,7 +23,19 @@ public:
 
     void Update() override {}
 
-    void Start() override {}
+    void Start() override { resources.emplace_back(shared_from_this()); }
+
+    void OnDestroy() override {
+        auto it = std::find_if(resources.begin(), resources.end(), [this](auto &&r) {
+            return r.get() == this;
+        });
+        if (it != resources.end()) {
+            resources.erase(it);
+        }
+    }
+
+
+    static std::vector<TPtr<Resource>> resources;
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(ResourceType,

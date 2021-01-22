@@ -186,6 +186,13 @@ set(SRC
         include/GameClient/Components/Resource.h
         include/GameClient/Components/ShipAi.cpp
         include/GameClient/Components/ShipAi.h
+        include/GameClient/Components/Enemy.cpp
+        include/GameClient/Components/Enemy.h
+        include/GameClient/Components/mono_state.h
+        include/GameClient/Components/mono_state.cpp
+        include/GameClient/Components/Base.cpp
+        include/GameClient/Components/Base.h
+        include/GameClient/Components/SmartCamera.cpp
         )
 
 add_executable(GameClient ${SRC})

@@ -14,6 +14,7 @@
 #include <GameClient/Unity/Core/Transform.h>
 #include <box2d/box2d.h>
 #include <numbers>
+#include <Macro.h>
 
 #if UNITY_EDITOR
 extern bool Application_isPlaying;
@@ -150,13 +151,15 @@ void GameLoop::run() {
                 if (object) [[likely]] {
                     if (object->gameObject()->activeInHierarchy() &&
                         (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
-
-                        object->UnityStart();
+                        try {
+                            object->UnityStart();
+                        } EXCEPTION_PRINT
 
                         global.scene.components.emplace_back(object);
                         object = nullptr;
                     } else {
                         scene.second.new_components.emplace_back(object);
+                        global.scene.all_comoponents.emplace_back(object);
                     }
                 }
             }
@@ -178,7 +181,9 @@ void GameLoop::run() {
             for (auto &object : global.scene.components) {
                 auto beh = dynamic_pointer_cast<Behaviour>(object);
                 if (beh) {
-                    beh->UnityFixedUpdate();
+                    try {
+                        beh->UnityFixedUpdate();
+                    } EXCEPTION_PRINT
                 }
             }
 
@@ -210,7 +215,9 @@ void GameLoop::run() {
         auto beh = dynamic_pointer_cast<Behaviour>(object);
         if (beh &&
             (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
-            beh->UnityUpdate(); //TODO: Call only when something happened in editor mode
+            try {
+                beh->UnityUpdate(); //TODO: Call only when something happened in editor mode
+            } EXCEPTION_PRINT
         }
     }
 
@@ -220,7 +227,9 @@ void GameLoop::run() {
         auto beh = dynamic_pointer_cast<Behaviour>(object);
         if (beh &&
             (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
-            beh->UnityLateUpdate(); //TODO: Call only when something happened
+            try {
+                beh->UnityLateUpdate(); //TODO: Call only when something happened
+            } EXCEPTION_PRINT
         }
     }
 

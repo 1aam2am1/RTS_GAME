@@ -65,8 +65,13 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
             global.scene.data.insert(std::move(copy));
             global.scene.active_scene = new_id;
 
-            MainThread::Invoke([old]() {}); //< Here delete old data, as this can be called from update,
+            //MainThread::Invoke([old]() {}); //< Here delete old data, as this can be called from update,
             // by inexperienced user we save him, by deleting objects in new frame
+
+            MainThread::Invoke([]() {
+                std::erase_if(global.scene.components, [](auto &ob) { return ob.expired(); });
+                std::erase_if(global.scene.dont_destroy, [](auto &ob) { return ob.expired(); });
+            });
         }
 
 
@@ -78,6 +83,7 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
                     ob->UnityAwake();
                 } EXCEPTION_PRINT
                 global.scene.data[new_id].new_components.emplace_back(ob); //To Start()
+                global.scene.all_comoponents.emplace_back(ob);
             }
         }
         global.scene.data[new_id].loading_awake.clear();

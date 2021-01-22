@@ -97,6 +97,7 @@ void GameObject::SetActive(bool value) noexcept {
                     (*it)->UnityAwake();
                     //result->UnityOnActiveChange(true); later in now_active_in_h != was_active_in_h
                     global.scene.data[m_scene->id].new_components.emplace_back(*it); //To Start()
+                    global.scene.all_comoponents.emplace_back(*it);
                 } else {
                     // Don't add, reload scene
                 }
@@ -177,6 +178,7 @@ TPtr<Component> GameObject::AddComponent(TPtr<Component> result) {
                 result->UnityAwake();
                 result->UnityOnActiveChange(true);
                 global.scene.data[m_scene->id].new_components.emplace_back(result); //To Start()
+                global.scene.all_comoponents.emplace_back(result);
             } else {
                 global.scene.data[m_scene->id].loading_awake.emplace_back(result); //To Awake()
             }

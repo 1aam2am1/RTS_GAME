@@ -11,6 +11,7 @@
 #include <GameApi/Compiler.h>
 #include "Quaternion.h"
 #include <GameClient/TPtr.h>
+#include <functional>
 
 class Transform;
 
@@ -65,13 +66,23 @@ public:
     /// \tparam T The type of object to find.
     /// \return This returns the Object that matches the specified type. It returns null if no Object matches the type.
     template<typename T>
-    static std::shared_ptr<T> FindObjectOfType();
+    static TPtr<T> FindObjectOfType() {
+        return dynamic_pointer_cast<T>(PFindObjectOfType([](auto &&o) { return dynamic_cast<T *>(o.get()); }));
+    };
 
     /// Returns a list of all active loaded objects of Type type.
     /// \tparam T The type of object to find.
     /// \return The array of objects found matching the type specified.
     template<typename T>
-    static std::vector<std::shared_ptr<T>> FindObjectsOfType();
+    static std::vector<TPtr<T>> FindObjectsOfType() {
+        auto vec = PFindObjectsOfType([](auto &&o) { return dynamic_cast<T *>(o.get()); });
+        std::vector<TPtr<T>> result;
+        result.reserve(vec.size());
+        for (auto &&v : vec) {
+            result.emplace_back(v);
+        }
+        return result;
+    };
 
     /// Clones the object original and returns the clone.
     /// \param original An existing object that you want to make a copy of.
@@ -115,6 +126,11 @@ private:
 
     //const std::unordered_map<std::type_index, uintmax_t>* flags = nullptr;
     const mutable uintmax_t *flags = nullptr;
+
+
+    static TPtr<Object> PFindObjectOfType(const std::function<bool(TPtr<>)> &);
+
+    static std::vector<TPtr<Object>> PFindObjectsOfType(const std::function<bool(TPtr<>)> &);
 };
 
 

@@ -8,13 +8,20 @@
 #include <Core/MonoBehaviour.h>
 #include <numbers>
 #include "Resource.h"
+#include "mono_state.h"
+
+class Enemy;
 
 class ShipAi : public MonoBehaviour {
 public:
-    TPtr<Resource> target;
+    TPtr<Transform> target;
     TPtr<Rigidbody2D> rigidbody;
+    TPtr<Enemy> parent;
+
+    mono_state state = mono_state::resource;
 
     float force = 10;
+    float visibility = 7;
 
     void Awake() override {};
 
@@ -23,13 +30,17 @@ public:
         rigidbody->drag = 1;
     }
 
-    void Update() override {
+    void GetTarget();
 
+    void Update() override {
+        if (!target) {
+            GetTarget();
+        }
     };
 
     void FixedUpdate() override {
         if (target) {
-            auto where = transform()->localPosition() - target->transform()->localPosition();
+            auto where = transform()->localPosition() - target->localPosition();
 
             transform()->localRotation = std::atan2(where.y, where.x) * 180.0f / std::numbers::pi + 90.0f;
 

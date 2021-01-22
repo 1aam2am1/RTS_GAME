@@ -63,6 +63,7 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
 
         go->m_scene = std::shared_ptr<Scene>(new Scene(new_scene_id));
     }
+    //TODO: Fix moving all components...
 }
 /*
 bool SceneManager::LoadSceneFull(SceneManager::Data &d, std::string_view path) {

@@ -8,13 +8,14 @@
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include "Component.h"
+#include <GameApi/SetterEmitterP.h>
 
 class Renderer : public Component {
 public:
     Renderer();
 
     /// Makes the rendered 3D object visible if enabled.
-    bool enabled;
+    SetterEmitterP<bool, Renderer> enabled;
 
     /// Allows turning off rendering for a specific component.
     bool forceRenderingOff;
@@ -30,8 +31,11 @@ private:
     int64_t m_sortingOrder;
 
     bool m_onEnable = false;
+    bool m_gameObjectCacheEnabled = false;
 
     void UnityOnActiveChange(bool) override;
+
+    void EnableChange();
 
 protected:
     virtual void draw(sf::RenderTarget * = nullptr) = 0;

@@ -9,7 +9,7 @@
 EXPORT_CLASS(Renderer, ("m_enabled", enabled), forceRenderingOff, sortingOrder)
 
 
-Renderer::Renderer() : enabled(true), forceRenderingOff(false),
+Renderer::Renderer() : enabled(this, EnableChange, true), forceRenderingOff(false),
                        sortingOrder([this](int64_t o) {
                            m_sortingOrder = o;
                        }, [this]() -> int64_t {
@@ -20,5 +20,11 @@ Renderer::Renderer() : enabled(true), forceRenderingOff(false),
 }
 
 void Renderer::UnityOnActiveChange(bool b) {
-    m_onEnable = b & enabled;
+    m_gameObjectCacheEnabled = b;
+
+    m_onEnable = m_gameObjectCacheEnabled & enabled;
 }
+
+void Renderer::EnableChange() {
+    m_onEnable = m_gameObjectCacheEnabled & enabled;
+};

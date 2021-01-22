@@ -43,8 +43,7 @@ void Rigidbody2D::Awake() {
     b2BodyDef def;
     def.position = {p.x, p.y};
     def.angle = transform()->localRotation * std::numbers::pi / 180.f;
-    def.userData = static_pointer_cast<Transform>(
-            static_cast<std::enable_shared_from_this<Object> *>(transform().get())->shared_from_this());
+    def.userData = static_pointer_cast<Transform>(transform()->weak_from_this().lock());
     def.type = static_cast<b2BodyType>(bodyType());
     def.enabled = true;
     def.fixedRotation = false;

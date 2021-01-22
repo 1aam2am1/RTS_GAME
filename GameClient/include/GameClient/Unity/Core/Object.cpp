@@ -98,3 +98,25 @@ void Object::DontDestroyOnLoad(TPtr<Object> target) {
     if (go)
         global.scene.dont_destroy.emplace_back(go);
 }
+
+TPtr<Object> Object::PFindObjectOfType(const std::function<bool(TPtr<>)> &check) {
+    for (auto &o : global.scene.all_comoponents) {
+        if (check(o)) {
+            return o;
+        }
+    }
+    return {};
+}
+
+std::vector<TPtr<Object>> Object::PFindObjectsOfType(const std::function<bool(TPtr<>)> &check) {
+    std::vector<TPtr<>> result;
+    result.reserve(32);
+
+    for (auto &o : global.scene.all_comoponents) {
+        if (check(o)) {
+            result.emplace_back(o);
+        }
+    }
+
+    return result;
+}
