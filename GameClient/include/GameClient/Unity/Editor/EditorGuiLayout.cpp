@@ -345,9 +345,10 @@ std::string EditorGUILayout::EnumField(std::string str, std::type_index type) {
     } else {
         if (ImGui::BeginCombo(key.data(), str.data())) {
             for (auto &&s : reflection.d.members) {
-                const bool is_selected = (s.second == str);
-                if (ImGui::Selectable(s.second.data(), is_selected))
-                    str = s.second;
+                const bool is_selected = (s == str);
+                std::string str2{s};
+                if (ImGui::Selectable(str2.data(), is_selected))
+                    str = s;
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                 if (is_selected)

@@ -71,6 +71,13 @@ namespace {                                                                     
     });                                                                         \
 }
 
+#define EXPORT_STATE_MACHINE(TYPE)                                              \
+namespace{                                                                      \
+    static int UNIQUE_ID(INTERNAL_NO_USE_STATE_MACHINE_) = Initializer::add([](){   \
+        Enums::register_st<TYPE>(#TYPE);                                        \
+    });                                                                         \
+}
+
 #define ADD_ATTRIBUTE(TYPE, ...)                                                \
 namespace{                                                                      \
     static int UNIQUE_ID(INTERNAL_NO_USE_F_) = Initializer::add([](){           \

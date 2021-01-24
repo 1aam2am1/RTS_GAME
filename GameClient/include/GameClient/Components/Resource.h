@@ -17,11 +17,15 @@ class Resource : public MonoBehaviour {
 public:
     ResourceType type = ResourceType::water;
 
-    int volume = 0;
+    float volume = 0;
 
     void Awake() override {}
 
-    void Update() override {}
+    void Update() override {
+        if (volume == 0) {
+            Destroy(gameObject());
+        }
+    }
 
     void Start() override { resources.emplace_back(shared_from_this()); }
 

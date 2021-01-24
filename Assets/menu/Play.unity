@@ -1,0 +1,619 @@
+{
+  "objects": [
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 35.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 8,
+              "guid": "0"
+            }
+          },
+          {
+            "Camera": {
+              "backgroundColor": {
+                "alpha": 255,
+                "blue": 0,
+                "green": 0,
+                "red": 0
+              },
+              "depth": 0.0,
+              "m_Name": "",
+              "m_enabled": true,
+              "orthographicSize": 5.0,
+              "pixelRect": {
+                "height": 1.0,
+                "width": 1.0,
+                "x": 0.0,
+                "y": 0.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 9,
+              "guid": "0"
+            }
+          },
+          {
+            "SmartCamera": {
+              "block": {
+                "SpriteRenderer": {
+                  "forceRenderingOff": false,
+                  "m_Name": "",
+                  "m_enabled": true,
+                  "sortingOrder": 0,
+                  "sprite": {
+                    "fileID": 3405139177093013904,
+                    "guid": "00bac6ef60085db167e338c2b1755ae1"
+                  }
+                },
+                "__Node_id": {
+                  "fileID": 11,
+                  "guid": "0"
+                }
+              },
+              "m_Name": "",
+              "m_enabled": true,
+              "speed": 10.0,
+              "x": 0.0,
+              "y": 0.0,
+              "zakres": 60.0
+            },
+            "__Node_id": {
+              "fileID": 10,
+              "guid": "0"
+            }
+          },
+          {
+            "Camera": {
+              "backgroundColor": {
+                "alpha": 255,
+                "blue": 0,
+                "green": 0,
+                "red": 0
+              },
+              "depth": 1.0,
+              "m_Name": "Mini",
+              "m_enabled": true,
+              "orthographicSize": 50.0,
+              "pixelRect": {
+                "height": 0.20000000298023224,
+                "width": 0.20000000298023224,
+                "x": 0.800000011920929,
+                "y": 0.800000011920929
+              }
+            },
+            "__Node_id": {
+              "fileID": 12,
+              "guid": "0"
+            }
+          },
+          {
+            "AudioListener": {
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 13,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "MainCamera",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 1,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 14,
+              "guid": "0"
+            }
+          },
+          {
+            "fileID": 11,
+            "guid": "0"
+          }
+        ],
+        "m_Name": "Background",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 2,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 15,
+              "guid": "0"
+            }
+          },
+          {
+            "AudioSource": {
+              "clip": {
+                "fileID": 0,
+                "guid": "d39912e06009861a07d1a80878390cd2"
+              },
+              "loop": true,
+              "m_Name": "",
+              "m_enabled": true,
+              "playOnAwake": true,
+              "volume": 0.5
+            },
+            "__Node_id": {
+              "fileID": 16,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Music",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 3,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 17,
+              "guid": "0"
+            }
+          },
+          {
+            "GenerateWorld": {
+              "m_Name": "",
+              "m_enabled": true,
+              "volume": 300,
+              "x": 60,
+              "y": 32
+            },
+            "__Node_id": {
+              "fileID": 18,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Generate",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 4,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": -33.0,
+                "y": 1.7999999523162842,
+                "z": 0.0
+              },
+              "m_localRotation": 270.5,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 19,
+              "guid": "0"
+            }
+          },
+          {
+            "PolygonCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "paths": [
+                [
+                  {
+                    "x": -0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.0,
+                    "y": 0.5770000219345093
+                  }
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 20,
+              "guid": "0"
+            }
+          },
+          {
+            "Rigidbody2D": {
+              "angularDrag": 0.5,
+              "bodyType": "Dynamic",
+              "drag": 0.5,
+              "inertia": 0.10000000149011612,
+              "m_Name": "",
+              "mass": 1.0
+            },
+            "__Node_id": {
+              "fileID": 21,
+              "guid": "0"
+            }
+          },
+          {
+            "ResourceShip": {
+              "attack_force": 1.0,
+              "force": 8.5,
+              "life": 10.0,
+              "m_Name": "",
+              "m_enabled": true,
+              "parent": {
+                "AiEnemy": {
+                  "cell": "resource",
+                  "m_Name": "",
+                  "m_enabled": true,
+                  "needed": [
+                    [
+                      "water",
+                      0.5
+                    ],
+                    [
+                      "metal",
+                      0.5
+                    ],
+                    [
+                      "food",
+                      0.5
+                    ]
+                  ],
+                  "ship_production": [],
+                  "ships": []
+                },
+                "__Node_id": {
+                  "fileID": 23,
+                  "guid": "0"
+                }
+              },
+              "resource_area": 1.0,
+              "resources": [],
+              "speed_of_gathering": 10.0,
+              "state": "AttackState",
+              "target": null,
+              "time_of_flee": 10.0,
+              "visibility": 7.0
+            },
+            "__Node_id": {
+              "fileID": 22,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 15024732907312285943,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              }
+            },
+            "__Node_id": {
+              "fileID": 24,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Ship",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 5,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 35.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 25,
+              "guid": "0"
+            }
+          },
+          {
+            "UserControls": {
+              "cell": "resource",
+              "m_Name": "",
+              "m_enabled": true,
+              "needed": [
+                [
+                  "water",
+                  0.5
+                ],
+                [
+                  "metal",
+                  0.5
+                ],
+                [
+                  "food",
+                  0.5
+                ]
+              ],
+              "ship_production": [],
+              "ships": [],
+              "upper": 110.0
+            },
+            "__Node_id": {
+              "fileID": 26,
+              "guid": "0"
+            }
+          },
+          {
+            "Base": {
+              "m_Name": "",
+              "m_enabled": true,
+              "resources": [
+                [
+                  "water",
+                  100.0
+                ],
+                [
+                  "metal",
+                  200.0
+                ],
+                [
+                  "food",
+                  100.0
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 27,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 4092459745402248972,
+                "guid": "57df6d62600c066952a2f931b28c99bb"
+              }
+            },
+            "__Node_id": {
+              "fileID": 28,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 1.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 29,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "UserAi",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 6,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": -35.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 30,
+              "guid": "0"
+            }
+          },
+          {
+            "fileID": 23,
+            "guid": "0"
+          },
+          {
+            "Base": {
+              "m_Name": "",
+              "m_enabled": true,
+              "resources": [
+                [
+                  "water",
+                  100.0
+                ],
+                [
+                  "metal",
+                  200.0
+                ],
+                [
+                  "food",
+                  100.0
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 31,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 4092459745402248972,
+                "guid": "57df6d62600c066952a2f931b28c99bb"
+              }
+            },
+            "__Node_id": {
+              "fileID": 32,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 1.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 33,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "Ai",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 7,
+        "guid": "0"
+      }
+    }
+  ]
+}

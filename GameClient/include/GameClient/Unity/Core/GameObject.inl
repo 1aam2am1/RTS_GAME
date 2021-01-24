@@ -5,8 +5,7 @@ template<typename... Args>
 TPtr<GameObject> newGameObject(std::string name) {
     auto i = newGameObject(std::move(name));
 
-    using array = int[sizeof...(Args)];
-    array{(i->AddComponent<Args>(), 1)...};
+    ((i->AddComponent<Args>()), ...);
 
     return i;
 }

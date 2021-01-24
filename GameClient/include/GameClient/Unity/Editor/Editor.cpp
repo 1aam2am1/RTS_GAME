@@ -119,12 +119,43 @@ bool Editor::DrawDefaultInspector() {
                         }
 
                         if (!Enums::getReflection(type).d.members.empty()) {
-                            auto v2 = EditorGUILayout::EnumField(value.template get<std::string>(), type);
+                            if (value.is_array() && !value.empty()) {
+                                ImGui::NewLine();
 
-                            if (v2 != value) {
-                                dirty = true;
-                                value = v2;
+                                ImGui::BeginGroup();
+                                for (auto &&k : value) {
+                                    if (k.is_string()) {
+                                        ImGui::SetNextItemWidth(-FLT_MIN);
+                                        auto v2 = EditorGUILayout::EnumField(k.template get<std::string>(), type);
+
+                                        if (v2 != k) {
+                                            dirty = true;
+                                            k = v2;
+                                        }
+                                    }
+                                }
+                                ImGui::EndGroup();
+
+                            } else if (value.is_string()) {
+                                auto v2 = EditorGUILayout::EnumField(value.template get<std::string>(), type);
+
+                                if (v2 != value) {
+                                    dirty = true;
+                                    value = v2;
+                                }
+                            } else {
+                                ImGuiContext &g = *GImGui;
+                                g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;
+                                ImGui::NewLine();
                             }
+                        } else if (!value.empty()) {
+                            ImGui::NewLine();
+
+                            ImGui::BeginGroup();
+
+                            ImGui::Text("%s", value.dump(2, ' ', true).data());
+
+                            ImGui::EndGroup();
                         } else {
                             ImGuiContext &g = *GImGui;
                             g.NextItemData.Flags &= ~ImGuiNextItemDataFlags_HasWidth;

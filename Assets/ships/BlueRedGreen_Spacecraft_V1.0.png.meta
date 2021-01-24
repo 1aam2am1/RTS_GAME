@@ -6,6 +6,81 @@
     "pixelsPerUnit": 32.0,
     "spriteSheet": [
       {
+        "id": 15024732907312285940,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 32,
+          "y": 64
+        }
+      },
+      {
+        "id": 15024732907312285941,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 32,
+          "y": 32
+        }
+      },
+      {
+        "id": 15024732907312285942,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 32,
+          "y": 0
+        }
+      },
+      {
+        "id": 15024732907312285943,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 0,
+          "y": 64
+        }
+      },
+      {
+        "id": 15024732907312285944,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 0,
+          "y": 32
+        }
+      },
+      {
         "id": 15024732907312285945,
         "name": "",
         "pivot": {
@@ -19,42 +94,11 @@
           "x": 0,
           "y": 0
         }
-      },
-      {
-              "id": 15024732907312285944,
-              "name": "",
-              "pivot": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "pixelsPerUnit": 32,
-              "rect": {
-                "height": 32,
-                "width": 32,
-                "x": 0,
-                "y": 32
-              }
-            },
-            {
-                    "id": 15024732907312285943,
-                    "name": "",
-                    "pivot": {
-                      "x": 0.5,
-                      "y": 0.5
-                    },
-                    "pixelsPerUnit": 32,
-                    "rect": {
-                      "height": 32,
-                      "width": 32,
-                      "x": 0,
-                      "y": 64
-                    }
-                  }
-
+      }
     ]
   },
   "__Node_id": {
-    "fileID": 4,
+    "fileID": 1,
     "guid": "0"
   },
   "guid": "92a59f286009862c04fce2aaaf4dd8d2"

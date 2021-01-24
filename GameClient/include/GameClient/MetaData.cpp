@@ -196,7 +196,7 @@ Enums::Reflect Enums::getReflection(std::type_index type) {
 
     return Reflect{empty};
 }
-
+/*
 std::string_view Enums::Reflect::to_value(uint64_t i) {
     auto it = std::find_if(d.members.begin(), d.members.end(), [&](auto &&p) { return p.first == i; });
     if (it != d.members.end()) {
@@ -211,4 +211,4 @@ uint64_t Enums::Reflect::to_value(std::string_view name) {
         return it->first;
     }
     return 0;
-}
+}*/

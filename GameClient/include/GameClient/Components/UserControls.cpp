@@ -97,25 +97,30 @@ public:
             button_size_x = (size.x - 2.0f * upper) / 2.0f;
         }
 
-        if (ImGui::Button("Attack Ship", {button_size_x, 45})) {
-
+        auto count = std::count_if(ship_production.begin(), ship_production.end(),
+                                   [](auto &&b) { return b == ShipType::Attack; });
+        if (ImGui::Button(("Attack Ship (" + GameApi::to_string(count) + ")").data(), {button_size_x, 45})) {
+            ProduceShip(ShipType::Attack);
+            count = std::count_if(ship_production.begin(), ship_production.end(),
+                                  [](auto &&b) { return b == ShipType::Attack; });
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Resource Ship", {button_size_x, 45})) {
-
+        if (ImGui::Button(("Resource Ship (" + GameApi::to_string(ship_production.size() - count) + ")").data(),
+                          {button_size_x, 45})) {
+            ProduceShip(ShipType::Resource);
         }
 
 
         if (ImGui::Button("Attack Shipyard", {button_size_x, 45})) {
-
+            createBuildingPlacer(ShipType::Attack);
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Resource Shipyard", {button_size_x, 45})) {
-
+            createBuildingPlacer(ShipType::Resource);
         }
 
         ImGui::EndChild();

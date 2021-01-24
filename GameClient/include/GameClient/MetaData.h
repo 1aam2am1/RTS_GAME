@@ -16,11 +16,13 @@
 #include <string_view>
 #include <GameClient/TPtr.h>
 #include <GameApi/SGBase.h>
+#include <GameClient/Unity/StateMachine.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <GameApi/IsInstance.h>
 #include <variant>
 #include <SFML/Graphics/Rect.hpp>
 #include <GameClient/Unity/Serialization/to_json.h>
+#include <GameApi/IsBaseOfTemplate.h>
 
 class MetaData {
     struct Reflect;
@@ -121,7 +123,12 @@ class Enums {
     struct Reflect;
 public:
     template<typename T>
+    requires std::is_enum<T>::value
     static auto register_enum(std::string_view str);
+
+    template<typename T>
+    requires is_base_of_template_v<T, StateMachine>
+    static void register_st(std::string_view str);
 
     static Reflect getReflection(std::type_index type);
 
@@ -130,7 +137,7 @@ private:
     struct Register;
 
     struct Data {
-        std::vector<std::pair<uint64_t, std::string_view>> members;
+        std::vector<std::string_view> members;
     };
     static std::map<std::type_index, Data> reflection;
 };

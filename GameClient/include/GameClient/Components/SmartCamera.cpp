@@ -67,7 +67,7 @@ public:
         p.x += x;
         p.y += y;
 
-        if (block && block->sprite) {
+        if (block && block->sprite && size.x != 0 && size.y != 0) {
             const auto unit_size = block->sprite->s0.getTextureRect().getSize() / (int) block->sprite->pixelsPerUnit;
             const auto camera_size = sf::Vector2f{
                     static_cast<float>(2.f * camera->orthographicSize * (size.x / size.y)),

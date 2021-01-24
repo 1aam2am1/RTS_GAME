@@ -184,8 +184,8 @@ set(SRC
         include/GameClient/Components/GenerateWorld.cpp
         include/GameClient/Components/Resource.cpp
         include/GameClient/Components/Resource.h
-        include/GameClient/Components/ShipAi.cpp
-        include/GameClient/Components/ShipAi.h
+        include/GameClient/Components/Ship.cpp
+        include/GameClient/Components/Ship.h
         include/GameClient/Components/Enemy.cpp
         include/GameClient/Components/Enemy.h
         include/GameClient/Components/mono_state.h
@@ -197,6 +197,34 @@ set(SRC
         include/GameClient/Components/AiEnemy.cpp
         include/GameClient/Components/AiEnemy.h
         include/GameClient/Editors/SpriteEditor.cpp
+        include/GameClient/Components/ShipType.cpp
+        include/GameClient/Components/ShipType.h
+        include/GameClient/Unity/StateMachine/StateMachine.h
+        include/GameClient/Unity/StateMachine/TransitionTo.h
+        include/GameClient/Unity/StateMachine/On.h
+        include/GameClient/Unity/StateMachine/OneOf.h
+        include/GameClient/Unity/StateMachine/Nothing.h
+        include/GameClient/Unity/StateMachine/Maybe.h
+        include/GameClient/Unity/StateMachine/ByDefault.h
+        include/GameClient/Components/ResourceShipStateMachine/Event.h
+        include/GameClient/Components/ResourceShipStateMachine/WaitState.h
+        include/GameClient/Components/ResourceShipStateMachine/AttackState.h
+        include/GameClient/Components/ResourceShipStateMachine/GatheringResourceState.h
+        include/GameClient/Components/ResourceShipStateMachine/TransportState.h
+        include/GameClient/Components/ResourceShipStateMachine/FleeState.h
+        include/GameClient/Components/ResourceShip.cpp
+        include/GameClient/Components/ResourceShip.h
+        include/GameClient/Components/AttackShip.cpp
+        include/GameClient/Components/AttackShip.h
+        include/GameClient/Components/ResourceShipStateMachine/FleeState.cpp
+        include/GameClient/Unity/StateMachine.hpp
+        include/GameClient/Components/ResourceShipStateMachine/WaitState.cpp
+        include/GameClient/Components/ResourceShipStateMachine/TransportState.cpp
+        include/GameClient/Components/ResourceShipStateMachine/GatheringResourceState.cpp
+        include/GameClient/Components/ResourceShipStateMachine/AttackState.cpp
+        include/GameClient/Unity/StateMachine/Will.h
+        include/GameClient/Unity/Physics2D/Physics2D.cpp
+        include/GameClient/Unity/Physics2D/Physics2D.h
         )
 
 add_executable(GameClient ${SRC})

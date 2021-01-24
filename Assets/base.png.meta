@@ -1,0 +1,30 @@
+{
+  "TextureImporter": {
+    "force_sprites": false,
+    "m_Name": "",
+    "m_userData": "",
+    "pixelsPerUnit": 32.0,
+    "spriteSheet": [
+      {
+        "id": 4092459745402248972,
+        "name": "",
+        "pivot": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "pixelsPerUnit": 32,
+        "rect": {
+          "height": 32,
+          "width": 32,
+          "x": 0,
+          "y": 0
+        }
+      }
+    ]
+  },
+  "__Node_id": {
+    "fileID": 1,
+    "guid": "0"
+  },
+  "guid": "57df6d62600c066952a2f931b28c99bb"
+}

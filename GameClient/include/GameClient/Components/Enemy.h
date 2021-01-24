@@ -9,7 +9,8 @@
 #include "mono_state.h"
 #include "Resource.h"
 #include "Base.h"
-#include "ShipAi.h"
+#include "Ship.h"
+#include "ShipType.h"
 
 class Enemy : public MonoBehaviour {
 public:
@@ -18,13 +19,23 @@ public:
                                             {ResourceType::metal, 0.5f},
                                             {ResourceType::water, 0.5f}};
 
+    void AddShip(TPtr<Ship>);
+
+    void RemoveShip(TPtr<Ship>);
+
 protected:
+    std::vector<ShipType> ship_production;
+
     TPtr<Base> baze;
-    std::vector<TPtr<ShipAi>> ships;
+    std::vector<TPtr<Ship>> ships;
 
     TPtr<Enemy> other_enemy;
 
     void Update() override = 0;
+
+    void ProduceShip(ShipType);
+
+    void createBuildingPlacer(ShipType);
 
 protected:
     void Start() {

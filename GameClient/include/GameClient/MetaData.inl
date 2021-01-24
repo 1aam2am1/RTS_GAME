@@ -1,5 +1,4 @@
 #include <cinttypes>
-#include <GameApi/IsBaseOfTemplate.h>
 
 struct MetaData::Reflect {
     const std::string_view name;
@@ -222,6 +221,48 @@ struct MetaData::Register {
         add(str, func);
     }
 
+private:
+    template<typename Z, typename M>
+    static constexpr void registerMemberForSerializeStateMachineHelper(M &state, nlohmann::json &arg) {
+        if (GameApi::demangle(typeid(Z).name()) == arg.get<std::string>()) {
+            state.template transitionTo<Z>();
+        }
+    }
+
+public:
+
+    template<typename Y>
+    requires is_base_of_template_v<Y, StateMachine>
+    void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
+        auto func = [=](auto t) -> TU {
+            std::function<void(nlohmann::json)> set;
+            std::function<nlohmann::json()> get;
+
+            if constexpr (!std::is_const<typename std::remove_reference<decltype(t->*ptr)>::type>::value) {
+                set = [=](nlohmann::json arg) {
+                    []<typename... Args>(StateMachine<Args...> &state, nlohmann::json &arg) {
+                        (registerMemberForSerializeStateMachineHelper<Args>(state, arg), ...);
+                    }(t->*ptr, arg);
+                };
+            }
+
+            get = [=]() -> nlohmann::json {
+                std::string name;
+                (t->*ptr).visit([&name](auto &&state) { name = GameApi::demangle(typeid(*state).name()); });
+                return name;
+            };
+
+            return std::pair<std::function<void(nlohmann::json)>, std::function<nlohmann::json(void)>>{
+                    set,
+                    get
+            };
+        };
+
+        add(str, func);
+
+        d.TPtr_type.emplace_back(str, typeid(Y));
+    }
+
     template<typename Y>
     requires std::is_assignable<TU &, std::pair<
             std::function<void(Y)>,
@@ -303,6 +344,7 @@ struct MetaData::Register {
         requires !(std::is_integral_v<Y> && (sizeof(Y) <= sizeof(int64_t)));
         requires !std::is_floating_point_v<Y>;
         requires !is_base_of_template_v<Y, SGBase>;
+        requires !is_base_of_template_v<Y, StateMachine>;
     }
     void registerMemberForSerialize(std::string_view str, Y T::*ptr) {
         auto func = [=](auto t) -> TU {
@@ -513,10 +555,6 @@ void Importers::register_importer(int64_t priority) {
 }
 
 struct Enums::Reflect {
-    std::string_view to_value(uint64_t);
-
-    uint64_t to_value(std::string_view);
-
     const Data &d;
 };
 
@@ -524,10 +562,10 @@ template<typename T>
 struct Enums::Register {
 
     void setReflection(std::initializer_list<std::pair<T, std::string_view>> l) {
-        std::vector<std::pair<uint64_t, std::string_view>> m;
+        std::vector<std::string_view> m;
         m.reserve(l.size());
         for (auto &&i : l) {
-            m.emplace_back(static_cast<uint64_t>(i.first), i.second);
+            m.emplace_back(i.second);
         }
         d.members = std::move(m);
     }
@@ -536,8 +574,8 @@ struct Enums::Register {
 };
 
 template<typename T>
+requires std::is_enum<T>::value
 auto Enums::register_enum(std::string_view) {
-    static_assert(std::is_enum<T>::value);
     auto it = reflection.find(typeid(T));
     if (it != reflection.end()) {
         return Register < T > {it->second};
@@ -548,4 +586,54 @@ auto Enums::register_enum(std::string_view) {
     auto[it2, b2] = reflection.emplace(typeid(T), result);
 
     return Register < T > {it2->second};
+}
+
+namespace {
+    template<class T>
+    constexpr std::string_view get_name() {
+        char const *p = __PRETTY_FUNCTION__;
+        while (*p++ != '=');
+        for (; *p == ' '; ++p);
+        char const *p2 = p;
+        int count = 1;
+        bool ret = false;
+        for (;; ++p2) {
+            switch (*p2) {
+                case '[':
+                    ++count;
+                    break;
+                case ']':
+                    --count;
+                    if (!count) {
+                        if (ret) {
+                            while (*p2 != ';') { p2--; }
+                        }
+
+                        return {p, std::size_t(p2 - p)};
+                    }
+                    break;
+                case '=':
+                    ret = true;
+            }
+        }
+        return {p};
+    }
+}
+
+template<typename Z>
+static constexpr void register_stStateMachineHelper(std::vector<std::string_view> &arg) {
+    arg.emplace_back(get_name<Z>());
+}
+
+template<typename T>
+requires is_base_of_template_v<T, StateMachine>
+void Enums::register_st(std::string_view) {
+    auto it = reflection.find(typeid(T));
+    if (it != reflection.end()) { return; }
+
+    auto &object = reflection[typeid(T)];
+    []<typename... Args>(StateMachine<Args...> *, Enums::Data &arg) {
+        (register_stStateMachineHelper<Args>(arg.members), ...);
+    }((T *) (nullptr), object);
+
 }
