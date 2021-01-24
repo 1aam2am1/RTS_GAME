@@ -12,6 +12,7 @@ class Enemy;
 class Ship : public MonoBehaviour {
 public:
     TPtr<Transform> target;
+    sf::Vector3f target_position_goto{};
 
     float force = 10;
     float visibility = 7;
@@ -19,15 +20,13 @@ public:
     float life = 10;
 
     TPtr<Enemy> parent;
-protected:
-    friend class Enemy;
-
     TPtr<Rigidbody2D> rigidbody;
-
-
+protected:
     virtual void OnUpdate() = 0;
 
     virtual void OnFixedUpdate() = 0;
+
+    void OnCollisionStay2D(const Collision2D &other) override;
 
 private:
     void Start() final;

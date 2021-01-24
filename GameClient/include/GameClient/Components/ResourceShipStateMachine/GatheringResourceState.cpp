@@ -47,23 +47,35 @@ void GatheringResourceState::onEnter() {
             ship->target = res->transform();
         }
     }
+}
 
+Maybe<TransitionTo<TransportState>, TransitionTo<GoToState>> GatheringResourceState::handle(UpdateEvent &) {
     if (!ship->target) {
+        const auto calculate_points = [&](const TPtr<Resource> &r) {
+            if (!r) { return -1.0f; }
+            auto o2 = ship->transform()->localPosition() - r->transform()->localPosition();
+            auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y);
+
+
+            if (ship->parent->needed[r->type] >= 0.98f) {
+                return r->volume + 20 - l2 * 5.0f;
+            }
+
+            auto val = r->volume * ship->parent->needed[r->type] * ship->parent->needed[r->type];
+
+            return val - l2 * l2 * 10;
+        };
+
+        float value_points = -FLT_MAX;
         for (auto &&res : Resource::resources) {
             auto point = calculate_points(res);
 
-            if (point > value_points || !ship->target) {
+            if (point > value_points) {
                 value_points = point;
-                ship->target = res->transform();
+                ship->target_position_goto = res->transform()->localPosition();
             }
         }
-    }
-}
-
-Maybe<TransitionTo<TransportState>> GatheringResourceState::handle(UpdateEvent &) {
-    if (!ship->target) {
-        onEnter();
-        return Nothing{};
+        return TransitionTo<GoToState>{};
     }
 
     auto res = ship->target->GetComponent<Resource>();
@@ -99,6 +111,9 @@ Maybe<TransitionTo<AttackState>, TransitionTo<FleeState>> GatheringResourceState
         return TransitionTo<AttackState>{};
     }
     if (ship->parent->cell == mono_state::wait)
+        return TransitionTo<FleeState>{};
+
+    if (ship->parent->cell == mono_state::flee)
         return TransitionTo<FleeState>{};
 
     return Nothing{};

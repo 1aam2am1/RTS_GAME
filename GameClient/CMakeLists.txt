@@ -225,6 +225,8 @@ set(SRC
         include/GameClient/Unity/StateMachine/Will.h
         include/GameClient/Unity/Physics2D/Physics2D.cpp
         include/GameClient/Unity/Physics2D/Physics2D.h
+        include/GameClient/Components/ResourceShipStateMachine/GoToState.cpp
+        include/GameClient/Components/ResourceShipStateMachine/GoToState.h
         )
 
 add_executable(GameClient ${SRC})

@@ -8,6 +8,7 @@
 #include <box2d/b2_draw.h>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <Physics2D/Physics2D.h>
 
 
 MENU_ITEM(SceneWindow::Init, "Window/General/Scene", 5);
@@ -211,17 +212,17 @@ void SceneWindow::OnGUI() {
     ImGui::Image(texture.getTexture());
     ImGui::SetCursorPos(cursor_pos);
 
+    sf::Transform transform;
+
+    transform.translate(origin.x, origin.y);
+    transform.scale(texture.getSize().y / (2.f * orthographicSize),
+                    texture.getSize().y / (2.f * orthographicSize));
+
+    transform.translate(-position.x, position.y);
+
+    transform.scale(1.f, -1.f);
+
     if (global.mis.draw_gizmo) {
-        sf::Transform transform;
-
-        transform.translate(origin.x, origin.y);
-        transform.scale(texture.getSize().y / (2.f * orthographicSize),
-                        texture.getSize().y / (2.f * orthographicSize));
-
-        transform.translate(-position.x, position.y);
-
-        transform.scale(1.f, -1.f);
-
         //draw->AddCircle({pos.x+size.x, pos.y+size.y},5, ImColor(1.f,0.f,0.f));
 
         DebugDraw d{transform};
@@ -246,7 +247,24 @@ void SceneWindow::OnGUI() {
         const bool is_hovered = ImGui::IsItemHovered(); // Hovered
         const bool is_active = ImGui::IsItemActive();   // Held
 
-        if (is_hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        if (is_hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+            auto mouse = ImGui::GetMousePos();
+
+            mouse = transform.getInverse().transformPoint(mouse.x, mouse.y);
+
+            auto collider = Physics2D::OverlapPoint({mouse.x, mouse.y});
+            if (collider) {
+                Selection::assetGUIDs.clear();
+                ///Selection::assetGUIDs.emplace_back(AssetDatabase::G);
+
+                Selection::activeGameObject = collider->gameObject();
+                if (Selection::activeGameObject) {
+                    Selection::activeTransform = Selection::activeGameObject->transform();
+                } else {
+                    Selection::activeTransform = nullptr;
+                }
+                Selection::activeObject = Selection::activeGameObject;
+            }
             //Select body
         }
 

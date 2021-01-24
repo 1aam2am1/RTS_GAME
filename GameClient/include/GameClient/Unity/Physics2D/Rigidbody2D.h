@@ -40,6 +40,8 @@ public:
 
     void AddForce(sf::Vector2f force, ForceMode2D mode = Force);
 
+    void AddTorque(float torque, ForceMode2D mode = Force);
+
 protected:
     void Awake() override;
 

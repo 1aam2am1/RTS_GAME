@@ -104,3 +104,15 @@ void Rigidbody2D::AddForce(sf::Vector2f force, ForceMode2D mode) {
 
 }
 
+void Rigidbody2D::AddTorque(float torque, ForceMode2D mode) {
+    if (body) {
+        switch (mode) {
+            case Force:
+                body->ApplyTorque(torque, true);
+                break;
+            case Impulse:
+                body->ApplyAngularImpulse(torque, true);
+        }
+    }
+}
+

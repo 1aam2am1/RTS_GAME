@@ -9,6 +9,7 @@
 #include <box2d/box2d.h>
 #include <Core/Time.h>
 #include <numbers>
+#include <random>
 
 EXPORT_CLASS(Ship, parent, target, force, visibility, attack_force, life)
 
@@ -52,6 +53,14 @@ void Ship::FixedUpdate() {
         }
 
         rigidbody->AddForce({-where.x, -where.y});
+    }
+}
+
+void Ship::OnCollisionStay2D(const Collision2D &other) {
+    if (other.transform != target) {
+        std::random_device rd;
+        std::uniform_int_distribution<> distribx(-force, force);
+        rigidbody->AddForce({distribx(rd), distribx(rd)});
     }
 }
 /*

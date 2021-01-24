@@ -8,7 +8,7 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Components/Enemy.h>
 
-ADD_USER_COMPONENT(ResourceShip, state, time_of_flee, resource_area, speed_of_gathering, resources)
+ADD_USER_COMPONENT(ResourceShip, state, time_of_flee, resource_area, speed_of_gathering, resources, capacity)
 EXPORT_STATE_MACHINE(ResourceShip::ST)
 
 void ResourceShip::OnUpdate() {

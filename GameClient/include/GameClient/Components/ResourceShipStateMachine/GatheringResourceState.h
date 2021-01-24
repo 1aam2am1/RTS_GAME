@@ -11,6 +11,7 @@
 struct FleeState;
 struct AttackState;
 struct TransportState;
+struct GoToState;
 
 struct GatheringResourceState : Will<On<FixedUpdateEvent, Nothing>, On<ChangedBaseModeEvent, Nothing>> {
     ResourceShip *ship = nullptr;
@@ -24,7 +25,7 @@ struct GatheringResourceState : Will<On<FixedUpdateEvent, Nothing>, On<ChangedBa
 
     void onEnter();
 
-    Maybe<TransitionTo<TransportState>> handle(UpdateEvent &e);
+    Maybe<TransitionTo<TransportState>, TransitionTo<GoToState>> handle(UpdateEvent &e);
 
     Maybe<TransitionTo<AttackState>, TransitionTo<FleeState>> handle(AttackedEvent &e);
 };
