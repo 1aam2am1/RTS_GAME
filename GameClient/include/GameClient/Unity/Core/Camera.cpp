@@ -39,7 +39,8 @@ void Camera::Awake() {
 
 TPtr<Camera> Camera::main() {
     for (auto &c : global.rendering.m_cameras) {
-        if (c->enabled && c->tag.get() == "MainCamera")
+        if (c && c->enabled && c->tag.get() == "MainCamera" &&
+            c->name.empty()) //Path because Transform don't work (parent)
             return c->shared_from_this();
     }
 

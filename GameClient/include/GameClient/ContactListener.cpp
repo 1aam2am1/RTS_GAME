@@ -8,6 +8,7 @@
 #include <box2d/b2_contact.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_body.h>
+#include <Macro.h>
 
 auto to_collision = [](b2Contact *o) {
     std::pair<Collision2D, Collision2D> p;
@@ -210,7 +211,9 @@ void ContactListener::Call() {
             auto mono = o.second.first.gameObject->GetComponents<MonoBehaviour>();
             for (auto &&m : mono) {
                 if (m) {
-                    m->OnCollisionStay2D(o.second.second);
+                    try {
+                        m->OnCollisionStay2D(o.second.second);
+                    } EXCEPTION_PRINT
                 }
             }
         }
@@ -218,7 +221,9 @@ void ContactListener::Call() {
             auto mono = o.second.second.gameObject->GetComponents<MonoBehaviour>();
             for (auto &&m : mono) {
                 if (m) {
-                    m->OnCollisionStay2D(o.second.first);
+                    try {
+                        m->OnCollisionStay2D(o.second.first);
+                    } EXCEPTION_PRINT
                 }
             }
         }

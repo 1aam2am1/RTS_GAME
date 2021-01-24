@@ -6,9 +6,15 @@
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include "Enemy.h"
+#include "Placer.h"
+#include "PrefabFunc.h"
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <Core/Camera.h>
+#include <GameClient/Unity/Core/SpriteRenderer.h>
+#include <GameClient/Unity/Editor/AssetDatabase.h>
+#include <Physics2D/BoxCollider2D.h>
+#include "Building.h"
 
 
 class UserControls : public Enemy {
@@ -20,6 +26,23 @@ public:
     void Start() override {
         Enemy::Start();
         camera = FindObjectOfType<Camera>()->transform();
+
+        auto vec = AssetDatabase::LoadAllAssetRepresentationsAtPath("Assets/ships/BlueRedGreen_Spacecraft_V1.0.png");
+
+        for (auto &&v : vec) {
+            Unity::GUID guid;
+            Unity::fileID id;
+
+            AssetDatabase::TryGetGUIDAndLocalFileIdentifier(v, guid, id);
+
+            if (id == 15024732907312285945llu) {
+                ship_sprites[(int) ShipType::Attack] = dynamic_pointer_cast<Sprite>(v);
+            }
+
+            if (id == 15024732907312285942llu) {
+                ship_sprites[(int) ShipType::Resource] = dynamic_pointer_cast<Sprite>(v);
+            }
+        }
     }
 
     void Update() override {}
@@ -131,6 +154,13 @@ public:
         ImGui::Text("X: %.1f Y: %.1f", camera->localPosition().x, camera->localPosition().y);
 
         ImGui::PopStyleColor();
+    }
+
+    void createBuildingPlacer(ShipType type) {
+        auto go = Prefab_func::create_building(shared_from_this(), type);
+        go->GetComponent<Building>()->enabled = false;
+        go->AddComponent<Placer>();
+
     }
 };
 

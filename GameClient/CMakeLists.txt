@@ -227,6 +227,12 @@ set(SRC
         include/GameClient/Unity/Physics2D/Physics2D.h
         include/GameClient/Components/ResourceShipStateMachine/GoToState.cpp
         include/GameClient/Components/ResourceShipStateMachine/GoToState.h
+        include/GameClient/Components/Building.cpp
+        include/GameClient/Components/Building.h
+        include/GameClient/Components/PrefabFunc.cpp
+        include/GameClient/Components/PrefabFunc.h
+        include/GameClient/Components/Placer.cpp
+        include/GameClient/Components/Placer.h
         )
 
 add_executable(GameClient ${SRC})

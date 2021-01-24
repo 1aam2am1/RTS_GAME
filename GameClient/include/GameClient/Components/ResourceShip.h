@@ -20,7 +20,7 @@ public:
     using ST = StateMachine<AttackState, WaitState, TransportState, FleeState, GatheringResourceState, GoToState>;
     float time_of_flee = 10; ///How long to flee
     float resource_area = 1;
-    float speed_of_gathering = 5; //How fast we gather resources
+    float speed_of_gathering = 10; //How fast we gather resources
     std::map<ResourceType, float> resources;
     float capacity = 50;
 

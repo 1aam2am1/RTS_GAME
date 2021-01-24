@@ -14,7 +14,7 @@ public:
     TPtr<Transform> target;
     sf::Vector3f target_position_goto{};
 
-    float force = 10;
+    float force = 8.5;
     float visibility = 7;
     float attack_force = 1;
     float life = 10;

@@ -3,6 +3,7 @@
 //
 
 #include "Enemy.h"
+#include "Placer.h"
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
@@ -43,10 +44,6 @@ void Enemy::ProduceShip(ShipType type) {
                 }
         }
     }
-}
-
-void Enemy::createBuildingPlacer(ShipType) {
-
 }
 
 

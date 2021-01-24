@@ -178,7 +178,6 @@ void GameLoop::run() {
         m_physics_time -= Time::fixedDeltaTime;
 
         if (Application::isPlaying()) {
-            global.physics.world.ClearForces();
 
             for (auto &object : global.scene.components) {
                 auto beh = dynamic_pointer_cast<Behaviour>(object);

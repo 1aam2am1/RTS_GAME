@@ -6,6 +6,7 @@
 #define RTS_GAME_ENEMY_H
 
 #include <Core/MonoBehaviour.h>
+#include <Core/Sprite.h>
 #include "mono_state.h"
 #include "Resource.h"
 #include "Base.h"
@@ -23,7 +24,10 @@ public:
 
     void RemoveShip(TPtr<Ship>);
 
+    TPtr<Sprite> ship_sprites[2];
 protected:
+    friend class Building;
+
     std::vector<ShipType> ship_production;
 
     TPtr<Base> baze;
@@ -35,10 +39,8 @@ protected:
 
     void ProduceShip(ShipType);
 
-    void createBuildingPlacer(ShipType);
-
 protected:
-    void Start() {
+    void Start() override {
         baze = GetComponent<Base>();
         auto ob = FindObjectsOfType<Enemy>();
         for (auto &o : ob) {

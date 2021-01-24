@@ -90,6 +90,7 @@ SceneData::~SceneData() {
 
 GlobalStaticVariables::GlobalStaticVariables() noexcept {
     physics.world.SetContactListener(&physics.listener);
+    physics.world.SetAutoClearForces(true);
 }
 
 GlobalStaticVariables::~GlobalStaticVariables() {

@@ -12,7 +12,7 @@
 #include <Editor/EditorApplication.h>
 #include <utility>
 
-EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components)
+EXPORT_CLASS_CONSTRUCTOR(GameObject, []() { return newGameObject(); }, m_active, components, tag)
 
 TPtr<GameObject> newGameObject() {
     auto i = std::shared_ptr<GameObject>(new GameObject());
