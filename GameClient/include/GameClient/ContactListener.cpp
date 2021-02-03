@@ -3,6 +3,7 @@
 //
 
 #include "ContactListener.h"
+#include "Performance.h"
 #include <GameClient/Unity/Core/MonoBehaviour.h>
 #include <GameClient/TPtr.h>
 #include <box2d/b2_contact.h>
@@ -133,6 +134,8 @@ void ContactListener::Update() {
         m_trigger_stays.emplace(o, p);
     }
     to_trigger_stay.clear();
+
+    performance.RefreshData(Performance::ContactListenerUpdate);
 }
 
 void ContactListener::Call() {
@@ -168,6 +171,8 @@ void ContactListener::Call() {
         }
     };
     call_trigger(m_trigger_new, &MonoBehaviour::OnTriggerEnter2D);
+    performance.RefreshData(Performance::OnTriggerEnter2D);
+
     for (auto &&o : m_trigger_stays) {
         auto mono = o.second.first->GetComponents<MonoBehaviour>();
         if (o.second.second) {
@@ -180,7 +185,10 @@ void ContactListener::Call() {
             }
         }
     }
+    performance.RefreshData(Performance::OnTriggerStay2D);
+
     call_trigger(m_trigger_exit, &MonoBehaviour::OnTriggerExit2D);
+    performance.RefreshData(Performance::OnTriggerExit2D);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -214,6 +222,8 @@ void ContactListener::Call() {
     };
 
     call_collision(m_new, &MonoBehaviour::OnCollisionEnter2D);
+    performance.RefreshData(Performance::OnCollisionEnter2D);
+
     for (auto &&o : m_stays) {
         if (o.second.first.gameObject) {
             auto mono = o.second.first.gameObject->GetComponents<MonoBehaviour>();
@@ -236,7 +246,10 @@ void ContactListener::Call() {
             }
         }
     }
+    performance.RefreshData(Performance::OnCollisionStay2D);
+
     call_collision(m_exit, &MonoBehaviour::OnCollisionExit2D);
+    performance.RefreshData(Performance::OnCollisionExit2D);
 }
 
 bool ContactListener::empty() {

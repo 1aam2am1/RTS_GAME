@@ -91,7 +91,11 @@ protected:
 
 #define ONE_TIME_EXEC(NAME) void Unity##NAME(){if(!m_unity##NAME##ed){m_unity##NAME##ed=true;NAME();}}bool m_unity##NAME##ed = false; virtual void NAME(){}
 
-    ONE_TIME_EXEC(Awake)
+    void UnityAwake();
+
+    bool m_unityAwakeed = false;
+
+    virtual void Awake() {}
 
     ONE_TIME_EXEC(Start)
 

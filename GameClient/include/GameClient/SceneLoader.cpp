@@ -67,7 +67,6 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
                     ob->UnityAwake();
                 } EXCEPTION_PRINT
                 global.scene.data[new_id].new_components.emplace_back(ob); //To Start()
-                global.scene.all_comoponents.emplace_back(ob);
             }
         }
         global.scene.data[new_id].loading_awake.clear();

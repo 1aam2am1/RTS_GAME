@@ -5,6 +5,7 @@
 #include "MainWindow.h"
 #include "MainThread.h"
 #include "GlobalStaticVariables.h"
+#include "Performance.h"
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -95,6 +96,8 @@ void MainWindow::run() {
 
         ImGui::SFML::Update(window, deltaClock.restart()); /// ImGui Io events eating
 
+        performance.RefreshData(Performance::Event);
+
         WindowLayout::drawLayout(); /// Set basic layout and global dock window
 
         game.run(); /// Before editors because this changes Time.deltaTime
@@ -113,6 +116,7 @@ void MainWindow::run() {
                     it = windows.erase(it);
                 }
             }
+            performance.RefreshData(Performance::WindowUpdate);
 
             for (auto it = windows.begin(); it != windows.end();) {
                 if (*it) {
@@ -122,6 +126,7 @@ void MainWindow::run() {
                     it = windows.erase(it);
                 }
             }
+            performance.RefreshData(Performance::WindowDraw);
         }
 
         ///On Gui TODO: Change this for another context (context in context), do the same for ImGui Components
@@ -129,8 +134,11 @@ void MainWindow::run() {
 
         ImGui::SFML::Render(window);
         window.display();
+        performance.RefreshData(Performance::Display);
 
         ///Run invoked functions on main thread
         MainThread::run();
+        performance.RefreshData(Performance::Invoke);
+        performance.reset();
     }
 }

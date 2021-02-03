@@ -4,6 +4,7 @@
 
 #include "Component.h"
 #include <GameClient/Unity/Core/Transform.h>
+#include <GameClient/GlobalStaticVariables.h>
 
 Component::Component() :
         tag([&](auto t) { m_gameObject->tag = t; }, [&]() { return m_gameObject->tag; }) {
@@ -23,4 +24,12 @@ TPtr<Transform> Component::transform() {
 
 bool Component::CompareTag(std::string_view t) const noexcept {
     return tag.get() == t;
+}
+
+void Component::UnityAwake() {
+    if (!m_unityAwakeed) {
+        m_unityAwakeed = true;
+        Awake();
+        global.scene.all_comoponents.emplace_back(shared_from_this());
+    }
 }

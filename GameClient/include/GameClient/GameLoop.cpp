@@ -3,6 +3,7 @@
 //
 
 #include "GameLoop.h"
+#include "Performance.h"
 #include <GameClient/GlobalStaticVariables.h>
 #include <GameClient/Unity/Editor/EditorApplication.h>
 #include <GameClient/Unity/Core/Application.h>
@@ -47,6 +48,7 @@ void GameLoop::run() {
         copy.clear();
         assert(global.physics.transform_dirty.empty());
         std::swap(copy, global.physics.transform_dirty); //Declared memory back
+        performance.RefreshData(Performance::Synchronize);
     };
 
     static const auto synchronize_transform_from_box2d = []() {
@@ -64,6 +66,7 @@ void GameLoop::run() {
         }
         global.physics.transform_lock = false;
         assert(global.physics.transform_dirty.empty());
+        performance.RefreshData(Performance::Synchronize);
     };
 
 #if UNITY_EDITOR
@@ -145,7 +148,7 @@ void GameLoop::run() {
 
         m_physics_time += Time::m_deltaTime;
     }
-
+    performance.RefreshData(Performance::RunInitializer);
     ///Start
     {
         for (auto &scene: global.scene.data) {
@@ -165,12 +168,12 @@ void GameLoop::run() {
                         object = nullptr;
                     } else {
                         scene.second.new_components.emplace_back(object);
-                        global.scene.all_comoponents.emplace_back(object);
                     }
                 }
             }
         }
     }
+    performance.RefreshData(Performance::Start);
 
     /// Physics
     while (true) {
@@ -184,17 +187,19 @@ void GameLoop::run() {
         if (Application::isPlaying()) {
 
             for (auto &object : global.scene.components) {
-                auto beh = dynamic_pointer_cast<Behaviour>(object);
+                auto beh = dynamic_cast<Behaviour *>(object.get());
                 if (beh) {
                     try {
                         beh->UnityFixedUpdate();
                     } EXCEPTION_PRINT
                 }
             }
+            performance.RefreshData(Performance::FixedUpdate);
 
             synchronize_transform_to_box2d();
 
             global.physics.world.Step(Time::fixedDeltaTime, 10, 8);
+            performance.RefreshData(Performance::Box2dStep);
 
             synchronize_transform_from_box2d();
 
@@ -217,26 +222,28 @@ void GameLoop::run() {
 
     ///Update
     for (auto &object : global.scene.components) {
-        auto beh = dynamic_pointer_cast<Behaviour>(object);
+        auto beh = dynamic_cast<Behaviour *>(object.get());
         if (beh &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
             try {
                 beh->UnityUpdate(); //TODO: Call only when something happened in editor mode
             } EXCEPTION_PRINT
         }
     }
+    performance.RefreshData(Performance::Update);
 
 
     ///Late Update
     for (auto &object : global.scene.components) {
-        auto beh = dynamic_pointer_cast<Behaviour>(object);
+        auto beh = dynamic_cast<Behaviour *>(object.get());
         if (beh &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(beh, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
             try {
                 beh->UnityLateUpdate(); //TODO: Call only when something happened
             } EXCEPTION_PRINT
         }
     }
+    performance.RefreshData(Performance::LateUpdate);
 
     ///Delete objects
     {
@@ -248,6 +255,7 @@ void GameLoop::run() {
             }
         }
     }
+    performance.RefreshData(Performance::BeforeDraw);
 
     ///Scene rendering
     global.rendering.m_target().clear();
@@ -257,4 +265,5 @@ void GameLoop::run() {
         }
     }
     global.rendering.m_target().display();
+    performance.RefreshData(Performance::SceneRendering);
 }

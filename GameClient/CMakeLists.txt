@@ -237,6 +237,9 @@ set(SRC
         include/GameClient/Components/Life/Life.h
         include/GameClient/Components/Life/Attack.cpp
         include/GameClient/Components/Life/Attack.h
+        include/GameClient/Performance.cpp
+        include/GameClient/Performance.h
+        include/GameClient/Windows/PerformanceWindow.cpp
         )
 
 add_executable(GameClient ${SRC})
