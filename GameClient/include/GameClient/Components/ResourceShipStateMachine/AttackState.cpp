@@ -6,6 +6,10 @@
 #include <GameClient/Components/ResourceShip.h>
 #include <GameClient/Components/Enemy.h>
 #include <Physics2D/Physics2D.h>
+#include <Core/Time.h>
+#include <GameClient/Components/PrefabFunc.h>
+#include <numbers>
+#include <GameClient/Components/Life/Attack.h>
 
 Maybe<TransitionTo<WaitState>> AttackState::handle(UpdateEvent &) {
     if (!ship->target) {
@@ -44,6 +48,23 @@ Maybe<TransitionTo<WaitState>> AttackState::handle(UpdateEvent &) {
 }
 
 Maybe<TransitionTo<WaitState>> AttackState::handle(FixedUpdateEvent &) {
+    time_to_attack -= Time::fixedDeltaTime;
+    if (ship->target && time_to_attack <= 0) {
+        auto position = ship->transform()->localPosition();
+        auto rot = ship->transform()->localRotation();
+        auto radians = rot * std::numbers::pi / 180.0f;
+
+        constexpr float bullet_size = 1;
+
+        position.x -= bullet_size * sin(radians);
+        position.y += bullet_size * cos(radians);
+
+        auto bullet = Prefab_func::create_bullet(ship->gameObject(), position, rot);
+        bullet->GetComponent<Attack>()->attack = ship->attack_force;
+
+        time_to_attack = 3;
+    }
+
     ///TODO: Create bullets
     return Nothing{};
 }

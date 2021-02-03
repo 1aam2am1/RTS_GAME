@@ -13,9 +13,11 @@
 #include "Ship.h"
 #include "ShipType.h"
 
+class Building;
+
 class Enemy : public MonoBehaviour {
 public:
-    mono_state cell = mono_state::resource;
+    SetterEmitterP<mono_state, Enemy> cell = {this, &Enemy::ChangedObjective, mono_state::resource};
     std::map<ResourceType, float> needed = {{ResourceType::food,  0.5f},
                                             {ResourceType::metal, 0.5f},
                                             {ResourceType::water, 0.5f}};
@@ -24,11 +26,16 @@ public:
 
     void RemoveShip(TPtr<Ship>);
 
+    void AddBuilding(ShipType);
+
+    void RemoveBuilding(ShipType type);
+
     TPtr<Sprite> ship_sprites[2];
 protected:
     friend class Building;
 
     std::vector<ShipType> ship_production;
+    int buildings[2] = {0, 0};
 
     TPtr<Base> baze;
     std::vector<TPtr<Ship>> ships;
@@ -39,6 +46,7 @@ protected:
 
     void ProduceShip(ShipType);
 
+    void ChangedObjective();
 protected:
     void Start() override {
         baze = GetComponent<Base>();

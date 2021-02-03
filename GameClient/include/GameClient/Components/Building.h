@@ -21,6 +21,8 @@ private:
 
     void Start() override;
 
+    void OnDestroy() override;
+
     bool building = false;
     sf::Clock t;
 };

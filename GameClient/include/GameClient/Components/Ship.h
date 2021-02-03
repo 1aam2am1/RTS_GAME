@@ -16,11 +16,13 @@ public:
 
     float force = 8.5;
     float visibility = 7;
-    float attack_force = 1;
-    float life = 10;
+    float attack_force = 3;
 
     TPtr<Enemy> parent;
     TPtr<Rigidbody2D> rigidbody;
+
+    virtual void UpdateObjective() = 0;
+
 protected:
     virtual void OnUpdate() = 0;
 

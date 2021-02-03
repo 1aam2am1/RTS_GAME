@@ -7,6 +7,9 @@
 #include <GameClient/Unity/SceneManagement/EditorSceneManager.h>
 #include <GameClient/Unity/Editor/Selection.h>
 #include <GameClient/Unity/Core/Transform.h>
+#include <GameClient/Unity/Core/GameObject.h>
+#include <Serialization/SceneSerializer.h>
+#include <GameClient/SceneLoader.h>
 #include "FileDialogWindow.h"
 
 MENU_ITEM([]() {
@@ -57,5 +60,23 @@ CONTEXT_MENU(GameObject, "Create empty", []() {
 CONTEXT_MENU(GameObject, "Remove", []() {
     if (Selection::activeGameObject) {
         Object::DestroyImmediate(Selection::activeGameObject);
+    }
+})
+
+CONTEXT_MENU(GameObject, "Duplicate", [](){
+    if (Selection::activeGameObject) {
+        SceneSerializer ser;
+
+        auto json = ser.JsonSerializer::Serialize(Selection::activeGameObject.get());
+
+        {
+            SceneSerializer ser2;
+
+            auto go = dynamic_pointer_cast<GameObject>(ser2.JsonSerializer::Deserialize(json));
+            if(go){
+                go->name += " Copy";
+            }
+            SceneLoader::GameObjectFix(go);
+        }
     }
 })

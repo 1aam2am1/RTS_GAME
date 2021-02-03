@@ -29,24 +29,8 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
         }
         //creation of gameobjects adds them to the scene
 
-        std::function<void(const TPtr<GameObject> &)> fix = [&fix](const TPtr<GameObject> &go) {
-            if (!go) { return; }
-
-            decltype(go->components) copy = std::move(go->components);
-            go->components.clear();
-
-            for (auto &c : copy) {
-                go->AddComponent(c);
-            }
-
-            for (int i = 0; i < go->transform()->childCount(); ++i) {
-                auto child = go->transform()->GetChild(i);
-                fix(child);
-            }
-        };
-
         for (auto &ob : global.scene.data[new_id].root) {
-            fix(ob);
+            GameObjectFix(ob);
         }
 
         if (single) {
@@ -96,5 +80,21 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
     } catch (const std::exception &e) {
         global.scene.data.erase(new_id);
         GameApi::log(ERR.fmt("%s", e.what()));
+    }
+}
+
+void SceneLoader::GameObjectFix(const TPtr<GameObject> &go) {
+    if (!go) { return; }
+
+    decltype(go->components) copy = std::move(go->components);
+    go->components.clear();
+
+    for (auto &c : copy) {
+        go->AddComponent(c);
+    }
+
+    for (int i = 0; i < go->transform()->childCount(); ++i) {
+        auto child = go->transform()->GetChild(i);
+        GameObjectFix(child);
     }
 }

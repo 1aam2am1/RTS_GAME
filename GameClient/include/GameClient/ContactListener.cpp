@@ -159,7 +159,9 @@ void ContactListener::Call() {
             if (o.second) {
                 for (auto &&m : mono) {
                     if (m) {
-                        (m.get()->*f)(o.second);
+                        try {
+                            (m.get()->*f)(o.second);
+                        } EXCEPTION_PRINT
                     }
                 }
             }
@@ -171,7 +173,9 @@ void ContactListener::Call() {
         if (o.second.second) {
             for (auto &&m : mono) {
                 if (m) {
-                    m->OnTriggerStay2D(o.second.second);
+                    try {
+                        m->OnTriggerStay2D(o.second.second);
+                    } EXCEPTION_PRINT
                 }
             }
         }
@@ -189,7 +193,9 @@ void ContactListener::Call() {
                 auto mono = o.first.gameObject->template GetComponents<MonoBehaviour>();
                 for (auto &&m : mono) {
                     if (m) {
-                        (m.get()->*f)(o.second);
+                        try {
+                            (m.get()->*f)(o.second);
+                        } EXCEPTION_PRINT
                     }
                 }
             }
@@ -197,7 +203,9 @@ void ContactListener::Call() {
                 auto mono = o.second.gameObject->template GetComponents<MonoBehaviour>();
                 for (auto &&m : mono) {
                     if (m) {
-                        (m.get()->*f)(o.first);
+                        try {
+                            (m.get()->*f)(o.first);
+                        } EXCEPTION_PRINT
                     }
                 }
             }

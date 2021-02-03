@@ -58,7 +58,7 @@ public:
     [[nodiscard]] const std::vector<TPtr<GameObject>> &getRootGameObjects() const noexcept;
 
     bool operator==(const Scene &r) const noexcept {
-        return this == &r;
+        return id == r.id;
     }
 
     bool operator!=(const Scene &r) const noexcept {

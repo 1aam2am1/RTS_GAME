@@ -21,7 +21,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 9,
+              "fileID": 10,
               "guid": "0"
             }
           },
@@ -45,7 +45,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 10,
+              "fileID": 11,
               "guid": "0"
             }
           },
@@ -63,7 +63,7 @@
                   }
                 },
                 "__Node_id": {
-                  "fileID": 12,
+                  "fileID": 13,
                   "guid": "0"
                 }
               },
@@ -75,7 +75,7 @@
               "zakres": 60.0
             },
             "__Node_id": {
-              "fileID": 11,
+              "fileID": 12,
               "guid": "0"
             }
           },
@@ -99,7 +99,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 13,
+              "fileID": 14,
               "guid": "0"
             }
           },
@@ -109,11 +109,12 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 14,
+              "fileID": 15,
               "guid": "0"
             }
           }
         ],
+        "layer": 0,
         "m_Name": "MainCamera",
         "m_active": true,
         "tag": "MainCamera"
@@ -144,15 +145,16 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 15,
+              "fileID": 16,
               "guid": "0"
             }
           },
           {
-            "fileID": 12,
+            "fileID": 13,
             "guid": "0"
           }
         ],
+        "layer": 0,
         "m_Name": "Background",
         "m_active": true,
         "tag": ""
@@ -183,7 +185,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 16,
+              "fileID": 17,
               "guid": "0"
             }
           },
@@ -200,11 +202,12 @@
               "volume": 0.5
             },
             "__Node_id": {
-              "fileID": 17,
+              "fileID": 18,
               "guid": "0"
             }
           }
         ],
+        "layer": 0,
         "m_Name": "Music",
         "m_active": true,
         "tag": ""
@@ -235,7 +238,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 18,
+              "fileID": 19,
               "guid": "0"
             }
           },
@@ -248,11 +251,12 @@
               "y": 32
             },
             "__Node_id": {
-              "fileID": 19,
+              "fileID": 20,
               "guid": "0"
             }
           }
         ],
+        "layer": 0,
         "m_Name": "Generate",
         "m_active": true,
         "tag": ""
@@ -283,7 +287,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 20,
+              "fileID": 21,
               "guid": "0"
             }
           },
@@ -313,7 +317,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 21,
+              "fileID": 22,
               "guid": "0"
             }
           },
@@ -327,7 +331,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 22,
+              "fileID": 23,
               "guid": "0"
             }
           },
@@ -336,7 +340,6 @@
               "attack_force": 1.0,
               "capacity": 50.0,
               "force": 8.5,
-              "life": 10.0,
               "m_Name": "",
               "m_enabled": true,
               "parent": {
@@ -362,20 +365,20 @@
                   "ships": []
                 },
                 "__Node_id": {
-                  "fileID": 24,
+                  "fileID": 25,
                   "guid": "0"
                 }
               },
               "resource_area": 1.0,
               "resources": [],
               "speed_of_gathering": 10.0,
-              "state": "AttackState",
+              "state": "WaitState",
               "target": null,
               "time_of_flee": 10.0,
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 23,
+              "fileID": 24,
               "guid": "0"
             }
           },
@@ -391,11 +394,23 @@
               }
             },
             "__Node_id": {
-              "fileID": 25,
+              "fileID": 26,
+              "guid": "0"
+            }
+          },
+          {
+            "Life": {
+              "life": 10.0,
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 27,
               "guid": "0"
             }
           }
         ],
+        "layer": 0,
         "m_Name": "Ship",
         "m_active": true,
         "tag": ""
@@ -426,7 +441,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 26,
+              "fileID": 28,
               "guid": "0"
             }
           },
@@ -454,7 +469,7 @@
               "upper": 110.0
             },
             "__Node_id": {
-              "fileID": 27,
+              "fileID": 29,
               "guid": "0"
             }
           },
@@ -478,7 +493,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 28,
+              "fileID": 30,
               "guid": "0"
             }
           },
@@ -494,7 +509,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 29,
+              "fileID": 31,
               "guid": "0"
             }
           },
@@ -512,11 +527,12 @@
               }
             },
             "__Node_id": {
-              "fileID": 30,
+              "fileID": 32,
               "guid": "0"
             }
           }
         ],
+        "layer": 1,
         "m_Name": "UserAi",
         "m_active": true,
         "tag": ""
@@ -547,12 +563,12 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 31,
+              "fileID": 33,
               "guid": "0"
             }
           },
           {
-            "fileID": 24,
+            "fileID": 25,
             "guid": "0"
           },
           {
@@ -575,7 +591,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 32,
+              "fileID": 34,
               "guid": "0"
             }
           },
@@ -591,7 +607,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 33,
+              "fileID": 35,
               "guid": "0"
             }
           },
@@ -609,11 +625,12 @@
               }
             },
             "__Node_id": {
-              "fileID": 34,
+              "fileID": 36,
               "guid": "0"
             }
           }
         ],
+        "layer": -1,
         "m_Name": "Ai",
         "m_active": true,
         "tag": ""
@@ -644,7 +661,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 35,
+              "fileID": 37,
               "guid": "0"
             }
           },
@@ -660,7 +677,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 36,
+              "fileID": 38,
               "guid": "0"
             }
           },
@@ -678,7 +695,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 37,
+              "fileID": 39,
               "guid": "0"
             }
           },
@@ -688,24 +705,167 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 24,
+                "fileID": 29,
                 "guid": "0"
               },
               "time": 10.0,
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 38,
+              "fileID": 40,
+              "guid": "0"
+            }
+          },
+          {
+            "Life": {
+              "life": 30.0,
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 41,
               "guid": "0"
             }
           }
         ],
-        "m_Name": "GameObject",
+        "layer": 0,
+        "m_Name": "Building",
         "m_active": true,
         "tag": ""
       },
       "__Node_id": {
         "fileID": 8,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": -31.200000762939453,
+                "y": 1.7999999523162842,
+                "z": 0.0
+              },
+              "m_localRotation": 270.5,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 42,
+              "guid": "0"
+            }
+          },
+          {
+            "PolygonCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "paths": [
+                [
+                  {
+                    "x": -0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.0,
+                    "y": 0.5770000219345093
+                  }
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 43,
+              "guid": "0"
+            }
+          },
+          {
+            "Rigidbody2D": {
+              "angularDrag": 0.5,
+              "bodyType": "Dynamic",
+              "drag": 0.5,
+              "inertia": 0.10000000149011612,
+              "m_Name": "",
+              "mass": 1.0
+            },
+            "__Node_id": {
+              "fileID": 44,
+              "guid": "0"
+            }
+          },
+          {
+            "ResourceShip": {
+              "attack_force": 1.0,
+              "capacity": 50.0,
+              "force": 8.5,
+              "m_Name": "",
+              "m_enabled": true,
+              "parent": {
+                "fileID": 29,
+                "guid": "0"
+              },
+              "resource_area": 1.0,
+              "resources": [],
+              "speed_of_gathering": 10.0,
+              "state": "AttackState",
+              "target": null,
+              "time_of_flee": 10.0,
+              "visibility": 7.0
+            },
+            "__Node_id": {
+              "fileID": 45,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 15024732907312285943,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              }
+            },
+            "__Node_id": {
+              "fileID": 46,
+              "guid": "0"
+            }
+          },
+          {
+            "Life": {
+              "life": 10.0,
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 47,
+              "guid": "0"
+            }
+          }
+        ],
+        "layer": 0,
+        "m_Name": "Ship Copy",
+        "m_active": true,
+        "tag": ""
+      },
+      "__Node_id": {
+        "fileID": 9,
         "guid": "0"
       }
     }

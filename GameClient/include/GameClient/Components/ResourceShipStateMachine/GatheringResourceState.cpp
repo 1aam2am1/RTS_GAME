@@ -110,11 +110,6 @@ Maybe<TransitionTo<AttackState>, TransitionTo<FleeState>> GatheringResourceState
     if (ship->parent->cell == mono_state::attack) {
         return TransitionTo<AttackState>{};
     }
-    if (ship->parent->cell == mono_state::wait)
-        return TransitionTo<FleeState>{};
 
-    if (ship->parent->cell == mono_state::flee)
-        return TransitionTo<FleeState>{};
-
-    return Nothing{};
+    return TransitionTo<FleeState>{};
 }

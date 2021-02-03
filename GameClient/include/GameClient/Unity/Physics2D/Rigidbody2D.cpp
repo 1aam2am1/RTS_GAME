@@ -87,6 +87,7 @@ void Rigidbody2D::ChangeBody() {
     RecalculateMass();
 
     if (body) {
+        body->SetType(static_cast<b2BodyType>(bodyType()));
         body->SetLinearDamping(drag);
         body->SetAngularDamping(angularDrag);
     }

@@ -12,6 +12,7 @@ struct WaitState;
 
 struct AttackState : Will<On<AttackedEvent, Nothing>> {
     ResourceShip *ship = nullptr;
+    float time_to_attack = 0;
 
     using Will::handle;
 
@@ -27,6 +28,9 @@ struct AttackState : Will<On<AttackedEvent, Nothing>> {
     Maybe<TransitionTo<WaitState>> handle(FixedUpdateEvent &e);
 
     Maybe<TransitionTo<WaitState>> handle(ChangedBaseModeEvent &e);
+
+private:
+
 };
 
 

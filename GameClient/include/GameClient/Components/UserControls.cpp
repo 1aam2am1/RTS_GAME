@@ -107,7 +107,7 @@ public:
 
             ImGui::SetCursorPos({(size.x - button_size) / 2.0f, upper});
             if (ImGui::ButtonEx(key.data(), {0, 0}, ImGuiButtonFlags_AllowItemOverlap)) {
-                cell = static_cast<mono_state>(((int) cell + 1) % 4);
+                cell = static_cast<mono_state>(((int) cell() + 1) % 4);
             }
         }
 

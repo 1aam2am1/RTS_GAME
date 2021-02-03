@@ -11,7 +11,7 @@
 struct WaitState;
 struct AttackState;
 
-struct FleeState : Will<On<FixedUpdateEvent, Nothing>> {
+struct FleeState : Will<On<UpdateEvent, Nothing>> {
     ResourceShip *ship = nullptr;
     float not_attacked = 0;
 
@@ -24,7 +24,7 @@ struct FleeState : Will<On<FixedUpdateEvent, Nothing>> {
 
     void onEnter();
 
-    Maybe<TransitionTo<WaitState>> handle(UpdateEvent &e);
+    Maybe<TransitionTo<WaitState>> handle(FixedUpdateEvent &e);
 
     TransitionTo<FleeState> handle(AttackedEvent &) {
         not_attacked = 0;

@@ -11,7 +11,7 @@
 #include <numbers>
 #include <random>
 
-EXPORT_CLASS(Ship, parent, target, force, visibility, attack_force, life)
+EXPORT_CLASS(Ship, parent, target, force, visibility, attack_force)
 
 void Ship::Start() {
     rigidbody = GetComponent<Rigidbody2D>();
@@ -21,6 +21,7 @@ void Ship::Start() {
         Destroy(transform());
     } else {
         parent->AddShip(shared_from_this());
+        gameObject()->layer = parent->gameObject()->layer;
     }
 }
 

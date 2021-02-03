@@ -93,7 +93,7 @@ public:
                         Selection::assetGUIDs.clear();
                         clear_selection = false;
 
-                        if (ImGui::IsItemClicked(1)) {
+                        if (ImGui::IsMouseReleased(1)) {
                             ContextMenu::Init("GameObject");
                         }
                     }

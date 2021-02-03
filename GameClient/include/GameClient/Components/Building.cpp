@@ -36,5 +36,13 @@ void Building::FixedUpdate() {
 void Building::Start() {
     if (!parent) {
         Destroy(gameObject());
+    } else {
+        parent->AddBuilding(type);
+        gameObject()->layer = parent->gameObject()->layer;
     }
+}
+
+void Building::OnDestroy() {
+    if (parent)
+        parent->RemoveBuilding(type);
 }

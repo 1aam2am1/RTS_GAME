@@ -9,8 +9,8 @@
 #include <GameClient/Components/ResourceShip.h>
 #include <GameClient/Components/Enemy.h>
 
-Maybe<TransitionTo<WaitState>> FleeState::handle(UpdateEvent &) {
-    not_attacked += Time::deltaTime();
+Maybe<TransitionTo<WaitState>> FleeState::handle(FixedUpdateEvent &) {
+    not_attacked += Time::fixedDeltaTime;
     ship->target = ship->parent->transform();
 
     if (not_attacked > ship->time_of_flee) {

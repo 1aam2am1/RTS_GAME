@@ -233,6 +233,10 @@ set(SRC
         include/GameClient/Components/PrefabFunc.h
         include/GameClient/Components/Placer.cpp
         include/GameClient/Components/Placer.h
+        include/GameClient/Components/Life/Life.cpp
+        include/GameClient/Components/Life/Life.h
+        include/GameClient/Components/Life/Attack.cpp
+        include/GameClient/Components/Life/Attack.h
         )
 
 add_executable(GameClient ${SRC})

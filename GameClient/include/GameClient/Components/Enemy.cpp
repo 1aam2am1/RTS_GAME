@@ -18,6 +18,14 @@ void Enemy::AddShip(TPtr<Ship> s) {
     }
 }
 
+void Enemy::AddBuilding(ShipType type) {
+    buildings[(int) type] += 1;
+}
+
+void Enemy::RemoveBuilding(ShipType type) {
+    buildings[(int) type] -= 1;
+}
+
 void Enemy::RemoveShip(TPtr<Ship> s) {
     auto it = std::find_if(ships.begin(), ships.end(), [&](auto &&t) { return t == s; });
     if (it != ships.end()) {
@@ -45,5 +53,12 @@ void Enemy::ProduceShip(ShipType type) {
         }
     }
 }
+
+void Enemy::ChangedObjective() {
+    for (auto &&s : ships) {
+        if (s) { s->UpdateObjective(); }
+    }
+}
+
 
 
