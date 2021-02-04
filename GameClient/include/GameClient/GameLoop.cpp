@@ -88,10 +88,13 @@ void GameLoop::run() {
             //What to load?
             std::string to_load;
             if (EditorSceneManager::playModeStartScene) {
-                if (EditorSceneManager::playModeStartScene == SceneManager::GetActiveScene()) {
+                if (EditorSceneManager::playModeStartScene) {
                     to_load = "Assets/_U.unity";
                 } else {
                     to_load = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+                    if (to_load == SceneManager::GetActiveScene()->path()) {
+                        to_load = "Assets/_U.unity";
+                    }
                 }
             } else {
                 to_load = "Assets/_U.unity";

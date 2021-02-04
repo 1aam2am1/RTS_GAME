@@ -122,7 +122,8 @@ public:
 
         auto count = std::count_if(ship_production.begin(), ship_production.end(),
                                    [](auto &&b) { return b == ShipType::Attack; });
-        if (ImGui::Button(("Attack Ship (" + GameApi::to_string(count) + ")").data(), {button_size_x, 45})) {
+        if (ImGui::Button(("Attack Ship (" + GameApi::to_string(count) + ")\n(0, 200, 100)").data(),
+                          {button_size_x, 45})) {
             ProduceShip(ShipType::Attack);
             count = std::count_if(ship_production.begin(), ship_production.end(),
                                   [](auto &&b) { return b == ShipType::Attack; });
@@ -130,19 +131,20 @@ public:
 
         ImGui::SameLine();
 
-        if (ImGui::Button(("Resource Ship (" + GameApi::to_string(ship_production.size() - count) + ")").data(),
-                          {button_size_x, 45})) {
+        if (ImGui::Button(
+                ("Resource Ship (" + GameApi::to_string(ship_production.size() - count) + ")\n(0, 100, 100)").data(),
+                {button_size_x, 45})) {
             ProduceShip(ShipType::Resource);
         }
 
 
-        if (ImGui::Button("Attack Shipyard", {button_size_x, 45})) {
+        if (ImGui::Button("Attack Shipyard\n(1000, 600, 500)", {button_size_x, 45})) {
             createBuildingPlacer(ShipType::Attack);
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Resource Shipyard", {button_size_x, 45})) {
+        if (ImGui::Button("Resource Shipyard\n(1000, 300, 500)", {button_size_x, 45})) {
             createBuildingPlacer(ShipType::Resource);
         }
 
@@ -157,7 +159,8 @@ public:
     }
 
     void createBuildingPlacer(ShipType type) {
-        auto go = Prefab_func::create_building(shared_from_this(), type);
+        auto go = ProduceBuilding(type);
+        if (!go) { return; }
         go->GetComponent<Building>()->enabled = false;
         go->AddComponent<Placer>();
 

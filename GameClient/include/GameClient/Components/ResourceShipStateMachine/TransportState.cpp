@@ -8,6 +8,7 @@
 #include <GameClient/Components/ResourceShip.h>
 #include <GameClient/Components/Enemy.h>
 #include <Core/Time.h>
+#include <GameClient/Components/ResourcePoint.h>
 
 Maybe<TransitionTo<AttackState>> TransportState::handle(AttackedEvent &) {
     if (ship->parent->cell == mono_state::attack) {
@@ -18,8 +19,6 @@ Maybe<TransitionTo<AttackState>> TransportState::handle(AttackedEvent &) {
 }
 
 Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
-    ship->target = ship->parent->transform();
-
     auto o2 = ship->transform()->localPosition() - ship->target->localPosition();
     auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y) - 1;
 
@@ -48,5 +47,23 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
 }
 
 void TransportState::onEnter() {
+    auto &vec = ship->parent->GetBuildings();
+
     ship->target = ship->parent->transform();
+    double l;
+    {
+        auto o2 = ship->transform()->localPosition() - ship->target->localPosition();
+        l = std::sqrt(o2.x * o2.x + o2.y * o2.y) - 1;
+    }
+
+    for (auto &v : vec) {
+        if (!v->GetComponent<ResourcePoint>()) { continue; }
+        auto o2 = ship->transform()->localPosition() - v->transform()->localPosition();
+        auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y) - 1;
+
+        if (l > l2) {
+            l = l2;
+            ship->target = v->transform();
+        }
+    }
 }

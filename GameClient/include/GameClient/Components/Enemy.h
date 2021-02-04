@@ -12,8 +12,8 @@
 #include "Base.h"
 #include "Ship.h"
 #include "ShipType.h"
+#include "Building.h"
 
-class Building;
 
 class Enemy : public MonoBehaviour {
 public:
@@ -26,19 +26,21 @@ public:
 
     void RemoveShip(TPtr<Ship>);
 
-    void AddBuilding(ShipType);
+    void AddBuilding(TPtr<Building>);
 
-    void RemoveBuilding(ShipType type);
+    void RemoveBuilding(TPtr<Building>);
+
+    const std::vector<TPtr<Building>> &GetBuildings() const { return buildings; }
 
     TPtr<Sprite> ship_sprites[2];
 protected:
     friend class Building;
 
     std::vector<ShipType> ship_production;
-    int buildings[2] = {0, 0};
 
     TPtr<Base> baze;
     std::vector<TPtr<Ship>> ships;
+    std::vector<TPtr<Building>> buildings;
 
     TPtr<Enemy> other_enemy;
 
@@ -46,7 +48,10 @@ protected:
 
     void ProduceShip(ShipType);
 
+    TPtr<GameObject> ProduceBuilding(ShipType);
+
     void ChangedObjective();
+
 protected:
     void Start() override {
         baze = GetComponent<Base>();

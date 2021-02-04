@@ -726,6 +726,16 @@
               "fileID": 41,
               "guid": "0"
             }
+          },
+          {
+            "ResourcePoint": {
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 42,
+              "guid": "0"
+            }
           }
         ],
         "layer": 0,
@@ -759,7 +769,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 42,
+              "fileID": 43,
               "guid": "0"
             }
           },
@@ -789,7 +799,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 43,
+              "fileID": 44,
               "guid": "0"
             }
           },
@@ -803,7 +813,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 44,
+              "fileID": 45,
               "guid": "0"
             }
           },
@@ -821,13 +831,13 @@
               "resource_area": 1.0,
               "resources": [],
               "speed_of_gathering": 10.0,
-              "state": "AttackState",
+              "state": "WaitState",
               "target": null,
               "time_of_flee": 10.0,
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 45,
+              "fileID": 46,
               "guid": "0"
             }
           },
@@ -843,7 +853,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 46,
+              "fileID": 47,
               "guid": "0"
             }
           },
@@ -854,7 +864,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 47,
+              "fileID": 48,
               "guid": "0"
             }
           }

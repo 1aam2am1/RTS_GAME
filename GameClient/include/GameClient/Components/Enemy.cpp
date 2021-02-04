@@ -4,6 +4,7 @@
 
 #include "Enemy.h"
 #include "Placer.h"
+#include "PrefabFunc.h"
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
@@ -18,12 +19,20 @@ void Enemy::AddShip(TPtr<Ship> s) {
     }
 }
 
-void Enemy::AddBuilding(ShipType type) {
-    buildings[(int) type] += 1;
+void Enemy::AddBuilding(TPtr<Building> b) {
+    auto it = std::find_if(buildings.begin(), buildings.end(), [&](auto &&t) { return t == b; });
+    if (it == buildings.end()) {
+        buildings.emplace_back(b);
+        b->parent = static_pointer_cast<Enemy>(shared_from_this());
+    }
 }
 
-void Enemy::RemoveBuilding(ShipType type) {
-    buildings[(int) type] -= 1;
+void Enemy::RemoveBuilding(TPtr<Building> b) {
+    auto it = std::find_if(buildings.begin(), buildings.end(), [&](auto &&t) { return t == b; });
+    if (it != buildings.end()) {
+        buildings.erase(it);
+        b->parent = nullptr;
+    }
 }
 
 void Enemy::RemoveShip(TPtr<Ship> s) {
@@ -58,6 +67,30 @@ void Enemy::ChangedObjective() {
     for (auto &&s : ships) {
         if (s) { s->UpdateObjective(); }
     }
+}
+
+TPtr<GameObject> Enemy::ProduceBuilding(ShipType type) {
+    if (baze->resources[ResourceType::food] >= 500 && baze->resources[ResourceType::water] >= 1000) {
+        switch (type) {
+            case ShipType::Resource:
+                if (baze->resources[ResourceType::metal] >= 300) {
+                    baze->resources[ResourceType::food] -= 500;
+                    baze->resources[ResourceType::metal] -= 300;
+                    baze->resources[ResourceType::water] -= 1000;
+                    return Prefab_func::create_building(shared_from_this(), type);
+                }
+                break;
+            case ShipType::Attack:
+                if (baze->resources[ResourceType::metal] >= 600) {
+                    baze->resources[ResourceType::food] -= 500;
+                    baze->resources[ResourceType::metal] -= 600;
+                    baze->resources[ResourceType::water] -= 1000;
+                    return Prefab_func::create_building(shared_from_this(), type);
+                }
+        }
+    }
+
+    return {};
 }
 
 

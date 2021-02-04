@@ -23,6 +23,9 @@ public:
     sf::Vector2f relativeVelocity; //<	The relative linear velocity of the two colliding objects (Read Only).
     TPtr<Rigidbody2D> rigidbody; //<	The incoming Rigidbody2D involved in the collision with the otherRigidbody.
     TPtr<Transform> transform; //<	The Transform of the incoming object involved in the collision.
+
+
+    sf::Vector2f normal;
 };
 
 

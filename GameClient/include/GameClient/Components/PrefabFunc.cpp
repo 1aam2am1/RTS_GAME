@@ -13,6 +13,7 @@
 #include "Enemy.h"
 #include "ResourceShip.h"
 #include "Building.h"
+#include "ResourcePoint.h"
 
 TPtr<GameObject> Prefab_func::create_ship(TPtr<Enemy> parent, ShipType type, sf::Vector3f position) {
     auto go = newGameObject("Ship");
@@ -50,6 +51,7 @@ TPtr<GameObject> Prefab_func::create_building(TPtr<Enemy> parent, ShipType type)
         case ShipType::Resource:
             sr->sprite = dynamic_pointer_cast<Sprite>(
                     AssetDatabase::LoadAssetAtPath("Assets/zasoby_zbieranie.png", typeid(Sprite)));
+            go->AddComponent<ResourcePoint>();
             break;
         case ShipType::Attack:
             sr->sprite = dynamic_pointer_cast<Sprite>(

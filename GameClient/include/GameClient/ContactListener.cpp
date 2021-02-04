@@ -43,10 +43,15 @@ auto to_collision = [](b2Contact *o) {
     p.first.relativeVelocity.y =
             o->GetFixtureB()->GetBody()->GetLinearVelocity().y - o->GetFixtureA()->GetBody()->GetLinearVelocity().y;
 
+    b2WorldManifold m;
+    o->GetWorldManifold(&m);
+    p.second.normal = {m.normal.x, m.normal.y};
+
     //B
     p.second.rigidbody = p.first.otherRigidbody;
     p.second.otherRigidbody = p.first.rigidbody;
     p.second.relativeVelocity = -p.first.relativeVelocity;
+    p.first.normal = -p.second.normal;
 
     return p;
 };
@@ -149,6 +154,11 @@ void ContactListener::Call() {
                 o.first->GetFixtureA()->GetBody()->GetLinearVelocity().y;
 
         o.second.second.relativeVelocity = -o.second.first.relativeVelocity;
+
+        b2WorldManifold m;
+        o.first->GetWorldManifold(&m);
+        o.second.second.normal = {m.normal.x, m.normal.y};
+        o.second.first.normal = -o.second.second.normal;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////

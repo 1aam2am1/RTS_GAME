@@ -6,8 +6,14 @@
 #include "PrefabFunc.h"
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
+#include "Enemy.h"
 
 ADD_USER_COMPONENT(Building, type, building, parent, time)
+
+Building::Building() = default;
+
+Building::~Building() = default;
+
 
 void Building::FixedUpdate() {
     if (!parent) {
@@ -37,12 +43,12 @@ void Building::Start() {
     if (!parent) {
         Destroy(gameObject());
     } else {
-        parent->AddBuilding(type);
+        parent->AddBuilding(shared_from_this());
         gameObject()->layer = parent->gameObject()->layer;
     }
 }
 
 void Building::OnDestroy() {
     if (parent)
-        parent->RemoveBuilding(type);
+        parent->RemoveBuilding(shared_from_this());
 }

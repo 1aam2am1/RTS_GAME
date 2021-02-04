@@ -8,10 +8,15 @@
 #include <Core/MonoBehaviour.h>
 #include <SFML/System/Clock.hpp>
 #include "ShipType.h"
-#include "Enemy.h"
+
+class Enemy;
 
 class Building : public MonoBehaviour {
 public:
+    Building();
+
+    ~Building();
+
     ShipType type;
     TPtr<Enemy> parent;
     float time = 10;
