@@ -242,6 +242,8 @@ set(SRC
         include/GameClient/Windows/PerformanceWindow.cpp
         include/GameClient/Components/ResourcePoint.cpp
         include/GameClient/Components/ResourcePoint.h
+        include/GameClient/Components/Pause.cpp
+        include/GameClient/Components/Pause.h
         )
 
 add_executable(GameClient ${SRC})

@@ -254,6 +254,16 @@
               "fileID": 20,
               "guid": "0"
             }
+          },
+          {
+            "Pause": {
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 21,
+              "guid": "0"
+            }
           }
         ],
         "layer": 0,
@@ -287,7 +297,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 21,
+              "fileID": 22,
               "guid": "0"
             }
           },
@@ -317,7 +327,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 22,
+              "fileID": 23,
               "guid": "0"
             }
           },
@@ -331,7 +341,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 23,
+              "fileID": 24,
               "guid": "0"
             }
           },
@@ -365,7 +375,7 @@
                   "ships": []
                 },
                 "__Node_id": {
-                  "fileID": 25,
+                  "fileID": 26,
                   "guid": "0"
                 }
               },
@@ -378,7 +388,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 24,
+              "fileID": 25,
               "guid": "0"
             }
           },
@@ -394,7 +404,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 26,
+              "fileID": 27,
               "guid": "0"
             }
           },
@@ -405,7 +415,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 27,
+              "fileID": 28,
               "guid": "0"
             }
           }
@@ -441,7 +451,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 28,
+              "fileID": 29,
               "guid": "0"
             }
           },
@@ -469,7 +479,7 @@
               "upper": 110.0
             },
             "__Node_id": {
-              "fileID": 29,
+              "fileID": 30,
               "guid": "0"
             }
           },
@@ -493,7 +503,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 30,
+              "fileID": 31,
               "guid": "0"
             }
           },
@@ -509,7 +519,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 31,
+              "fileID": 32,
               "guid": "0"
             }
           },
@@ -527,7 +537,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 32,
+              "fileID": 33,
               "guid": "0"
             }
           }
@@ -563,12 +573,12 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 33,
+              "fileID": 34,
               "guid": "0"
             }
           },
           {
-            "fileID": 25,
+            "fileID": 26,
             "guid": "0"
           },
           {
@@ -591,7 +601,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 34,
+              "fileID": 35,
               "guid": "0"
             }
           },
@@ -607,7 +617,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 35,
+              "fileID": 36,
               "guid": "0"
             }
           },
@@ -625,7 +635,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 36,
+              "fileID": 37,
               "guid": "0"
             }
           }
@@ -661,7 +671,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 37,
+              "fileID": 38,
               "guid": "0"
             }
           },
@@ -677,7 +687,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 38,
+              "fileID": 39,
               "guid": "0"
             }
           },
@@ -695,7 +705,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 39,
+              "fileID": 40,
               "guid": "0"
             }
           },
@@ -705,14 +715,14 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 29,
+                "fileID": 30,
                 "guid": "0"
               },
               "time": 10.0,
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 40,
+              "fileID": 41,
               "guid": "0"
             }
           },
@@ -723,7 +733,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 41,
+              "fileID": 42,
               "guid": "0"
             }
           },
@@ -733,7 +743,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 42,
+              "fileID": 43,
               "guid": "0"
             }
           }
@@ -769,7 +779,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 43,
+              "fileID": 44,
               "guid": "0"
             }
           },
@@ -799,7 +809,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 44,
+              "fileID": 45,
               "guid": "0"
             }
           },
@@ -813,7 +823,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 45,
+              "fileID": 46,
               "guid": "0"
             }
           },
@@ -825,7 +835,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 29,
+                "fileID": 30,
                 "guid": "0"
               },
               "resource_area": 1.0,
@@ -837,7 +847,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 46,
+              "fileID": 47,
               "guid": "0"
             }
           },
@@ -853,7 +863,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 47,
+              "fileID": 48,
               "guid": "0"
             }
           },
@@ -864,7 +874,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 48,
+              "fileID": 49,
               "guid": "0"
             }
           }

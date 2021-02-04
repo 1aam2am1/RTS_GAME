@@ -34,7 +34,7 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
 
             res.second -= get;
 
-            if (get < 0.1f) {
+            if (get < 0.1f && Time::deltaTime() > 0.001f) {
                 ++empty;
             }
         }
