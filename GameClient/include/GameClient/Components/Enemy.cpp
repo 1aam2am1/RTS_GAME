@@ -8,8 +8,9 @@
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
+#include <GameClient/Unity/Editor/Menu.h>
 
-EXPORT_CLASS(Enemy, cell, needed, ships, ship_production)
+ADD_USER_COMPONENT(Enemy, resources, cell, needed, ships, ship_production)
 
 void Enemy::AddShip(TPtr<Ship> s) {
     auto it = std::find_if(ships.begin(), ships.end(), [&](auto &&t) { return t == s; });
@@ -44,19 +45,19 @@ void Enemy::RemoveShip(TPtr<Ship> s) {
 }
 
 void Enemy::ProduceShip(ShipType type) {
-    if (baze->resources[ResourceType::food] >= 100) {
+    if (resources[ResourceType::food] >= 100) {
         switch (type) {
             case ShipType::Resource:
-                if (baze->resources[ResourceType::metal] >= 100) {
-                    baze->resources[ResourceType::food] -= 100;
-                    baze->resources[ResourceType::metal] -= 100;
+                if (resources[ResourceType::metal] >= 100) {
+                    resources[ResourceType::food] -= 100;
+                    resources[ResourceType::metal] -= 100;
                     ship_production.emplace_back(type);
                 }
                 break;
             case ShipType::Attack:
-                if (baze->resources[ResourceType::metal] >= 200) {
-                    baze->resources[ResourceType::food] -= 100;
-                    baze->resources[ResourceType::metal] -= 200;
+                if (resources[ResourceType::metal] >= 200) {
+                    resources[ResourceType::food] -= 100;
+                    resources[ResourceType::metal] -= 200;
                     ship_production.emplace_back(type);
                 }
         }
@@ -70,21 +71,21 @@ void Enemy::ChangedObjective() {
 }
 
 TPtr<GameObject> Enemy::ProduceBuilding(ShipType type) {
-    if (baze->resources[ResourceType::food] >= 500 && baze->resources[ResourceType::water] >= 1000) {
+    if (resources[ResourceType::food] >= 500 && resources[ResourceType::water] >= 1000) {
         switch (type) {
             case ShipType::Resource:
-                if (baze->resources[ResourceType::metal] >= 300) {
-                    baze->resources[ResourceType::food] -= 500;
-                    baze->resources[ResourceType::metal] -= 300;
-                    baze->resources[ResourceType::water] -= 1000;
+                if (resources[ResourceType::metal] >= 300) {
+                    resources[ResourceType::food] -= 500;
+                    resources[ResourceType::metal] -= 300;
+                    resources[ResourceType::water] -= 1000;
                     return Prefab_func::create_building(shared_from_this(), type);
                 }
                 break;
             case ShipType::Attack:
-                if (baze->resources[ResourceType::metal] >= 600) {
-                    baze->resources[ResourceType::food] -= 500;
-                    baze->resources[ResourceType::metal] -= 600;
-                    baze->resources[ResourceType::water] -= 1000;
+                if (resources[ResourceType::metal] >= 600) {
+                    resources[ResourceType::food] -= 500;
+                    resources[ResourceType::metal] -= 600;
+                    resources[ResourceType::water] -= 1000;
                     return Prefab_func::create_building(shared_from_this(), type);
                 }
         }
@@ -92,6 +93,13 @@ TPtr<GameObject> Enemy::ProduceBuilding(ShipType type) {
 
     return {};
 }
+
+void Enemy::Update() {
+    if (other_enemy == nullptr) {
+        GameApi::log(CRIT << "Someone have won");
+        Application::Quit();
+    }
+};
 
 
 

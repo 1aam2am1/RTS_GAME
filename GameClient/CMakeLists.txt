@@ -190,10 +190,9 @@ set(SRC
         include/GameClient/Components/Enemy.h
         include/GameClient/Components/mono_state.h
         include/GameClient/Components/mono_state.cpp
-        include/GameClient/Components/Base.cpp
-        include/GameClient/Components/Base.h
         include/GameClient/Components/SmartCamera.cpp
         include/GameClient/Components/UserControls.cpp
+        include/GameClient/Components/UserControls.h
         include/GameClient/Components/AiEnemy.cpp
         include/GameClient/Components/AiEnemy.h
         include/GameClient/Editors/SpriteEditor.cpp

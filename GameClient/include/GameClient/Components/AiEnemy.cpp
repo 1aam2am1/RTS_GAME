@@ -10,11 +10,6 @@
 ADD_USER_COMPONENT(AiEnemy)
 
 void AiEnemy::Update() {
-    if (other_enemy == nullptr) {
-        GameApi::log(CRIT << "Someone have won");
-        Application::Quit();
-    }
-
     /// TODO: Ai min-max
 
 }

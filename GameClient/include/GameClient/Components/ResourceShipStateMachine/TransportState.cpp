@@ -30,7 +30,7 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
                 get = res.second;
             }
 
-            ship->parent->GetComponent<Base>()->resources[res.first] += get;
+            ship->parent->resources[res.first] += get;
 
             res.second -= get;
 
@@ -47,7 +47,7 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
 }
 
 void TransportState::onEnter() {
-    auto &vec = ship->parent->GetBuildings();
+    auto &vec = ship->parent->buildings;
 
     ship->target = ship->parent->transform();
     double l;
@@ -57,7 +57,9 @@ void TransportState::onEnter() {
     }
 
     for (auto &v : vec) {
-        if (!v->GetComponent<ResourcePoint>()) { continue; }
+        auto point = v->GetComponent<ResourcePoint>();
+        if (!point) { continue; }
+        if (!point->isActiveAndEnabled()) { continue; }
         auto o2 = ship->transform()->localPosition() - v->transform()->localPosition();
         auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y) - 1;
 

@@ -9,10 +9,12 @@
 #include <GameClient/Unity/Core/SpriteRenderer.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 
-class AiEnemy : public Enemy {
+class AiEnemy : public MonoBehaviour {
 public:
+    TPtr<Enemy> base;
+
     void Start() override {
-        Enemy::Start();
+        base = GetComponent<Enemy>();
 
         auto vec = AssetDatabase::LoadAllAssetRepresentationsAtPath("Assets/ships/BlueRedGreen_Spacecraft_V1.0.png");
 
@@ -23,11 +25,11 @@ public:
             AssetDatabase::TryGetGUIDAndLocalFileIdentifier(v, guid, id);
 
             if (id == 15024732907312285943llu) {
-                ship_sprites[(int) ShipType::Attack] = dynamic_pointer_cast<Sprite>(v);
+                base->ship_sprites[(int) ShipType::Attack] = dynamic_pointer_cast<Sprite>(v);
             }
 
             if (id == 15024732907312285940llu) {
-                ship_sprites[(int) ShipType::Resource] = dynamic_pointer_cast<Sprite>(v);
+                base->ship_sprites[(int) ShipType::Resource] = dynamic_pointer_cast<Sprite>(v);
             }
         }
     }

@@ -9,7 +9,6 @@
 #include <Core/Sprite.h>
 #include "mono_state.h"
 #include "Resource.h"
-#include "Base.h"
 #include "Ship.h"
 #include "ShipType.h"
 #include "Building.h"
@@ -22,6 +21,10 @@ public:
                                             {ResourceType::metal, 0.5f},
                                             {ResourceType::water, 0.5f}};
 
+    std::map<ResourceType, float> resources = {{ResourceType::food,  100},
+                                               {ResourceType::metal, 200},
+                                               {ResourceType::water, 100}};
+
     void AddShip(TPtr<Ship>);
 
     void RemoveShip(TPtr<Ship>);
@@ -30,21 +33,16 @@ public:
 
     void RemoveBuilding(TPtr<Building>);
 
-    const std::vector<TPtr<Building>> &GetBuildings() const { return buildings; }
-
     TPtr<Sprite> ship_sprites[2];
-protected:
-    friend class Building;
 
     std::vector<ShipType> ship_production;
 
-    TPtr<Base> baze;
     std::vector<TPtr<Ship>> ships;
     std::vector<TPtr<Building>> buildings;
 
     TPtr<Enemy> other_enemy;
 
-    void Update() override = 0;
+    void Update() override;
 
     void ProduceShip(ShipType);
 
@@ -54,7 +52,6 @@ protected:
 
 protected:
     void Start() override {
-        baze = GetComponent<Base>();
         auto ob = FindObjectsOfType<Enemy>();
         for (auto &o : ob) {
             if (o.get() != this) {

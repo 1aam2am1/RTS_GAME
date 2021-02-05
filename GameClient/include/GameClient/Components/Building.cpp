@@ -41,6 +41,9 @@ void Building::FixedUpdate() {
 
 void Building::Start() {
     if (!parent) {
+        parent = GetComponent<Enemy>();
+    }
+    if (!parent) {
         Destroy(gameObject());
     } else {
         parent->AddBuilding(shared_from_this());

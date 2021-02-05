@@ -9,11 +9,11 @@
 #include <numbers>
 
 Maybe<TransitionTo<WaitState>> GoToState::handle(FixedUpdateEvent &) {
-    auto where = ship->transform()->localPosition();
-    where.x -= ship->target_position_goto.x;
-    where.y -= ship->target_position_goto.y;
+    auto where = ship->target_position_goto;
+    where.x -= ship->transform()->localPosition().x;
+    where.y -= ship->transform()->localPosition().y;
 
-    ship->transform()->localRotation = std::atan2(where.y, where.x) * 180.0f / std::numbers::pi + 90.0f;
+    ship->transform()->localRotation = std::atan2(where.y, where.x) * 180.0f / std::numbers::pi - 90.0f;
 
     auto length = (std::sqrt(where.x * where.x + where.y * where.y));
     where /= length;
@@ -24,7 +24,7 @@ Maybe<TransitionTo<WaitState>> GoToState::handle(FixedUpdateEvent &) {
         return TransitionTo<WaitState>{};
     }
 
-    ship->rigidbody->AddForce({-where.x, -where.y});
+    ship->rigidbody->AddForce({where.x, where.y});
 
     return Nothing{};
 }
