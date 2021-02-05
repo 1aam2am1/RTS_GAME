@@ -244,6 +244,8 @@ set(SRC
         include/GameClient/Components/ResourcePoint.h
         include/GameClient/Components/Pause.cpp
         include/GameClient/Components/Pause.h
+        include/GameClient/Components/Bullet.cpp
+        include/GameClient/Components/Bullet.h
         )
 
 add_executable(GameClient ${SRC})

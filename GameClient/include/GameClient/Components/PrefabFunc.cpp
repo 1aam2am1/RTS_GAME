@@ -14,6 +14,7 @@
 #include "ResourceShip.h"
 #include "Building.h"
 #include "ResourcePoint.h"
+#include "Bullet.h"
 
 TPtr<GameObject> Prefab_func::create_ship(TPtr<Enemy> parent, ShipType type, sf::Vector3f position) {
     auto go = newGameObject("Ship");
@@ -83,7 +84,7 @@ TPtr<GameObject> Prefab_func::create_bullet(TPtr<GameObject> parent, sf::Vector3
     box->radius = 0.2f;
 
     go->AddComponent<Attack>();
-
+    go->AddComponent<Bullet>();
 
     return go;
 }

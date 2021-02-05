@@ -19,7 +19,10 @@ Rigidbody2D::Rigidbody2D() : bodyType(this, &Rigidbody2D::ChangeBody, RigidbodyT
                              mass(this, &Rigidbody2D::ChangeBody, 1.f),
                              inertia(this, &Rigidbody2D::ChangeBody, 0.1f),
                              angularDrag(this, &Rigidbody2D::ChangeBody, 0.5f),
-                             drag(this, &Rigidbody2D::ChangeBody, 0.5f) {}
+                             drag(this, &Rigidbody2D::ChangeBody, 0.5f),
+                             velocity([this](sf::Vector2f v) { body->SetLinearVelocity({v.x, v.y}); }, [this]() {
+                                 return sf::Vector2f{body->GetLinearVelocity().x, body->GetLinearVelocity().y};
+                             }) {}
 
 Rigidbody2D::~Rigidbody2D() {
     if (!body) { return; }
