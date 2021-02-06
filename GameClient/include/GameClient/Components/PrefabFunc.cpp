@@ -12,6 +12,7 @@
 #include "PrefabFunc.h"
 #include "Enemy.h"
 #include "ResourceShip.h"
+#include "AttackShip.h"
 #include "Building.h"
 #include "ResourcePoint.h"
 #include "Bullet.h"
@@ -25,8 +26,9 @@ TPtr<GameObject> Prefab_func::create_ship(TPtr<Enemy> parent, ShipType type, sf:
     sr->sprite = parent->ship_sprites[(int) type];
     switch (type) {
         case ShipType::Attack: {
-            auto r = go->AddComponent<ResourceShip>(); //TODO: Change here
+            auto r = go->AddComponent<AttackShip>();
             r->parent = parent;
+            r->attack_force = 7;
         }
             break;
         case ShipType::Resource: {

@@ -37,6 +37,7 @@ Maybe<TransitionTo<WaitState>> AttackState::handle(UpdateEvent &) {
 
                     if (l2 < how_far) {
                         ship->target = s->transform();
+                        how_far = l2;
                     }
                 }
             }
@@ -65,7 +66,6 @@ Maybe<TransitionTo<WaitState>> AttackState::handle(FixedUpdateEvent &) {
         time_to_attack = 3;
     }
 
-    ///TODO: Create bullets
     return Nothing{};
 }
 

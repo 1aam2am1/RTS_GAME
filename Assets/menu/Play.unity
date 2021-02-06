@@ -21,7 +21,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 9,
+              "fileID": 11,
               "guid": "0"
             }
           },
@@ -45,7 +45,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 10,
+              "fileID": 12,
               "guid": "0"
             }
           },
@@ -63,7 +63,7 @@
                   }
                 },
                 "__Node_id": {
-                  "fileID": 12,
+                  "fileID": 14,
                   "guid": "0"
                 }
               },
@@ -75,7 +75,7 @@
               "zakres": 60.0
             },
             "__Node_id": {
-              "fileID": 11,
+              "fileID": 13,
               "guid": "0"
             }
           },
@@ -99,7 +99,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 13,
+              "fileID": 15,
               "guid": "0"
             }
           },
@@ -109,7 +109,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 14,
+              "fileID": 16,
               "guid": "0"
             }
           }
@@ -145,12 +145,12 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 15,
+              "fileID": 17,
               "guid": "0"
             }
           },
           {
-            "fileID": 12,
+            "fileID": 14,
             "guid": "0"
           }
         ],
@@ -185,7 +185,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 16,
+              "fileID": 18,
               "guid": "0"
             }
           },
@@ -202,7 +202,7 @@
               "volume": 0.5
             },
             "__Node_id": {
-              "fileID": 17,
+              "fileID": 19,
               "guid": "0"
             }
           }
@@ -238,7 +238,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 18,
+              "fileID": 20,
               "guid": "0"
             }
           },
@@ -251,7 +251,7 @@
               "y": 32
             },
             "__Node_id": {
-              "fileID": 19,
+              "fileID": 21,
               "guid": "0"
             }
           },
@@ -261,7 +261,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 20,
+              "fileID": 22,
               "guid": "0"
             }
           }
@@ -297,7 +297,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 21,
+              "fileID": 23,
               "guid": "0"
             }
           },
@@ -327,7 +327,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 22,
+              "fileID": 24,
               "guid": "0"
             }
           },
@@ -341,7 +341,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 23,
+              "fileID": 25,
               "guid": "0"
             }
           },
@@ -389,7 +389,7 @@
                   "ships": []
                 },
                 "__Node_id": {
-                  "fileID": 25,
+                  "fileID": 27,
                   "guid": "0"
                 }
               },
@@ -402,7 +402,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 24,
+              "fileID": 26,
               "guid": "0"
             }
           },
@@ -413,12 +413,12 @@
               "m_enabled": true,
               "sortingOrder": 0,
               "sprite": {
-                "fileID": 15024732907312285943,
+                "fileID": 15024732907312285940,
                 "guid": "92a59f286009862c04fce2aaaf4dd8d2"
               }
             },
             "__Node_id": {
-              "fileID": 26,
+              "fileID": 28,
               "guid": "0"
             }
           },
@@ -429,7 +429,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 27,
+              "fileID": 29,
               "guid": "0"
             }
           }
@@ -465,7 +465,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 28,
+              "fileID": 30,
               "guid": "0"
             }
           },
@@ -481,7 +481,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 29,
+              "fileID": 31,
               "guid": "0"
             }
           },
@@ -499,7 +499,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 30,
+              "fileID": 32,
               "guid": "0"
             }
           },
@@ -510,7 +510,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 31,
+              "fileID": 33,
               "guid": "0"
             }
           },
@@ -551,7 +551,7 @@
               "ships": []
             },
             "__Node_id": {
-              "fileID": 32,
+              "fileID": 34,
               "guid": "0"
             }
           },
@@ -565,7 +565,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 33,
+              "fileID": 35,
               "guid": "0"
             }
           },
@@ -579,7 +579,7 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 34,
+              "fileID": 36,
               "guid": "0"
             }
           }
@@ -615,7 +615,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 35,
+              "fileID": 37,
               "guid": "0"
             }
           },
@@ -631,7 +631,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 36,
+              "fileID": 38,
               "guid": "0"
             }
           },
@@ -649,7 +649,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 37,
+              "fileID": 39,
               "guid": "0"
             }
           },
@@ -660,12 +660,12 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 38,
+              "fileID": 40,
               "guid": "0"
             }
           },
           {
-            "fileID": 25,
+            "fileID": 27,
             "guid": "0"
           },
           {
@@ -678,7 +678,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 39,
+              "fileID": 41,
               "guid": "0"
             }
           },
@@ -692,7 +692,7 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 40,
+              "fileID": 42,
               "guid": "0"
             }
           }
@@ -715,7 +715,7 @@
               "children": [],
               "m_Name": "",
               "m_localPosition": {
-                "x": 31.200000762939453,
+                "x": 33.0,
                 "y": 1.7999999523162842,
                 "z": 0.0
               },
@@ -728,7 +728,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 41,
+              "fileID": 43,
               "guid": "0"
             }
           },
@@ -758,7 +758,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 42,
+              "fileID": 44,
               "guid": "0"
             }
           },
@@ -772,7 +772,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 43,
+              "fileID": 45,
               "guid": "0"
             }
           },
@@ -784,7 +784,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 32,
+                "fileID": 34,
                 "guid": "0"
               },
               "resource_area": 1.0,
@@ -796,7 +796,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 44,
+              "fileID": 46,
               "guid": "0"
             }
           },
@@ -812,7 +812,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 45,
+              "fileID": 47,
               "guid": "0"
             }
           },
@@ -823,7 +823,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 46,
+              "fileID": 48,
               "guid": "0"
             }
           }
@@ -835,6 +835,260 @@
       },
       "__Node_id": {
         "fileID": 8,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 33.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 90.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 49,
+              "guid": "0"
+            }
+          },
+          {
+            "PolygonCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "paths": [
+                [
+                  {
+                    "x": -0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.0,
+                    "y": 0.5770000219345093
+                  }
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 50,
+              "guid": "0"
+            }
+          },
+          {
+            "Rigidbody2D": {
+              "angularDrag": 0.5,
+              "bodyType": "Dynamic",
+              "drag": 0.5,
+              "inertia": 0.10000000149011612,
+              "m_Name": "",
+              "mass": 1.0
+            },
+            "__Node_id": {
+              "fileID": 51,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 15024732907312285945,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              }
+            },
+            "__Node_id": {
+              "fileID": 52,
+              "guid": "0"
+            }
+          },
+          {
+            "Life": {
+              "life": 10.0,
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 53,
+              "guid": "0"
+            }
+          },
+          {
+            "AttackShip": {
+              "attack_force": 3.0,
+              "force": 8.5,
+              "m_Name": "",
+              "m_enabled": true,
+              "parent": {
+                "fileID": 34,
+                "guid": "0"
+              },
+              "state": "AttackMachine::WaitState",
+              "target": null,
+              "time_of_flee": 2.0,
+              "visibility": 7.0
+            },
+            "__Node_id": {
+              "fileID": 54,
+              "guid": "0"
+            }
+          }
+        ],
+        "layer": 0,
+        "m_Name": "Ship Attack",
+        "m_active": true,
+        "tag": ""
+      },
+      "__Node_id": {
+        "fileID": 9,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": -33.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 270.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 55,
+              "guid": "0"
+            }
+          },
+          {
+            "PolygonCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "paths": [
+                [
+                  {
+                    "x": -0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.5,
+                    "y": -0.2879999876022339
+                  },
+                  {
+                    "x": 0.0,
+                    "y": 0.5770000219345093
+                  }
+                ]
+              ]
+            },
+            "__Node_id": {
+              "fileID": 56,
+              "guid": "0"
+            }
+          },
+          {
+            "Rigidbody2D": {
+              "angularDrag": 0.5,
+              "bodyType": "Dynamic",
+              "drag": 0.5,
+              "inertia": 0.10000000149011612,
+              "m_Name": "",
+              "mass": 1.0
+            },
+            "__Node_id": {
+              "fileID": 57,
+              "guid": "0"
+            }
+          },
+          {
+            "SpriteRenderer": {
+              "forceRenderingOff": false,
+              "m_Name": "",
+              "m_enabled": true,
+              "sortingOrder": 0,
+              "sprite": {
+                "fileID": 15024732907312285943,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              }
+            },
+            "__Node_id": {
+              "fileID": 58,
+              "guid": "0"
+            }
+          },
+          {
+            "Life": {
+              "life": 10.0,
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 59,
+              "guid": "0"
+            }
+          },
+          {
+            "AttackShip": {
+              "attack_force": 3.0,
+              "force": 8.5,
+              "m_Name": "",
+              "m_enabled": true,
+              "parent": {
+                "fileID": 27,
+                "guid": "0"
+              },
+              "state": "AttackMachine::WaitState",
+              "target": null,
+              "time_of_flee": 2.0,
+              "visibility": 7.0
+            },
+            "__Node_id": {
+              "fileID": 60,
+              "guid": "0"
+            }
+          }
+        ],
+        "layer": 0,
+        "m_Name": "Ship Attack Ai",
+        "m_active": true,
+        "tag": ""
+      },
+      "__Node_id": {
+        "fileID": 10,
         "guid": "0"
       }
     }

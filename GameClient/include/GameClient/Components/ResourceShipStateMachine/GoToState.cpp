@@ -20,7 +20,6 @@ Maybe<TransitionTo<WaitState>> GoToState::handle(FixedUpdateEvent &) {
     if (length > 5.0f) {
         where *= ship->force;
     } else {
-        where *= ship->force * length / 5.0f;
         return TransitionTo<WaitState>{};
     }
 

@@ -245,6 +245,18 @@ set(SRC
         include/GameClient/Components/Pause.h
         include/GameClient/Components/Bullet.cpp
         include/GameClient/Components/Bullet.h
+        include/GameClient/Components/AttackShipStateMachine/AttackState.cpp
+        include/GameClient/Components/AttackShipStateMachine/AttackState.h
+        include/GameClient/Components/AttackShipStateMachine/WaitState.cpp
+        include/GameClient/Components/AttackShipStateMachine/WaitState.h
+        include/GameClient/Components/AttackShipStateMachine/GoToState.cpp
+        include/GameClient/Components/AttackShipStateMachine/GoToState.h
+        include/GameClient/Components/AttackShipStateMachine/FleeState.cpp
+        include/GameClient/Components/AttackShipStateMachine/FleeState.h
+        include/GameClient/Components/AttackShipStateMachine/Attacked.cpp
+        include/GameClient/Components/AttackShipStateMachine/Attacked.h
+        include/GameClient/Components/AttackShipStateMachine/Patrol.cpp
+        include/GameClient/Components/AttackShipStateMachine/Patrol.h
         )
 
 add_executable(GameClient ${SRC})

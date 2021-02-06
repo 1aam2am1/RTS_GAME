@@ -73,10 +73,10 @@ void Ship::OnCollisionStay2D(const Collision2D &other) {
 
         r3 += r1;
 
-        auto s1 = r1 * 180 / std::numbers::pi;
+        /*auto s1 = r1 * 180 / std::numbers::pi;
         auto s2 = r2 * 180 / std::numbers::pi;
         auto s3 = r3 * 180 / std::numbers::pi;
-        /* GameApi::log(
+        GameApi::log(
                  INFO << "x " << where.x << " y " << where.y << " | r1: " << r1 << " " << s1 << " | r2: " << r2 << " "
                       << s2 << " | r3: " << r3 << " " << s3);*/
         /*
