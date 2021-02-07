@@ -39,7 +39,7 @@ void AiEnemy::Update() {
     time_to_decision -= Time::deltaTime();
 
     if (!base || !base->other_enemy) { return; }
-    if (t.joinable()) { return; }
+    if (thread_runs) { return; }
 
     if (time_to_decision <= 0) {
         Data data;
@@ -74,11 +74,11 @@ void AiEnemy::Update() {
                     }
                 }
 
-                for (auto &t : data.time_to_resource_ship) {
-                    t = 0;
+                for (auto &t2 : data.time_to_resource_ship) {
+                    t2 = 0;
                 }
-                for (auto &t : data.time_to_attack_ship) {
-                    t = 0;
+                for (auto &t2 : data.time_to_attack_ship) {
+                    t2 = 0;
                 }
 
                 data.ship_life = 0;
@@ -94,7 +94,9 @@ void AiEnemy::Update() {
             write(ai, base);
         }
 
-        t = std::thread([data, depth = this->depth, base = this->base]() {
+        thread_runs = true;
+        if (t.joinable()) { t.detach(); }
+        t = std::thread([&thread_runs = this->thread_runs, data, depth = this->depth, base = this->base]() {
             auto vec = actions(data, true);
 
             Actions action = Wait;
@@ -150,6 +152,8 @@ void AiEnemy::Update() {
                     }
                 });
             }
+
+            thread_runs = false;
         });
 
         time_to_decision = 1;

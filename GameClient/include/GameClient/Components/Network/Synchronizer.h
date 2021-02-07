@@ -13,7 +13,7 @@ class Synchronizer : public MonoBehaviour {
 public:
     Synchronizer();
 
-    void Start() final;
+    void Awake() final;
 
     bool isServer();
 

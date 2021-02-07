@@ -26,17 +26,15 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
         size_t empty = 0;
         for (auto &&res : ship->resources) {
             auto get = ship->speed_of_gathering * Time::deltaTime();
-            if (get > res.second) {
+            if (get >= res.second) {
                 get = res.second;
+                ++empty;
             }
 
             ship->parent->resources[res.first] += get;
 
             res.second -= get;
 
-            if (get < 0.1f && Time::deltaTime() > 0.001f) {
-                ++empty;
-            }
         }
         if (empty == ship->resources.size()) {
             return TransitionTo<WaitState>{};

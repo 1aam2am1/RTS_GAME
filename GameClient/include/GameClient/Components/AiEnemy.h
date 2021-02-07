@@ -16,7 +16,7 @@ public:
     uint32_t depth = 20;
 
     ~AiEnemy() {
-        t.detach();
+        if (t.joinable()) { t.detach(); }
     }
 
     void Start() override {
@@ -53,6 +53,7 @@ private:
     };
 
     std::thread t;
+    std::atomic<bool> thread_runs = false;
 
     struct Data;
 

@@ -11,7 +11,7 @@ EXPORT_CLASS(Synchronizer, network)
 Synchronizer::Synchronizer() = default;
 
 
-void Synchronizer::Start() {
+void Synchronizer::Awake() {
     auto vec = FindObjectsOfType<NetworkInterface>();
     if (!vec.empty())
         network = vec[0];

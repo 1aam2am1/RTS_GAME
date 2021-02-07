@@ -86,7 +86,7 @@ void NetworkInterface::Update() {
 }
 
 void NetworkInterface::OnDestroy() {
-    t.detach();
+    if (t.joinable()) { t.detach(); }
     Disconnect();
     ClosePort();
 }
