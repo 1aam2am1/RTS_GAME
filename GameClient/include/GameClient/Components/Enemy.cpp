@@ -65,8 +65,10 @@ void Enemy::ProduceShip(ShipType type) {
 }
 
 void Enemy::ChangedObjective() {
-    for (auto &&s : ships) {
-        if (s) { s->UpdateObjective(); }
+    if (old_cell != cell()) {
+        for (auto &&s : ships) {
+            if (s) { s->UpdateObjective(); }
+        }
     }
 }
 

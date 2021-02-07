@@ -60,6 +60,8 @@ protected:
             }
         }
     }
+
+    mono_state old_cell = mono_state::resource;
 };
 
 #endif //RTS_GAME_ENEMY_H

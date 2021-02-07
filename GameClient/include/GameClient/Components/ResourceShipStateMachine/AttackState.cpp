@@ -65,7 +65,7 @@ Maybe<TransitionTo<WaitState>> AttackState::handle(FixedUpdateEvent &) {
 
         time_to_attack = 3;
     }
-
+    //TODO: Make so that we will stop before target and not go to collide with target
     return Nothing{};
 }
 

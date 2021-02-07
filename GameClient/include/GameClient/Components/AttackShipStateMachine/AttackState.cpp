@@ -76,10 +76,10 @@ namespace AttackMachine {
     }
 
     Maybe<TransitionTo<WaitState>> AttackState::handle(ChangedBaseModeEvent &) {
-        if (ship->parent->cell == mono_state::attack)
-            return Nothing{};
+        if (ship->parent->cell == mono_state::flee)
+            return TransitionTo<WaitState>{};
 
-        return TransitionTo<WaitState>{};
+        return Nothing{};
     }
 
     void AttackState::onEnter() {

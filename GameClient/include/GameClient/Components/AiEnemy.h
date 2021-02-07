@@ -12,6 +12,8 @@
 class AiEnemy : public MonoBehaviour {
 public:
     TPtr<Enemy> base;
+    float time_to_decision = 0.f;
+    uint32_t depth = 20;
 
     void Start() override {
         base = GetComponent<Enemy>();
@@ -35,6 +37,28 @@ public:
     }
 
     void Update() override;
+
+private:
+    enum Actions {
+        Attack,
+        Wait,
+        Build_attack_ship,
+        Build_resource_ship,
+        Build_attack_building,
+        Build_resource_building
+    };
+
+    struct Data;
+
+    static float min_max(const Data &d, int depth, bool max, float tA, float tB, float alfa, float beta);
+
+    static float calculate(const Data &);
+
+    static std::pair<std::array<Actions, 6>, size_t> actions(const Data &, bool max);
+
+    static Data simulate(Data d, Actions action, bool max, float time);
+
+    static float NextActionTime(const Data &d, bool max);
 };
 
 
