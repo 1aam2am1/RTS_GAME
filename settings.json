@@ -1,0 +1,14 @@
+{
+  "settings": {
+    "fixedDeltaTime": 0.019999999552965164,
+    "gravity": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "maximumDeltaTime": 0.20000000298023224,
+    "scene": "Assets/menu/Menu.unity",
+    "timeScale": 1.0,
+    "gizmo": true,
+    "orthographicSize": 3.6
+  }
+}
