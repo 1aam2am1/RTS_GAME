@@ -28,10 +28,10 @@ void GatheringResourceState::onEnter() {
 
 
         if (ship->parent->needed[r->type] >= 0.98f) {
-            return r->volume + 20 - l2 * 5.0f;
+            return r->GetVolume() + 20 - l2 * 5.0f;
         }
 
-        auto val = r->volume * ship->parent->needed[r->type] * ship->parent->needed[r->type];
+        auto val = r->GetVolume() * ship->parent->needed[r->type] * ship->parent->needed[r->type];
 
         return val - l2 * l2 * 10;
     };
@@ -58,10 +58,10 @@ Maybe<TransitionTo<TransportState>, TransitionTo<GoToState>> GatheringResourceSt
 
 
             if (ship->parent->needed[r->type] >= 0.98f) {
-                return r->volume + 20 - l2 * 5.0f;
+                return r->GetVolume() + 20 - l2 * 5.0f;
             }
 
-            auto val = r->volume * ship->parent->needed[r->type] * ship->parent->needed[r->type];
+            auto val = r->GetVolume() * ship->parent->needed[r->type] * ship->parent->needed[r->type];
 
             return val - l2 * l2 * 10;
         };
@@ -85,12 +85,12 @@ Maybe<TransitionTo<TransportState>, TransitionTo<GoToState>> GatheringResourceSt
 
         if (l2 < ship->resource_area) {
             auto get = ship->speed_of_gathering * Time::deltaTime();
-            if (get > res->volume) {
-                get = res->volume;
+            if (get > res->GetVolume()) {
+                get = res->GetVolume();
             }
 
             ship->resources[res->type] += get;
-            res->volume -= get;
+            res->RemoveFromVolume(get);
 
         }
 

@@ -43,7 +43,7 @@ void SceneManager::MoveGameObjectToScene(TPtr<GameObject> go, SceneManager::Scen
     }
     auto new_scene_id = scene->id;
 
-    if (go->scene.get() && go->scene.get()->isValid()) {
+    if (go->scene.get() && !go->scene()->isValid()) {
         GameApi::log(ERR.fmt("Game object scene is invalid. It should not happen"));
         std::terminate(); //< Should never happen #4
     }

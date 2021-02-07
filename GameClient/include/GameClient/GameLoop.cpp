@@ -191,7 +191,7 @@ void GameLoop::run() {
 
             for (auto &object : global.scene.components) {
                 auto beh = dynamic_cast<Behaviour *>(object.get());
-                if (beh) {
+                if (beh) [[likely]] {
                     try {
                         beh->UnityFixedUpdate();
                     } EXCEPTION_PRINT
@@ -227,7 +227,7 @@ void GameLoop::run() {
     for (auto &object : global.scene.components) {
         auto beh = dynamic_cast<Behaviour *>(object.get());
         if (beh &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) [[likely]] {
             try {
                 beh->UnityUpdate(); //TODO: Call only when something happened in editor mode
             } EXCEPTION_PRINT
@@ -240,7 +240,7 @@ void GameLoop::run() {
     for (auto &object : global.scene.components) {
         auto beh = dynamic_cast<Behaviour *>(object.get());
         if (beh &&
-            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) {
+            (Application::isPlaying() || Attributes::CheckCustomAttribute(object, ExecuteInEditMode))) [[likely]] {
             try {
                 beh->UnityLateUpdate(); //TODO: Call only when something happened
             } EXCEPTION_PRINT

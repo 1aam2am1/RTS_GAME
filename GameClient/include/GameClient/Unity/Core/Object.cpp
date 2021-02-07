@@ -95,8 +95,15 @@ void Object::Destroy(TPtr<Object> obj, float t) {
 
 void Object::DontDestroyOnLoad(TPtr<Object> target) {
     auto go = dynamic_pointer_cast<GameObject>(target);
-    if (go)
+    if (go) {
         global.scene.dont_destroy.emplace_back(go);
+    } else {
+        auto co = dynamic_pointer_cast<Component>(target);
+        if (co) {
+            DontDestroyOnLoad(co->gameObject());
+        }
+    }
+
 }
 
 TPtr<Object> Object::PFindObjectOfType(const std::function<bool(TPtr<>)> &check) {

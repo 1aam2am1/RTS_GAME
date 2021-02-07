@@ -6,6 +6,7 @@
 #define RTS_GAME_RESOURCE_H
 
 #include <Core/MonoBehaviour.h>
+#include <GameClient/Components/Network/SignalSynchronizer.h>
 
 enum class ResourceType {
     water = 0,
@@ -17,7 +18,14 @@ class Resource : public MonoBehaviour {
 public:
     ResourceType type = ResourceType::water;
 
-    float volume = 0;
+    float GetVolume() const { return volume; }
+
+    void RemoveFromVolume(float v) {
+        volume -= v;
+        if (signal) {
+            signal->SendMessage(0, {{"v", v}});
+        }
+    }
 
     void Awake() override {}
 
@@ -27,7 +35,13 @@ public:
         }
     }
 
-    void Start() override { resources.emplace_back(shared_from_this()); }
+    void Start() override {
+        resources.emplace_back(shared_from_this());
+        signal = GetComponent<SignalSynchronizer>();
+        if (signal) {
+            signal->OnMessage.connect(&Resource::OnGet, this);
+        }
+    }
 
     void OnDestroy() override {
         auto it = std::find_if(resources.begin(), resources.end(), [this](auto &&r) {
@@ -40,6 +54,15 @@ public:
 
 
     static std::vector<TPtr<Resource>> resources;
+
+private:
+    friend class GenerateWorld;
+
+    TPtr<SignalSynchronizer> signal;
+
+    float volume = 0;
+
+    void OnGet(int i, nlohmann::json j);
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(ResourceType,

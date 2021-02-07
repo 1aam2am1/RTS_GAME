@@ -10,6 +10,7 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <Core/Time.h>
 #include <GameClient/Components/Life/Life.h>
+#include <GameClient/MainThread.h>
 
 ADD_USER_COMPONENT(AiEnemy, base, time_to_decision, depth)
 
@@ -38,6 +39,7 @@ void AiEnemy::Update() {
     time_to_decision -= Time::deltaTime();
 
     if (!base || !base->other_enemy) { return; }
+    if (t.joinable()) { return; }
 
     if (time_to_decision <= 0) {
         Data data;
@@ -92,56 +94,63 @@ void AiEnemy::Update() {
             write(ai, base);
         }
 
-        auto vec = actions(data, true);
+        t = std::thread([data, depth = this->depth, base = this->base]() {
+            auto vec = actions(data, true);
 
-        Actions action = Wait;
+            Actions action = Wait;
 
-        auto alfa = std::numeric_limits<float>::lowest();
-        auto beta = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < vec.second; ++i) {
-            auto d = simulate(data, vec.first[i], true, 10);
-            auto val = min_max(d, depth, true,
-                               0, 0,
-                               alfa, beta);
+            auto alfa = std::numeric_limits<float>::lowest();
+            auto beta = std::numeric_limits<float>::max();
+            for (size_t i = 0; i < vec.second; ++i) {
+                auto d = simulate(data, vec.first[i], true, 10);
+                auto val = min_max(d, depth, true,
+                                   0, 0,
+                                   alfa, beta);
 
-            if (val > alfa) {
-                alfa = val;
-                action = vec.first[i];
+                if (val > alfa) {
+                    alfa = val;
+                    action = vec.first[i];
+                }
             }
-        }
+            if (base) {
+                MainThread::Invoke([base, action]() {
+                    if (!base) { return; }
+                    //Make this in main thread!!!
+                    if (base->cell == mono_state::attack && action == Wait) {
+                        base->cell = mono_state::flee;
+                    }
 
-        if (base->cell == mono_state::attack && action == Wait) {
-            base->cell = mono_state::flee;
-        }
-
-        base->cell = mono_state::wait;
-        switch (action) {
-            case Attack: {
-                base->cell = mono_state::attack;
+                    base->cell = mono_state::wait;
+                    switch (action) {
+                        case Attack: {
+                            base->cell = mono_state::attack;
+                        }
+                            break;
+                        case Wait: {
+                            base->cell = mono_state::resource;
+                        }
+                            break;
+                        case Build_attack_building: {
+                            //TODO:!!!
+                            GameApi::log(ERR << "To do");
+                        }
+                            break;
+                        case Build_resource_building: {
+                            //TODO:!!!
+                            GameApi::log(ERR << "To do");
+                        }
+                            break;
+                        case Build_attack_ship: {
+                            base->ProduceShip(ShipType::Attack);
+                        }
+                            break;
+                        case Build_resource_ship: {
+                            base->ProduceShip(ShipType::Resource);
+                        }
+                    }
+                });
             }
-                break;
-            case Wait: {
-                base->cell = mono_state::resource;
-            }
-                break;
-            case Build_attack_building: {
-                //TODO:!!!
-                GameApi::log(ERR << "To do");
-            }
-                break;
-            case Build_resource_building: {
-                //TODO:!!!
-                GameApi::log(ERR << "To do");
-            }
-                break;
-            case Build_attack_ship: {
-                base->ProduceShip(ShipType::Attack);
-            }
-                break;
-            case Build_resource_ship: {
-                base->ProduceShip(ShipType::Resource);
-            }
-        }
+        });
 
         time_to_decision = 1;
     }

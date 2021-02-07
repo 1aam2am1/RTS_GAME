@@ -13,6 +13,8 @@
 #include <random>
 #include <Core/Attributes.h>
 #include <Core/Camera.h>
+#include <GameClient/Components/Network/NetworkInterface.h>
+#include <GameClient/Components/Network/SignalSynchronizer.h>
 #include "Resource.h"
 #include "PrefabFunc.h"
 #include "UserControls.h"
@@ -35,25 +37,34 @@ public:
         std::uniform_int_distribution<> distribt(0, 3000);
 
         auto sprite = dynamic_pointer_cast<Sprite>(AssetDatabase::LoadAssetAtPath("Assets/32x32.png", typeid(Sprite)));
+        auto network = FindObjectOfType<NetworkInterface>();
 
-        for (int i = 0; i < volume; ++i) {
-            auto go = newGameObject("Asteroid " + GameApi::to_string(i));
-            go->transform()->SetParent(transform(), true);
+        if (!network || network->isServer()) {
 
-            sf::Vector3f p;
-            do {
-                p.x = distribx(rd) & ~1;
-                p.y = distriby(rd) & ~1;
-            } while ((abs(p.x) >= 34 && abs(p.x) <= 36) || (abs(p.y) >= 34 && abs(p.y) <= 36));
+            for (int i = 0; i < volume; ++i) {
+                auto go = newGameObject("Asteroid " + GameApi::to_string(i));
+                go->transform()->SetParent(transform(), true);
 
-            go->transform()->localPosition = p;
-            go->transform()->localScale = sf::Vector3f{0.55f, 0.55f, 1.f};
+                sf::Vector3f p;
+                do {
+                    p.x = distribx(rd) & ~1;
+                    p.y = distriby(rd) & ~1;
+                } while ((abs(p.x) >= 34 && abs(p.x) <= 36) || (abs(p.y) >= 34 && abs(p.y) <= 36));
 
-            go->AddComponent<SpriteRenderer>()->sprite = sprite;
-            go->AddComponent<CircleCollider2D>()->radius = 0.3;
-            auto r = go->AddComponent<Resource>();
-            r->type = static_cast<ResourceType>(distribt(rd) % 3);
-            r->volume = distribt(rd) + 300;
+                go->transform()->localPosition = p;
+                go->transform()->localScale = sf::Vector3f{0.55f, 0.55f, 1.f};
+
+                go->AddComponent<SpriteRenderer>()->sprite = sprite;
+                go->AddComponent<CircleCollider2D>()->radius = 0.3;
+                auto r = go->AddComponent<Resource>();
+                r->type = static_cast<ResourceType>(distribt(rd) % 3);
+                r->volume = distribt(rd) + 300;
+
+                if (network) {
+                    go->AddComponent<SignalSynchronizer>();
+                }
+            }
+
         }
 
         {
@@ -65,9 +76,14 @@ public:
                 std::swap(vec[0], vec[1]);
             }
 
+            if (network && !network->isServer()) {
+                std::swap(vec[0], vec[1]);
+            }
             vec[0]->gameObject()->AddComponent<UserControls>();
             Camera::main()->transform()->localPosition = vec[0]->transform()->localPosition;
-            vec[1]->gameObject()->AddComponent<AiEnemy>();
+
+            if (!network)
+                vec[1]->gameObject()->AddComponent<AiEnemy>();
         }
 
     }

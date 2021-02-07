@@ -257,6 +257,14 @@ set(SRC
         include/GameClient/Components/AttackShipStateMachine/Attacked.h
         include/GameClient/Components/AttackShipStateMachine/Patrol.cpp
         include/GameClient/Components/AttackShipStateMachine/Patrol.h
+        include/GameClient/Components/Network/NetworkInterface.cpp
+        include/GameClient/Components/Network/NetworkInterface.h
+        include/GameClient/Components/Network/FullSynchronizer.cpp
+        include/GameClient/Components/Network/FullSynchronizer.h
+        include/GameClient/Components/Network/SignalSynchronizer.cpp
+        include/GameClient/Components/Network/SignalSynchronizer.h
+        include/GameClient/Components/Network/Synchronizer.cpp
+        include/GameClient/Components/Network/Synchronizer.h
         )
 
 add_executable(GameClient ${SRC})

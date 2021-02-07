@@ -15,6 +15,10 @@ public:
     float time_to_decision = 0.f;
     uint32_t depth = 20;
 
+    ~AiEnemy() {
+        t.detach();
+    }
+
     void Start() override {
         base = GetComponent<Enemy>();
 
@@ -47,6 +51,8 @@ private:
         Build_attack_building,
         Build_resource_building
     };
+
+    std::thread t;
 
     struct Data;
 
