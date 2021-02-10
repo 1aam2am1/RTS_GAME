@@ -39,3 +39,23 @@ TPtr<> GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(Unity::GUI
     }
     return TPtr<>();
 }
+
+bool GameObjectDatabase::Register(TPtr<const Object> obj, Unity::fileID localId) {
+    auto go = dynamic_cast<const GameObject *>(obj.get());
+    auto com = dynamic_cast<const Component *>(obj.get());
+
+    if (com) { go = com->gameObject().get(); }
+
+    if (go) {
+
+        auto id = go->scene.get()->id;
+
+        auto scene = global.scene.data.find(id);
+        if (scene != global.scene.data.end()) {
+
+            return scene->second.RegisterID(localId, const_cast<Object *>(obj.get())->shared_from_this());
+        }
+    }
+
+    return false;
+}

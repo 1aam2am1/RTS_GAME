@@ -23,7 +23,6 @@ void FullSynchronizer::Update() {
 
             auto json = serializer.JsonSerializer::Serialize(v.get());
 
-            json["__FID"] = GetID(v);
             json["__Ly"] = gameObject()->layer;
             json["__GO"] = gameObject()->name;
             SendMessage(json);
@@ -33,10 +32,19 @@ void FullSynchronizer::Update() {
 
 void FullSynchronizer::ReceiveMessage(const nlohmann::json &json) {
     if (!send) {
-        auto id = json["__FID"].get<uint32_t>();
-        auto name = json["__GO"].get<std::string>();
-        gameObject()->layer = json["__Ly"].get<int>(); //Change this, when fixed serialization
-        gameObject()->name = name;
+        if (json.contains("__GO")) {
+            gameObject()->name = json["__GO"].get<std::string>();
+        }
+
+        if (json.contains("__Ly")) {
+            gameObject()->layer = json["__Ly"].get<int>(); //Change this, when fixed serialization
+        }
+
+        if (!json.contains("__Node_id") || !json["__Node_id"].is_object()) {
+            GameApi::log(ERR << "Wrong json message: " << json.dump(2, ' '));
+            return;
+        }
+        auto id = json["__Node_id"].get<GUIDFileIDPack>();
 
         auto o = GetObject(id);
 
@@ -51,7 +59,7 @@ void FullSynchronizer::ReceiveMessage(const nlohmann::json &json) {
                 if (!o) {
                     GameApi::log(ERR << "Can't add new component");
                 }
-                RegisterID(id, o);
+                RegisterID(id.id, o);
             }
 
             ///TODO: Fix serializers because there are some mayor errors in working with them

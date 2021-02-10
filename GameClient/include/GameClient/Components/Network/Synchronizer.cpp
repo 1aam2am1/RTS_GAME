@@ -5,8 +5,9 @@
 #include "Synchronizer.h"
 #include "NetworkInterface.h"
 #include <Macro.h>
+#include <GameClient/GameObjectDatabase.h>
 
-EXPORT_CLASS(Synchronizer, id)
+EXPORT_CLASS(Synchronizer)
 
 Synchronizer::Synchronizer() = default;
 
@@ -20,7 +21,7 @@ void Synchronizer::Start() {
     if (!NetworkInterface::network()) { return; }
 
     if (id == 0) {
-        id = NetworkInterface::network()->GetID();
+        id = GetID(gameObject()).id;
     }
 
     NetworkInterface::network()->RegisterReceiver(id, shared_from_this());
@@ -30,30 +31,14 @@ bool Synchronizer::isServer() {
     return NetworkInterface::network() ? NetworkInterface::network()->isServer() : false;
 }
 
-uint32_t Synchronizer::GetID(const TPtr<Object> &o) {
-    if (o.expired()) {
-        return 0;
-    }
-
-    auto it = ids.find(o.get());
-    if (it != ids.end()) {
-        return it->second;
-    }
-
-    max_id += 1;
-    auto new_id = max_id;
-    ids.emplace(o.get(), new_id);
-    ids2.emplace(new_id, o);
-    return new_id;
+GUIDFileIDPack Synchronizer::GetID(const TPtr<Object> &obj) {
+    GUIDFileIDPack pack;
+    GameObjectDatabase::TryGetGUIDAndLocalFileIdentifier(obj, pack.guid, pack.id);
+    return pack;
 }
 
-TPtr<Object> Synchronizer::GetObject(uint32_t s_id) {
-    auto it = ids2.find(s_id);
-    if (it != ids2.end()) {
-        return it->second;
-    }
-
-    return {};
+TPtr<Object> Synchronizer::GetObject(GUIDFileIDPack s_id) {
+    return GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(s_id.guid, s_id.id);
 }
 
 void Synchronizer::SendMessage(const nlohmann::json &j) {
@@ -63,22 +48,5 @@ void Synchronizer::SendMessage(const nlohmann::json &j) {
 }
 
 bool Synchronizer::RegisterID(uint32_t s_id, const TPtr<Object> &o) {
-    if (o.expired()) {
-        return false;
-    }
-
-    auto it = ids.find(o.get());
-    if (it != ids.end()) {
-        return false;
-    }
-
-    auto it2 = ids2.find(s_id);
-    if (it2 != ids2.end()) {
-        return false;
-    }
-
-    ids.emplace(o.get(), s_id);
-    ids2.emplace(s_id, o);
-
-    return true;
+    return GameObjectDatabase::Register(o, s_id);
 }

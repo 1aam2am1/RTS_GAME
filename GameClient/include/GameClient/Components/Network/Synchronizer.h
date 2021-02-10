@@ -6,6 +6,7 @@
 #define RTS_GAME_SYNCHRONIZER_H
 
 #include <Core/MonoBehaviour.h>
+#include <GameClient/GuidFileIdPack.h>
 
 class Synchronizer : public MonoBehaviour {
 public:
@@ -19,9 +20,9 @@ protected:
 
     bool isServer();
 
-    uint32_t GetID(const TPtr<Object> &);
+    GUIDFileIDPack GetID(const TPtr<Object> &);
 
-    TPtr<Object> GetObject(uint32_t);
+    TPtr<Object> GetObject(GUIDFileIDPack);
 
     bool RegisterID(uint32_t, const TPtr<Object> &);
 
@@ -33,10 +34,6 @@ private:
     friend class NetworkInterface;
 
     uint32_t id = 0;
-
-    uint32_t max_id = 1;
-    std::unordered_map<Object *, uint32_t> ids;
-    std::unordered_map<uint32_t, TPtr<Object>> ids2;
 };
 
 

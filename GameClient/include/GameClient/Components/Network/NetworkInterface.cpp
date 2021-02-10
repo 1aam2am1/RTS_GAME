@@ -129,6 +129,7 @@ bool NetworkInterface::OpenPort(int port) {
     auto result = listener.listen(port) == sf::Socket::Done;
     if (t.joinable()) { t.detach(); }
     t = std::thread([&]() {
+        socked.setBlocking(true);
         if (listener.accept(socked) != sf::Socket::Done) {
             GameApi::log(ERR << "Socked didn't connect");
         }
@@ -150,22 +151,6 @@ bool NetworkInterface::isConnected() {
 
 bool NetworkInterface::IsOpenedPort() {
     return listener.getLocalPort() != 0;
-}
-
-uint32_t NetworkInterface::GetID() {
-    if (server) {
-        if (!(max_id & 1)) {
-            max_id += 1; //server 1,3,5
-        }
-    } else {
-        if (max_id & 1) {
-            max_id += 1; //client 2,4,6
-        }
-    }
-
-    max_id += 2;
-    auto id = max_id;
-    return id;
 }
 
 void NetworkInterface::RegisterReceiver(uint32_t id, TPtr<Synchronizer> o) {

@@ -14,11 +14,15 @@ void SignalSynchronizer::Update() {
 }
 
 void SignalSynchronizer::ReceiveMessage(const nlohmann::json &json) {
-    auto id = json["__ID"].get<int>();
-    auto copy = json;
-    copy.erase("__ID");
+    if (!json.contains("__ID")) {
+        FullSynchronizer::ReceiveMessage(json);
+    } else {
+        auto id = json["__ID"].get<int>();
+        auto copy = json;
+        copy.erase("__ID");
 
-    OnMessage(id, copy);
+        OnMessage(id, copy);
+    }
 }
 
 void SignalSynchronizer::SendMessage(int id, nlohmann::json json) {

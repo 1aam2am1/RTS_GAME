@@ -21,7 +21,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 12,
+              "fileID": 2435196604,
               "guid": "0"
             }
           },
@@ -45,7 +45,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 13,
+              "fileID": 2922115693,
               "guid": "0"
             }
           },
@@ -63,7 +63,7 @@
                   }
                 },
                 "__Node_id": {
-                  "fileID": 15,
+                  "fileID": 3621357413,
                   "guid": "0"
                 }
               },
@@ -75,7 +75,7 @@
               "zakres": 60.0
             },
             "__Node_id": {
-              "fileID": 14,
+              "fileID": 2005196161,
               "guid": "0"
             }
           },
@@ -99,7 +99,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 16,
+              "fileID": 994584531,
               "guid": "0"
             }
           },
@@ -109,7 +109,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 17,
+              "fileID": 700819396,
               "guid": "0"
             }
           }
@@ -120,7 +120,7 @@
         "tag": "MainCamera"
       },
       "__Node_id": {
-        "fileID": 1,
+        "fileID": 221866831,
         "guid": "0"
       }
     },
@@ -145,12 +145,12 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 18,
+              "fileID": 3264671244,
               "guid": "0"
             }
           },
           {
-            "fileID": 15,
+            "fileID": 3621357413,
             "guid": "0"
           }
         ],
@@ -160,7 +160,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 2,
+        "fileID": 16988996,
         "guid": "0"
       }
     },
@@ -185,7 +185,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 19,
+              "fileID": 1271071571,
               "guid": "0"
             }
           },
@@ -202,7 +202,7 @@
               "volume": 0.5
             },
             "__Node_id": {
-              "fileID": 20,
+              "fileID": 3365003577,
               "guid": "0"
             }
           }
@@ -213,7 +213,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 3,
+        "fileID": 2548662289,
         "guid": "0"
       }
     },
@@ -238,7 +238,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 21,
+              "fileID": 2147188884,
               "guid": "0"
             }
           },
@@ -251,7 +251,7 @@
               "y": 32
             },
             "__Node_id": {
-              "fileID": 22,
+              "fileID": 1027198251,
               "guid": "0"
             }
           },
@@ -261,7 +261,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 23,
+              "fileID": 3246162351,
               "guid": "0"
             }
           }
@@ -272,7 +272,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 4,
+        "fileID": 3903312420,
         "guid": "0"
       }
     },
@@ -297,7 +297,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 24,
+              "fileID": 1455867291,
               "guid": "0"
             }
           },
@@ -327,7 +327,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 25,
+              "fileID": 1413044924,
               "guid": "0"
             }
           },
@@ -341,7 +341,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 26,
+              "fileID": 2002184875,
               "guid": "0"
             }
           },
@@ -397,7 +397,7 @@
                   "ships": []
                 },
                 "__Node_id": {
-                  "fileID": 28,
+                  "fileID": 3928786305,
                   "guid": "0"
                 }
               },
@@ -410,7 +410,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 27,
+              "fileID": 2069680931,
               "guid": "0"
             }
           },
@@ -426,7 +426,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 29,
+              "fileID": 80880612,
               "guid": "0"
             }
           },
@@ -437,19 +437,18 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 30,
+              "fileID": 3101784741,
               "guid": "0"
             }
           },
           {
             "FullSynchronizer": {
-              "id": 3,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 31,
+              "fileID": 2189887324,
               "guid": "0"
             }
           }
@@ -460,7 +459,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 5,
+        "fileID": 1247562697,
         "guid": "0"
       }
     },
@@ -485,7 +484,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 32,
+              "fileID": 895457133,
               "guid": "0"
             }
           },
@@ -501,7 +500,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 33,
+              "fileID": 3118841538,
               "guid": "0"
             }
           },
@@ -519,7 +518,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 34,
+              "fileID": 19868206,
               "guid": "0"
             }
           },
@@ -530,7 +529,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 35,
+              "fileID": 4161784271,
               "guid": "0"
             }
           },
@@ -579,7 +578,7 @@
               "ships": []
             },
             "__Node_id": {
-              "fileID": 36,
+              "fileID": 3030876684,
               "guid": "0"
             }
           },
@@ -593,7 +592,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 37,
+              "fileID": 3830032916,
               "guid": "0"
             }
           },
@@ -607,19 +606,18 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 38,
+              "fileID": 3595141834,
               "guid": "0"
             }
           },
           {
             "SignalSynchronizer": {
-              "id": 1,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 39,
+              "fileID": 1967294031,
               "guid": "0"
             }
           }
@@ -630,7 +628,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 6,
+        "fileID": 1617583684,
         "guid": "0"
       }
     },
@@ -655,7 +653,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 40,
+              "fileID": 1916368263,
               "guid": "0"
             }
           },
@@ -671,7 +669,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 41,
+              "fileID": 4200031131,
               "guid": "0"
             }
           },
@@ -689,7 +687,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 42,
+              "fileID": 1450240293,
               "guid": "0"
             }
           },
@@ -700,12 +698,12 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 43,
+              "fileID": 1620170169,
               "guid": "0"
             }
           },
           {
-            "fileID": 28,
+            "fileID": 3928786305,
             "guid": "0"
           },
           {
@@ -718,7 +716,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 44,
+              "fileID": 2440065011,
               "guid": "0"
             }
           },
@@ -732,19 +730,18 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 45,
+              "fileID": 409172945,
               "guid": "0"
             }
           },
           {
             "SignalSynchronizer": {
-              "id": 2,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 46,
+              "fileID": 293058415,
               "guid": "0"
             }
           }
@@ -755,7 +752,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 7,
+        "fileID": 2852582045,
         "guid": "0"
       }
     },
@@ -780,7 +777,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 47,
+              "fileID": 2037864862,
               "guid": "0"
             }
           },
@@ -810,7 +807,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 48,
+              "fileID": 534906631,
               "guid": "0"
             }
           },
@@ -824,7 +821,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 49,
+              "fileID": 4089279709,
               "guid": "0"
             }
           },
@@ -836,7 +833,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 36,
+                "fileID": 3030876684,
                 "guid": "0"
               },
               "resource_area": 1.0,
@@ -848,7 +845,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 50,
+              "fileID": 2552345411,
               "guid": "0"
             }
           },
@@ -864,7 +861,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 51,
+              "fileID": 3991557303,
               "guid": "0"
             }
           },
@@ -875,19 +872,18 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 52,
+              "fileID": 3617962672,
               "guid": "0"
             }
           },
           {
             "FullSynchronizer": {
-              "id": 4,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 53,
+              "fileID": 3113331518,
               "guid": "0"
             }
           }
@@ -898,7 +894,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 8,
+        "fileID": 1887465155,
         "guid": "0"
       }
     },
@@ -923,7 +919,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 54,
+              "fileID": 834934647,
               "guid": "0"
             }
           },
@@ -953,7 +949,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 55,
+              "fileID": 2277310929,
               "guid": "0"
             }
           },
@@ -967,7 +963,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 56,
+              "fileID": 2263645921,
               "guid": "0"
             }
           },
@@ -983,7 +979,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 57,
+              "fileID": 2085370750,
               "guid": "0"
             }
           },
@@ -994,7 +990,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 58,
+              "fileID": 4082464837,
               "guid": "0"
             }
           },
@@ -1005,7 +1001,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 36,
+                "fileID": 3030876684,
                 "guid": "0"
               },
               "state": "AttackMachine::WaitState",
@@ -1014,19 +1010,18 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 59,
+              "fileID": 2260446248,
               "guid": "0"
             }
           },
           {
             "FullSynchronizer": {
-              "id": 5,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 60,
+              "fileID": 1078688158,
               "guid": "0"
             }
           }
@@ -1037,7 +1032,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 9,
+        "fileID": 3724157344,
         "guid": "0"
       }
     },
@@ -1062,7 +1057,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 61,
+              "fileID": 3540649090,
               "guid": "0"
             }
           },
@@ -1092,7 +1087,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 62,
+              "fileID": 2816944082,
               "guid": "0"
             }
           },
@@ -1106,7 +1101,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 63,
+              "fileID": 3359454245,
               "guid": "0"
             }
           },
@@ -1122,7 +1117,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 64,
+              "fileID": 4099852122,
               "guid": "0"
             }
           },
@@ -1133,7 +1128,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 65,
+              "fileID": 1668971827,
               "guid": "0"
             }
           },
@@ -1144,7 +1139,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 28,
+                "fileID": 3928786305,
                 "guid": "0"
               },
               "state": "AttackMachine::WaitState",
@@ -1153,19 +1148,18 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 66,
+              "fileID": 337105234,
               "guid": "0"
             }
           },
           {
             "FullSynchronizer": {
-              "id": 6,
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 67,
+              "fileID": 2875401664,
               "guid": "0"
             }
           }
@@ -1176,7 +1170,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 10,
+        "fileID": 569856553,
         "guid": "0"
       }
     },
@@ -1201,7 +1195,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 68,
+              "fileID": 400764223,
               "guid": "0"
             }
           },
@@ -1219,7 +1213,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 69,
+              "fileID": 2998850397,
               "guid": "0"
             }
           },
@@ -1237,7 +1231,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 70,
+              "fileID": 102177952,
               "guid": "0"
             }
           },
@@ -1255,7 +1249,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 71,
+              "fileID": 1698392794,
               "guid": "0"
             }
           },
@@ -1273,7 +1267,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 72,
+              "fileID": 3132515397,
               "guid": "0"
             }
           }
@@ -1284,7 +1278,7 @@
         "tag": ""
       },
       "__Node_id": {
-        "fileID": 11,
+        "fileID": 3800372392,
         "guid": "0"
       }
     }

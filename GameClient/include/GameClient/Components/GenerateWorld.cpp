@@ -70,7 +70,7 @@ public:
         {
             auto vec = FindObjectsOfType<Enemy>();
             if (vec.size() != 2) {
-                throw std::runtime_error("We need to bases.");
+                throw std::runtime_error("We need two bases.");
             }
             if (vec[0]->gameObject()->name != "UserBase") {
                 std::swap(vec[0], vec[1]);
@@ -84,6 +84,18 @@ public:
 
             if (!network)
                 vec[1]->gameObject()->AddComponent<AiEnemy>();
+
+            if (network) {
+                auto s = FindObjectsOfType<Ship>();
+                for (auto &ship : s) {
+                    auto synch = ship->GetComponent<FullSynchronizer>();
+                    if (synch) {
+                        if (ship->parent == vec[0]) {
+                            synch->send = true;
+                        }
+                    }
+                }
+            }
         }
 
     }

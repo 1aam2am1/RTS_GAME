@@ -85,9 +85,6 @@ public:
                 if (ImGui::Button("Connect")) {
                     if (!network->Connect(ip, port)) {
                         ImGui::OpenPopup("###error");
-                    } else {
-                        DontDestroyOnLoad(network);
-                        SceneManager::LoadScene("Assets/menu/Play.unity");
                     }
                 }
 
@@ -102,12 +99,11 @@ public:
                 }
                 if (changed) {
                     ImGui::PopStyleColor();
-                    if (network->isConnected()) {
-                        DontDestroyOnLoad(network);
-                        SceneManager::LoadScene("Assets/menu/Play.unity");
-                    }
                 }
-
+                if (network->isConnected()) {
+                    DontDestroyOnLoad(network);
+                    SceneManager::LoadScene("Assets/menu/Play.unity");
+                }
 
                 if (ImGui::Button("Exit")) {
                     network->ClosePort();

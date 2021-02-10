@@ -17,6 +17,8 @@ public:
     TryGetGUIDAndLocalFileIdentifier(const TPtr<const Object> &obj, Unity::GUID &guid, Unity::fileID &localId);
 
     static TPtr<> TRYGetObjectFROMGUIDAndLocalFileIdentifier(Unity::GUID &guid, Unity::fileID &localId);
+
+    static bool Register(TPtr<const Object>, Unity::fileID);
 };
 
 

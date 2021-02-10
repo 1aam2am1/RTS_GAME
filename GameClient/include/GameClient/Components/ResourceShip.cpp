@@ -8,9 +8,11 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Components/Enemy.h>
 #include <GameClient/Components/Life/Attack.h>
+#include <Core/Attributes.h>
 
 ADD_USER_COMPONENT(ResourceShip, state, time_of_flee, resource_area, speed_of_gathering, resources, capacity)
 EXPORT_STATE_MACHINE(ResourceShip::ST)
+ADD_ATTRIBUTE(ResourceShip, DontNetworkSynchronize)
 
 void ResourceShip::OnUpdate() {
     UpdateEvent event{};
