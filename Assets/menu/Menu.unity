@@ -239,7 +239,9 @@
           {
             "NetworkInterface": {
               "m_Name": "",
-              "m_enabled": true
+              "m_enabled": true,
+              "print": false,
+              "server": false
             },
             "__Node_id": {
               "fileID": 15,

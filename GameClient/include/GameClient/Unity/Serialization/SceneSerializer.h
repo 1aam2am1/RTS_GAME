@@ -13,6 +13,8 @@ public:
     nlohmann::json Serialize(const std::vector<TPtr<>> &);
 
     void Deserialize(std::vector<TPtr<>> &, const nlohmann::json &);
+
+    Unity::GUID zero;
 protected:
     std::pair<GUIDFileIDPack, bool> serialize_node_callback(TPtr<const Object> ptr) override;
 

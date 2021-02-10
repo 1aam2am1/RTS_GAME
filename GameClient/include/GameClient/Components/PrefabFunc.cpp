@@ -10,6 +10,7 @@
 #include <Physics2D/CircleCollider2D.h>
 #include <GameClient/Components/Life/Attack.h>
 #include <GameClient/Components/Network/FullSynchronizer.h>
+#include <GameClient/Components/Network/NetworkInterface.h>
 #include "PrefabFunc.h"
 #include "Enemy.h"
 #include "ResourceShip.h"
@@ -23,19 +24,20 @@ TPtr<GameObject> Prefab_func::create_ship(TPtr<Enemy> parent, ShipType type, sf:
     go->AddComponent<PolygonCollider2D>();
     go->AddComponent<Rigidbody2D>();
     go->AddComponent<Life>();
-    if (Object::FindObjectOfType<NetworkInterface>())
+    if (NetworkInterface::network())
         go->AddComponent<FullSynchronizer>()->send = true;
 
     auto sr = go->AddComponent<SpriteRenderer>();
-    sr->sprite = parent->ship_sprites[(int) type];
     switch (type) {
         case ShipType::Attack: {
+            sr->sprite = parent->attack_sprite;
             auto r = go->AddComponent<AttackShip>();
             r->parent = parent;
             r->attack_force = 7;
         }
             break;
         case ShipType::Resource: {
+            sr->sprite = parent->resource_sprite;
             auto r = go->AddComponent<ResourceShip>();
             r->parent = parent;
 
@@ -51,7 +53,7 @@ TPtr<GameObject> Prefab_func::create_ship(TPtr<Enemy> parent, ShipType type, sf:
 TPtr<GameObject> Prefab_func::create_building(TPtr<Enemy> parent, ShipType type) {
     auto go = newGameObject("Building");
     go->layer = parent->gameObject()->layer;
-    if (Object::FindObjectOfType<NetworkInterface>())
+    if (NetworkInterface::network())
         go->AddComponent<FullSynchronizer>()->send = true;
 
     auto sr = go->AddComponent<SpriteRenderer>();
@@ -78,7 +80,7 @@ TPtr<GameObject> Prefab_func::create_building(TPtr<Enemy> parent, ShipType type)
 TPtr<GameObject> Prefab_func::create_bullet(TPtr<GameObject> parent, sf::Vector3f position, float direction) {
     auto go = newGameObject("Bullet");
     go->layer = parent->layer;
-    if (Object::FindObjectOfType<NetworkInterface>())
+    if (NetworkInterface::network())
         go->AddComponent<FullSynchronizer>()->send = true;
 
     go->transform()->localPosition = position;

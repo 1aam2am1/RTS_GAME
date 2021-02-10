@@ -32,6 +32,7 @@ SceneManager::SceneP EditorSceneManager::OpenScene(std::string_view scenePath, E
         auto &data = global.scene.data[new_id];
         data.isLoaded = false;
         data.path = scenePath;
+        data.guid = AssetDatabase::AssetPathToGUID(scenePath);
         data.name = fs::path(scenePath).stem().generic_string();
         data.buildIndex = -1;
     }
@@ -49,9 +50,9 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
         auto old = std::move(global.scene.data);
         global.scene.data.clear();
         MainThread::Invoke([old]() {}); //< Here delete old data
-
-        global.scene.active_scene = new_id;
     }
+
+    global.scene.active_scene = new_id;
 
     global.scene.data[new_id].isLoaded = true;
 
@@ -59,6 +60,8 @@ EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup setup, SceneManag
         auto ob = newGameObject<Camera>("MainCamera");
         ob->tag = "MainCamera";
     }
+
+    global.scene.data[new_id].guid = Unity::GUID::NewGuid();
 
     return std::shared_ptr<Scene>{new Scene(new_id)};
 }
@@ -101,6 +104,8 @@ bool EditorSceneManager::SaveScene(SceneManager::SceneP scene, std::string_view 
 
     try {
         SceneSerializer serializer;
+
+        serializer.zero = global.scene.data[scene->id].guid;
 
         nlohmann::json result;
 

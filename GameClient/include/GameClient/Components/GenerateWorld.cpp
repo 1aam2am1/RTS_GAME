@@ -61,7 +61,7 @@ public:
                 r->volume = distribt(rd) + 300;
 
                 if (network) {
-                    go->AddComponent<SignalSynchronizer>();
+                    go->AddComponent<SignalSynchronizer>()->send = true;
                 }
             }
 

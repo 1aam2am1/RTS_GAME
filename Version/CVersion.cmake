@@ -23,7 +23,7 @@ else ()
 endif ()
 
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/version.cpp"
+file(WRITE "${OUTPUT_DIR}/version.cpp"
         "#include \"Version/version.h\"\n"
         "\n"
         "\n"

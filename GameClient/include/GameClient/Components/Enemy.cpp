@@ -5,12 +5,14 @@
 #include "Enemy.h"
 #include "Placer.h"
 #include "PrefabFunc.h"
+#include "UserControls.h"
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Unity/Core/Application.h>
 #include <GameClient/Unity/Editor/Menu.h>
+#include <SceneManagement/SceneManager.h>
 
-ADD_USER_COMPONENT(Enemy, resources, cell, needed, ships, ship_production)
+ADD_USER_COMPONENT(Enemy, attack_sprite, resource_sprite, resources, cell, needed, ships, ship_production)
 
 void Enemy::AddShip(TPtr<Ship> s) {
     auto it = std::find_if(ships.begin(), ships.end(), [&](auto &&t) { return t == s; });
@@ -98,8 +100,15 @@ TPtr<GameObject> Enemy::ProduceBuilding(ShipType type) {
 
 void Enemy::Update() {
     if (other_enemy == nullptr) {
-        GameApi::log(CRIT << "Someone have won");
-        Application::Quit();
+        if (GetComponent<UserControls>()) {
+            SceneManager::LoadScene("Assets/menu/Win.unity");
+
+            if(signal){
+                signal->SendMessage(10, {});
+            }
+        } else {
+            SceneManager::LoadScene("Assets/menu/Lose.unity");
+        }
     }
 };
 

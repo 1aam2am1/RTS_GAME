@@ -24,6 +24,8 @@ private:
 
     friend class GameObject;
 
+    friend class GameObjectDatabase;
+
     const uint64_t id;
 
     explicit Scene(uint64_t id);

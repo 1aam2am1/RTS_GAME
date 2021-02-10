@@ -25,3 +25,13 @@ void SignalSynchronizer::SendMessage(int id, nlohmann::json json) {
     json["__ID"] = id;
     Synchronizer::SendMessage(json);
 }
+
+void SignalSynchronizer::Start() {
+    Synchronizer::Start();
+
+    if (send) {
+        //Crete reflection
+        FullSynchronizer::Update();
+    }
+    send = false;
+}

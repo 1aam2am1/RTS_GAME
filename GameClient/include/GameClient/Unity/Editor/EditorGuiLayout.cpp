@@ -35,7 +35,7 @@ TPtr<> EditorGUILayout::ObjectField(TPtr<> value, std::type_index objType, bool 
     std::string key = GetKey();
 
     if (value) {
-        name = GameApi::demangle(typeid(*value.get()).name()) + ": " + value->name;
+        name = GameApi::demangle(typeid(*value.get()).name()) + ": " + value->name; //TODO: AssetDatabase name[0]
     } else {
         name = GameApi::demangle(objType.name()) + ": None";
     }

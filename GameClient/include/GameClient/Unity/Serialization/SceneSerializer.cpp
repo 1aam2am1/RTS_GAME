@@ -4,6 +4,7 @@
 
 #include <Macro.h>
 #include <Editor/AssetDatabase.h>
+#include <GameClient/GameObjectDatabase.h>
 #include "SceneSerializer.h"
 
 std::pair<GUIDFileIDPack, bool> SceneSerializer::serialize_node_callback(TPtr<const Object> ptr) {
@@ -11,6 +12,15 @@ std::pair<GUIDFileIDPack, bool> SceneSerializer::serialize_node_callback(TPtr<co
 
     if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
         return {pack, false};
+    }
+    if (GameObjectDatabase::TryGetGUIDAndLocalFileIdentifier(ptr, pack.guid, pack.id)) {
+        if (pack.guid == zero) {
+            pack.guid = Unity::GUID{};
+            return {pack, true}; // Our scene, then serialize
+        } else {
+            return {pack, false}; //Not our scene then reference
+        }
+
     }
     pack.guid = "";
     pack.id = ++max_id;
@@ -27,6 +37,11 @@ TPtr<> SceneSerializer::deserialize_get_node_callback(GUIDFileIDPack pack) {
         if (AssetDatabase::TryGetGUIDAndLocalFileIdentifier(a, guid, localID) && localID == pack.id) {
             return a;
         }
+    }
+    // Get object reference from scene
+    auto ob = GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(!guid.empty() ? guid : zero, localID);
+    if (ob) {
+        return ob;
     }
     return TPtr<>{};
 }

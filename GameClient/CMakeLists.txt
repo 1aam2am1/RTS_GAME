@@ -265,17 +265,26 @@ set(SRC
         include/GameClient/Components/Network/SignalSynchronizer.h
         include/GameClient/Components/Network/Synchronizer.cpp
         include/GameClient/Components/Network/Synchronizer.h
+        include/GameClient/Components/TextCenter.cpp
+        include/GameClient/Components/TextCenter.h
+        include/GameClient/GameObjectDatabase.cpp
+        include/GameClient/GameObjectDatabase.h
         )
 
 add_executable(GameClient ${SRC})
+add_executable(Editor ${SRC})
 
 
 set_target_properties(GameClient PROPERTIES
         CXX_STANDARD ${CMAKE_CXX_STANDARD}
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF)
+set_target_properties(Editor PROPERTIES
+        CXX_STANDARD ${CMAKE_CXX_STANDARD}
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF)
 
-target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:UNITY_EDITOR>)
+target_compile_definitions(Editor PUBLIC UNITY_EDITOR)
 #target_compile_definitions(GameClient PUBLIC $<$<CONFIG:DEBUG>:_GLIBCXX_DEBUG>)
 
 target_link_libraries(GameClient sfml-network sfml-graphics sfml-audio)
@@ -286,16 +295,31 @@ target_link_libraries(GameClient nlohmann_json)
 add_versioning(GameClient)
 add_flags(GameClient)
 
+target_link_libraries(Editor sfml-network sfml-graphics sfml-audio)
+target_link_libraries(Editor ImGui)
+target_link_libraries(Editor box2d)
+target_link_libraries(Editor GameAPI)
+target_link_libraries(Editor nlohmann_json)
+add_versioning(Editor)
+add_flags(Editor)
+
 target_include_directories(GameClient PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_include_directories(GameClient PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/GameClient/Unity")
 
+target_include_directories(Editor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(Editor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/GameClient/Unity")
 
 set_target_properties(GameClient PROPERTIES OUTPUT_NAME "PWR_RTS")
+set_target_properties(Editor PROPERTIES OUTPUT_NAME "Editor")
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     set_property(TARGET GameClient PROPERTY WIN32_EXECUTABLE true)
+    set_property(TARGET Editor PROPERTY WIN32_EXECUTABLE true)
 endif ()
 
 
 copy_dll(GameClient GameAPI_DLL)
 copy_deps_dll(GameClient)
+
+copy_dll(Editor GameAPI_DLL)
+copy_deps_dll(Editor)

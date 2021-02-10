@@ -9,6 +9,8 @@
 
 class Pause : public MonoBehaviour {
 public:
+    void Start() override;
+
     void OnGUI() override;
 };
 

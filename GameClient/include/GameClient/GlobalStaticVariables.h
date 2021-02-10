@@ -41,14 +41,25 @@ public:
     bool isLoaded = false;
     std::string name = "Scene";
     std::string path{};
+    Unity::GUID guid{};
+
     std::vector<TPtr<GameObject>> root{};
     std::vector<TPtr<Component>> new_components{}; //To Start
     decltype(new_components) new_components_copy{}; //Used in loop std::swap()
 
     std::vector<TPtr<Component>> loading_awake{}; //used when loading
 
+    uint32_t GetID(const TPtr<Object> &);
+
+    TPtr<Object> GetObject(uint32_t);
+
+    bool RegisterID(uint32_t, const TPtr<Object> &);
+
 private:
     std::shared_ptr<const int> guard;
+
+    std::unordered_map<uint32_t, TPtr<>> localIDObject;
+    std::unordered_map<Object *, std::pair<uint32_t, TPtr<>>> ObjectLocalID;
 };
 
 struct FileTime {

@@ -26,6 +26,16 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
             std::vector<TPtr<>> result;
 
             serializer.Deserialize(result, json["objects"]);
+
+            // Register loaded game object and component
+            for (auto &it : serializer.get_id_map()) {
+                auto go = dynamic_cast<const GameObject *>(it.first.get());
+                auto com = dynamic_cast<const Component *>(it.first.get());
+                if (it.second.guid.empty() && (go || com)) {
+                    global.scene.data[new_id].RegisterID(it.second.id,
+                                                         const_cast<Object *>(it.first.get())->shared_from_this());
+                }
+            }
         }
         //creation of gameobjects adds them to the scene
 

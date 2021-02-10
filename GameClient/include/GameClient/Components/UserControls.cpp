@@ -23,23 +23,6 @@ void UserControls::Start() {
     base = GetComponent<Enemy>();
 
     if(!base){Destroy(gameObject());}
-
-    auto vec = AssetDatabase::LoadAllAssetRepresentationsAtPath("Assets/ships/BlueRedGreen_Spacecraft_V1.0.png");
-
-    for (auto &&v : vec) {
-        Unity::GUID guid;
-        Unity::fileID id;
-
-        AssetDatabase::TryGetGUIDAndLocalFileIdentifier(v, guid, id);
-
-        if (id == 15024732907312285945llu) {
-            base->ship_sprites[(int) ShipType::Attack] = dynamic_pointer_cast<Sprite>(v);
-        }
-
-        if (id == 15024732907312285942llu) {
-            base->ship_sprites[(int) ShipType::Resource] = dynamic_pointer_cast<Sprite>(v);
-        }
-    }
 }
 
 void UserControls::OnGUI() {

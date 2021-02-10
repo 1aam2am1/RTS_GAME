@@ -77,4 +77,5 @@ add_subdirectory(GameClient)
 add_subdirectory(tests)
 
 
-add_dependencies(RTS_GAME GameClient nlohmann_json)
+add_dependencies(RTS_GAME GameClient)
+add_dependencies(RTS_GAME Editor)

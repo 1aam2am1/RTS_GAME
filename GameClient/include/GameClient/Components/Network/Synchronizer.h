@@ -6,14 +6,16 @@
 #define RTS_GAME_SYNCHRONIZER_H
 
 #include <Core/MonoBehaviour.h>
-#include "NetworkInterface.h"
-
 
 class Synchronizer : public MonoBehaviour {
 public:
     Synchronizer();
 
     void Awake() final;
+
+    void Start() override;
+
+protected:
 
     bool isServer();
 
@@ -23,19 +25,18 @@ public:
 
     bool RegisterID(uint32_t, const TPtr<Object> &);
 
-protected:
-    friend class NetworkInterface;
-
-    TPtr<NetworkInterface> network;
-
     void SendMessage(const nlohmann::json &);
 
     virtual void ReceiveMessage(const nlohmann::json &) = 0;
 
-    enum Type : uint32_t {
-        Update = 0,
-        Delete = 1,
-    };
+private:
+    friend class NetworkInterface;
+
+    uint32_t id = 0;
+
+    uint32_t max_id = 1;
+    std::unordered_map<Object *, uint32_t> ids;
+    std::unordered_map<uint32_t, TPtr<Object>> ids2;
 };
 
 

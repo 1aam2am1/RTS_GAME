@@ -354,6 +354,10 @@
               "m_enabled": true,
               "parent": {
                 "Enemy": {
+                  "attack_sprite": {
+                    "fileID": 15024732907312285943,
+                    "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+                  },
                   "cell": "resource",
                   "m_Name": "",
                   "m_enabled": true,
@@ -371,6 +375,10 @@
                       0.5
                     ]
                   ],
+                  "resource_sprite": {
+                    "fileID": 15024732907312285940,
+                    "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+                  },
                   "resources": [
                     [
                       "water",
@@ -432,10 +440,22 @@
               "fileID": 30,
               "guid": "0"
             }
+          },
+          {
+            "FullSynchronizer": {
+              "id": 3,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 31,
+              "guid": "0"
+            }
           }
         ],
         "layer": 0,
-        "m_Name": "Ship",
+        "m_Name": "Ship R Ai",
         "m_active": true,
         "tag": ""
       },
@@ -465,7 +485,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 31,
+              "fileID": 32,
               "guid": "0"
             }
           },
@@ -481,7 +501,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 32,
+              "fileID": 33,
               "guid": "0"
             }
           },
@@ -499,7 +519,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 33,
+              "fileID": 34,
               "guid": "0"
             }
           },
@@ -510,12 +530,16 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 34,
+              "fileID": 35,
               "guid": "0"
             }
           },
           {
             "Enemy": {
+              "attack_sprite": {
+                "fileID": 15024732907312285945,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              },
               "cell": "resource",
               "m_Name": "",
               "m_enabled": true,
@@ -533,6 +557,10 @@
                   0.5
                 ]
               ],
+              "resource_sprite": {
+                "fileID": 15024732907312285942,
+                "guid": "92a59f286009862c04fce2aaaf4dd8d2"
+              },
               "resources": [
                 [
                   "water",
@@ -551,7 +579,7 @@
               "ships": []
             },
             "__Node_id": {
-              "fileID": 35,
+              "fileID": 36,
               "guid": "0"
             }
           },
@@ -565,7 +593,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 36,
+              "fileID": 37,
               "guid": "0"
             }
           },
@@ -579,7 +607,19 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 37,
+              "fileID": 38,
+              "guid": "0"
+            }
+          },
+          {
+            "SignalSynchronizer": {
+              "id": 1,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 39,
               "guid": "0"
             }
           }
@@ -615,7 +655,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 38,
+              "fileID": 40,
               "guid": "0"
             }
           },
@@ -631,7 +671,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 39,
+              "fileID": 41,
               "guid": "0"
             }
           },
@@ -649,7 +689,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 40,
+              "fileID": 42,
               "guid": "0"
             }
           },
@@ -660,7 +700,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 41,
+              "fileID": 43,
               "guid": "0"
             }
           },
@@ -678,7 +718,7 @@
               "type": "Resource"
             },
             "__Node_id": {
-              "fileID": 42,
+              "fileID": 44,
               "guid": "0"
             }
           },
@@ -692,7 +732,19 @@
               "type": "Attack"
             },
             "__Node_id": {
-              "fileID": 43,
+              "fileID": 45,
+              "guid": "0"
+            }
+          },
+          {
+            "SignalSynchronizer": {
+              "id": 2,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 46,
               "guid": "0"
             }
           }
@@ -728,7 +780,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 44,
+              "fileID": 47,
               "guid": "0"
             }
           },
@@ -758,7 +810,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 45,
+              "fileID": 48,
               "guid": "0"
             }
           },
@@ -772,7 +824,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 46,
+              "fileID": 49,
               "guid": "0"
             }
           },
@@ -784,7 +836,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 35,
+                "fileID": 36,
                 "guid": "0"
               },
               "resource_area": 1.0,
@@ -796,7 +848,7 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 47,
+              "fileID": 50,
               "guid": "0"
             }
           },
@@ -812,7 +864,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 48,
+              "fileID": 51,
               "guid": "0"
             }
           },
@@ -823,13 +875,25 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 49,
+              "fileID": 52,
+              "guid": "0"
+            }
+          },
+          {
+            "FullSynchronizer": {
+              "id": 4,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 53,
               "guid": "0"
             }
           }
         ],
         "layer": 0,
-        "m_Name": "Ship Copy",
+        "m_Name": "Ship R",
         "m_active": true,
         "tag": ""
       },
@@ -859,7 +923,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 50,
+              "fileID": 54,
               "guid": "0"
             }
           },
@@ -889,7 +953,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 51,
+              "fileID": 55,
               "guid": "0"
             }
           },
@@ -903,7 +967,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 52,
+              "fileID": 56,
               "guid": "0"
             }
           },
@@ -919,7 +983,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 53,
+              "fileID": 57,
               "guid": "0"
             }
           },
@@ -930,7 +994,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 54,
+              "fileID": 58,
               "guid": "0"
             }
           },
@@ -941,7 +1005,7 @@
               "m_Name": "",
               "m_enabled": true,
               "parent": {
-                "fileID": 35,
+                "fileID": 36,
                 "guid": "0"
               },
               "state": "AttackMachine::WaitState",
@@ -950,7 +1014,19 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 55,
+              "fileID": 59,
+              "guid": "0"
+            }
+          },
+          {
+            "FullSynchronizer": {
+              "id": 5,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 60,
               "guid": "0"
             }
           }
@@ -986,7 +1062,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 56,
+              "fileID": 61,
               "guid": "0"
             }
           },
@@ -1016,7 +1092,7 @@
               ]
             },
             "__Node_id": {
-              "fileID": 57,
+              "fileID": 62,
               "guid": "0"
             }
           },
@@ -1030,7 +1106,7 @@
               "mass": 1.0
             },
             "__Node_id": {
-              "fileID": 58,
+              "fileID": 63,
               "guid": "0"
             }
           },
@@ -1046,7 +1122,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 59,
+              "fileID": 64,
               "guid": "0"
             }
           },
@@ -1057,7 +1133,7 @@
               "m_enabled": true
             },
             "__Node_id": {
-              "fileID": 60,
+              "fileID": 65,
               "guid": "0"
             }
           },
@@ -1077,7 +1153,19 @@
               "visibility": 7.0
             },
             "__Node_id": {
-              "fileID": 61,
+              "fileID": 66,
+              "guid": "0"
+            }
+          },
+          {
+            "FullSynchronizer": {
+              "id": 6,
+              "m_Name": "",
+              "m_enabled": true,
+              "send": false
+            },
+            "__Node_id": {
+              "fileID": 67,
               "guid": "0"
             }
           }
@@ -1113,7 +1201,7 @@
               "m_parent": null
             },
             "__Node_id": {
-              "fileID": 62,
+              "fileID": 68,
               "guid": "0"
             }
           },
@@ -1131,7 +1219,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 63,
+              "fileID": 69,
               "guid": "0"
             }
           },
@@ -1149,7 +1237,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 64,
+              "fileID": 70,
               "guid": "0"
             }
           },
@@ -1167,7 +1255,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 65,
+              "fileID": 71,
               "guid": "0"
             }
           },
@@ -1185,7 +1273,7 @@
               }
             },
             "__Node_id": {
-              "fileID": 66,
+              "fileID": 72,
               "guid": "0"
             }
           }

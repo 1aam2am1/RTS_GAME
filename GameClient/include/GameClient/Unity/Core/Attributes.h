@@ -10,7 +10,8 @@
 
 enum UnityAttributes {
     ExecuteInEditMode = 1 << 0,
-    DisallowMultipleComponent = 1 << 1 //TODO: Make it inheritable
+    DisallowMultipleComponent = 1 << 1, //TODO: Make it inheritable
+    DontNetworkSynchronize = 1 << 2
 };
 
 class Attributes {

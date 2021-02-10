@@ -33,7 +33,8 @@ public:
 
     void RemoveBuilding(TPtr<Building>);
 
-    TPtr<Sprite> ship_sprites[2];
+    TPtr<Sprite> attack_sprite;
+    TPtr<Sprite> resource_sprite;
 
     std::vector<ShipType> ship_production;
 
@@ -59,9 +60,23 @@ protected:
                 return;
             }
         }
+        signal = GetComponent<SignalSynchronizer>();
+        if (signal) {
+            auto t = static_pointer_cast<Enemy>(shared_from_this());
+            signal->OnMessage.connect([t](uint32_t i, auto) {
+                if (!t) { return; }
+                if (i == 10) {
+                    t->other_enemy = nullptr;
+                    t->Update();
+                }
+            });
+        }
     }
 
     mono_state old_cell = mono_state::resource;
+
+private:
+    TPtr<SignalSynchronizer> signal;
 };
 
 #endif //RTS_GAME_ENEMY_H

@@ -21,23 +21,6 @@ public:
 
     void Start() override {
         base = GetComponent<Enemy>();
-
-        auto vec = AssetDatabase::LoadAllAssetRepresentationsAtPath("Assets/ships/BlueRedGreen_Spacecraft_V1.0.png");
-
-        for (auto &&v : vec) {
-            Unity::GUID guid;
-            Unity::fileID id;
-
-            AssetDatabase::TryGetGUIDAndLocalFileIdentifier(v, guid, id);
-
-            if (id == 15024732907312285943llu) {
-                base->ship_sprites[(int) ShipType::Attack] = dynamic_pointer_cast<Sprite>(v);
-            }
-
-            if (id == 15024732907312285940llu) {
-                base->ship_sprites[(int) ShipType::Resource] = dynamic_pointer_cast<Sprite>(v);
-            }
-        }
     }
 
     void Update() override;

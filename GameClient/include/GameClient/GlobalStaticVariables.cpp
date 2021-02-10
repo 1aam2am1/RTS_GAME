@@ -87,6 +87,54 @@ SceneData::~SceneData() {
     }
 }
 
+uint32_t SceneData::GetID(const TPtr<Object> &o) {
+    if (o.expired()) {
+        return 0;
+    }
+
+    auto it = ObjectLocalID.find(o.get());
+    if (it != ObjectLocalID.end()) {
+        if (it->second.second)
+            return it->second.first;
+    }
+
+    auto new_id = Unity::GUID::NewGuid().second;
+    ObjectLocalID[o.get()] = {new_id, o};
+    localIDObject[new_id] = o;
+    return new_id;
+}
+
+TPtr<Object> SceneData::GetObject(uint32_t id) {
+    auto it = localIDObject.find(id);
+    if (it != localIDObject.end()) {
+        return it->second;
+    }
+
+    return {};
+}
+
+bool SceneData::RegisterID(uint32_t s_id, const TPtr<Object> &o) {
+    if (o.expired()) {
+        return false;
+    }
+
+    auto it = ObjectLocalID.find(o.get());
+    if (it != ObjectLocalID.end()) {
+        if (it->second.second)
+            return false;
+    }
+
+    auto it2 = localIDObject.find(s_id);
+    if (it2 != localIDObject.end()) {
+        return false;
+    }
+
+    ObjectLocalID[o.get()] = {s_id, o};
+    localIDObject[s_id] = o;
+
+    return true;
+}
+
 
 GlobalStaticVariables::GlobalStaticVariables() noexcept {
     physics.world.SetContactListener(&physics.listener);

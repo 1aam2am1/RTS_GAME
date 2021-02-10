@@ -6,17 +6,19 @@
 #define RTS_GAME_SIGNALSYNCHRONIZER_H
 
 
-#include "Synchronizer.h"
+#include "FullSynchronizer.h"
 #include <GameApi/Signal.h>
 #include <nlohmann/json.hpp>
 
-class SignalSynchronizer : public Synchronizer {
+class SignalSynchronizer : public FullSynchronizer {
 public:
     sigslot::signal<int, nlohmann::json> OnMessage;
 
     void SendMessage(int, nlohmann::json);
 
     void Update() override;
+
+    void Start() override;
 
 protected:
     void ReceiveMessage(const nlohmann::json &json) override;

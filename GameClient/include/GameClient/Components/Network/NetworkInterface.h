@@ -8,49 +8,62 @@
 #include <Core/MonoBehaviour.h>
 #include <SFML/Network.hpp>
 
+class Synchronizer;
+
 class NetworkInterface : public MonoBehaviour {
-public:
     void Start() override;
 
     void OnDestroy() override;
 
     void Update() override;
 
+public:
+    /// Connect with user
     bool Connect(sf::IpAddress ip, int port = 22653);
 
+    /// Disconnect from user
     void Disconnect();
 
+    /// Open server port
     bool OpenPort(int port = 22653);
 
+    /// Is server opened
     bool IsOpenedPort();
 
+    /// Close Server
     void ClosePort();
 
+    /// Is Client Connected or are we connected to server
     bool isConnected();
 
-    bool isServer() { return server; }
+    /// Are we server
+    bool isServer() const { return server; }
+
+    static const TPtr<NetworkInterface> &network();
 
 private:
     friend class Synchronizer;
 
+    uint32_t GetID();
+
+    void SendMessage(uint32_t id, std::string_view type, const nlohmann::json &message);
+
+    void RegisterReceiver(uint32_t id, TPtr<Synchronizer>);
+
+    void RemoveReceiver(uint32_t id);
+
+private:
     bool server = false;
     std::thread t;
 
     sf::TcpListener listener;
     sf::TcpSocket socked;
 
-    std::vector<sf::Packet> to_send;
-    std::vector<sf::Packet> received;
+    uint32_t max_id = 100;
 
-    uint32_t GetID(const TPtr<Object> &);
+    std::unordered_map<uint32_t, TPtr<Synchronizer>> receivers;
 
-    TPtr<Object> GetObject(uint32_t);
-
-    bool RegisterID(uint32_t, const TPtr<Object> &);
-
-    uint32_t max_id = 1;
-    std::unordered_map<Object *, uint32_t> ids;
-    std::unordered_map<uint32_t, TPtr<Object>> ids2;
+    bool print = false;
 };
 
 
