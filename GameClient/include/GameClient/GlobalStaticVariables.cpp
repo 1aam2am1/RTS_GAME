@@ -16,7 +16,6 @@ GlobalStaticVariables global;
 
 INITIALIZE_FUNC(MainThread::Invoke(
         []() {
-            global.settings.Load();
             global.settings.Apply();
 
             {
@@ -172,12 +171,14 @@ void GlobalStaticVariables::Settings::Load() {
     if (s.contains("gizmo")) { s.at("gizmo").get_to(gizmo); }
     if (s.contains("orthographicSize")) { s.at("orthographicSize").get_to(old_orthographicSize); }
 
-    if (s.contains("window") && s.is_object()) {
-        if (s.contains("fullscreen")) { s.at("fullscreen").get_to(window.fullscreen); }
-        if (s.contains("size")) { s.at("size").get_to(window.fullscreen); }
-        if (s.contains("auto_size")) { s.at("auto_size").get_to(window.auto_size); }
-        if (s.contains("fps")) { s.at("fps").get_to(window.fps); }
-        if (s.contains("antialiasing")) { s.at("antialiasing").get_to(window.antialiasing); }
+    if (s.contains("window")) {
+        auto &w = s.at("window");
+        if (w.contains("fullscreen")) { w.at("fullscreen").get_to(window.fullscreen); }
+        if (w.contains("size")) { w.at("size").get_to(window.fullscreen); }
+        if (w.contains("auto_size")) { w.at("auto_size").get_to(window.auto_size); }
+        if (w.contains("fps")) { w.at("fps").get_to(window.fps); }
+        if (w.contains("antialiasing")) { w.at("antialiasing").get_to(window.antialiasing); }
+        if (w.contains("icon")) { w.at("icon").get_to(window.icon); }
     }
 }
 
@@ -198,6 +199,7 @@ void GlobalStaticVariables::Settings::Save() {
     s["window"]["auto_size"] = window.auto_size;
     s["window"]["fps"] = window.fps;
     s["window"]["antialiasing"] = window.antialiasing;
+    s["window"]["icon"] = window.icon;
 
     if (!GameApi::saveFullFile("settings.json", result.dump(2, ' ', true))) {
         GameApi::log(ERR.fmt("Can't save settings.json"));
@@ -212,4 +214,11 @@ void GlobalStaticVariables::Settings::Apply() {
     global.mis.draw_gizmo = gizmo;
     EditorSceneManager::playModeStartScene = dynamic_pointer_cast<SceneAsset>(
             AssetDatabase::LoadMainAssetAtPath(scene_path));
+
+    if (global.rendering.m_window) {
+        sf::Image image;
+        if (image.loadFromFile(global.settings.window.icon)) {
+            global.rendering.m_window->setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
+        }
+    }
 }

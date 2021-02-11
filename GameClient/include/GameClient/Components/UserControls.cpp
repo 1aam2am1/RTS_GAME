@@ -13,9 +13,11 @@
 #include <GameClient/Unity/Core/SpriteRenderer.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
 #include <Physics2D/BoxCollider2D.h>
+#include <Core/Attributes.h>
 #include "Building.h"
 
 ADD_USER_COMPONENT(UserControls, upper)
+ADD_ATTRIBUTE(UserControls, DontNetworkSynchronize)
 
 
 void UserControls::Start() {

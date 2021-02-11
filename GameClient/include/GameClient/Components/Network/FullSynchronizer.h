@@ -12,11 +12,13 @@ class FullSynchronizer : public Synchronizer {
 public:
     bool send = false;
 
-    void Update() override;
+    void IntUpdate() override;
 
 private:
 protected:
     void ReceiveMessage(const nlohmann::json &json) override;
+
+    bool SendStatus();
 };
 
 

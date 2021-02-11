@@ -35,6 +35,9 @@ public:
 
     SetterGetterF<sf::Vector2f> velocity;
 
+    /// Angular velocity in degrees per second.
+    SetterGetterF<float> angularVelocity;
+
     enum ForceMode2D {
         Force, ///<	Add a force to the Rigidbody2D, using its mass.
         Impulse, ///<	Add an instant force impulse to the rigidbody2D, using its mass.

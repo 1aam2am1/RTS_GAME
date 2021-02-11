@@ -6,6 +6,7 @@
 #define RTS_GAME_SHIP_H
 
 #include <Core/MonoBehaviour.h>
+#include "ShipDummy.h"
 
 class Enemy;
 

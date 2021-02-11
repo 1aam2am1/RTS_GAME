@@ -22,8 +22,8 @@ std::pair<GUIDFileIDPack, bool> SceneSerializer::serialize_node_callback(TPtr<co
         }
 
     }
-    pack.guid = "";
-    pack.id = ++max_id;
+    pack.guid = Unity::GUID{};
+    pack.id = Unity::GUID::NewGuid().second;
 
     return {pack, true};
 }
@@ -39,7 +39,8 @@ TPtr<> SceneSerializer::deserialize_get_node_callback(GUIDFileIDPack pack) {
         }
     }
     // Get object reference from scene
-    auto ob = GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(!guid.empty() ? guid : zero, localID);
+    auto ob = GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(!pack.guid.empty() ? pack.guid : zero,
+                                                                             pack.id);
     if (ob) {
         return ob;
     }

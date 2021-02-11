@@ -264,6 +264,16 @@
               "fileID": 3246162351,
               "guid": "0"
             }
+          },
+          {
+            "WinLose": {
+              "m_Name": "",
+              "m_enabled": true
+            },
+            "__Node_id": {
+              "fileID": 622330163,
+              "guid": "0"
+            }
           }
         ],
         "layer": 0,
@@ -334,11 +344,16 @@
           {
             "Rigidbody2D": {
               "angularDrag": 0.5,
+              "angularVelocity": 0.0,
               "bodyType": "Dynamic",
               "drag": 0.5,
               "inertia": 0.10000000149011612,
               "m_Name": "",
-              "mass": 1.0
+              "mass": 1.0,
+              "velocity": {
+                "x": 0.0,
+                "y": 0.0
+              }
             },
             "__Node_id": {
               "fileID": 2002184875,
@@ -394,7 +409,10 @@
                     ]
                   ],
                   "ship_production": [],
-                  "ships": []
+                  "targets_ABuild": [],
+                  "targets_AShip": [],
+                  "targets_RBuild": [],
+                  "targets_RShip": []
                 },
                 "__Node_id": {
                   "fileID": 3928786305,
@@ -575,7 +593,10 @@
                 ]
               ],
               "ship_production": [],
-              "ships": []
+              "targets_ABuild": [],
+              "targets_AShip": [],
+              "targets_RBuild": [],
+              "targets_RShip": []
             },
             "__Node_id": {
               "fileID": 3030876684,
@@ -611,13 +632,13 @@
             }
           },
           {
-            "SignalSynchronizer": {
+            "FullSynchronizer": {
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 1967294031,
+              "fileID": 1050387635,
               "guid": "0"
             }
           }
@@ -735,13 +756,13 @@
             }
           },
           {
-            "SignalSynchronizer": {
+            "FullSynchronizer": {
               "m_Name": "",
               "m_enabled": true,
               "send": false
             },
             "__Node_id": {
-              "fileID": 293058415,
+              "fileID": 247224472,
               "guid": "0"
             }
           }
@@ -814,11 +835,16 @@
           {
             "Rigidbody2D": {
               "angularDrag": 0.5,
+              "angularVelocity": 0.0,
               "bodyType": "Dynamic",
               "drag": 0.5,
               "inertia": 0.10000000149011612,
               "m_Name": "",
-              "mass": 1.0
+              "mass": 1.0,
+              "velocity": {
+                "x": 0.0,
+                "y": 0.0
+              }
             },
             "__Node_id": {
               "fileID": 4089279709,
@@ -956,11 +982,16 @@
           {
             "Rigidbody2D": {
               "angularDrag": 0.5,
+              "angularVelocity": 0.0,
               "bodyType": "Dynamic",
               "drag": 0.5,
               "inertia": 0.10000000149011612,
               "m_Name": "",
-              "mass": 1.0
+              "mass": 1.0,
+              "velocity": {
+                "x": 0.0,
+                "y": 0.0
+              }
             },
             "__Node_id": {
               "fileID": 2263645921,
@@ -996,7 +1027,7 @@
           },
           {
             "AttackShip": {
-              "attack_force": 3.0,
+              "attack_force": 7.0,
               "force": 8.5,
               "m_Name": "",
               "m_enabled": true,
@@ -1094,11 +1125,16 @@
           {
             "Rigidbody2D": {
               "angularDrag": 0.5,
+              "angularVelocity": 0.0,
               "bodyType": "Dynamic",
               "drag": 0.5,
               "inertia": 0.10000000149011612,
               "m_Name": "",
-              "mass": 1.0
+              "mass": 1.0,
+              "velocity": {
+                "x": 0.0,
+                "y": 0.0
+              }
             },
             "__Node_id": {
               "fileID": 3359454245,
@@ -1134,7 +1170,7 @@
           },
           {
             "AttackShip": {
-              "attack_force": 3.0,
+              "attack_force": 7.0,
               "force": 8.5,
               "m_Name": "",
               "m_enabled": true,

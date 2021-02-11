@@ -28,12 +28,12 @@ void SceneLoader::LoadSceneFull(uint32_t new_id, std::string_view scenePath, boo
             serializer.Deserialize(result, json["objects"]);
 
             // Register loaded game object and component
-            for (auto &it : serializer.get_id_map()) {
-                auto go = dynamic_cast<const GameObject *>(it.first.get());
-                auto com = dynamic_cast<const Component *>(it.first.get());
-                if (it.second.guid.empty() && (go || com)) {
-                    global.scene.data[new_id].RegisterID(it.second.id,
-                                                         const_cast<Object *>(it.first.get())->shared_from_this());
+            for (auto &it : serializer.deserialize_id_map()) {
+                auto go = dynamic_cast<GameObject *>(it.second.get());
+                auto com = dynamic_cast<Component *>(it.second.get());
+                if (it.first.guid.empty() && (go || com)) {
+                    global.scene.data[new_id].RegisterID(it.first.id,
+                                                         const_cast<Object *>(it.second.get())->shared_from_this());
                 }
             }
         }

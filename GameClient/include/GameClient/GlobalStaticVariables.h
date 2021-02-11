@@ -162,6 +162,8 @@ struct GlobalStaticVariables {
             bool auto_size = true;
             uint32_t fps = 120;
             uint32_t antialiasing = 0;
+
+            std::string icon = "icon.ico";
         } window;
     } settings;
 

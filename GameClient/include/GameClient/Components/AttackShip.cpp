@@ -8,9 +8,11 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include <GameClient/Components/Enemy.h>
 #include <GameClient/Components/Life/Attack.h>
+#include <Core/Attributes.h>
 
 ADD_USER_COMPONENT(AttackShip, state, time_of_flee)
 EXPORT_STATE_MACHINE(AttackShip::ST)
+ADD_ATTRIBUTE(AttackShip, DontNetworkSynchronize)
 
 void AttackShip::OnUpdate() {
     AttackMachine::UpdateEvent event{};

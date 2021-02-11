@@ -12,16 +12,9 @@
 
 class SignalSynchronizer : public FullSynchronizer {
 public:
-    sigslot::signal<int, nlohmann::json> OnMessage;
-
-    void SendMessage(int, nlohmann::json);
-
-    void Update() override;
+    void IntUpdate() override;
 
     void Start() override;
-
-protected:
-    void ReceiveMessage(const nlohmann::json &json) override;
 };
 
 

@@ -29,6 +29,8 @@ public:
 
     const std::unordered_map<TPtr<const Object>, GUIDFileIDPack> &get_id_map() { return serialize_map; }
 
+    const std::unordered_map<GUIDFileIDPack, TPtr<Object>> &deserialize_id_map() { return deserialize_map; }
+
 protected:
     /// Must give unique GUIDFileIDPack, if returns true object is serialized as it is not saved elsewhere
     virtual std::pair<GUIDFileIDPack, bool> serialize_node_callback(TPtr<const Object>);

@@ -16,7 +16,17 @@ public:
 
     void Start() override;
 
+    void OnDestroy() override;
+
+    sigslot::signal<int, nlohmann::json> OnMessage;
+
+    void SendMessage(int, nlohmann::json);
+
+    void Update() final;
+
 protected:
+
+    virtual void IntUpdate() = 0;
 
     bool isServer();
 
@@ -26,7 +36,7 @@ protected:
 
     bool RegisterID(uint32_t, const TPtr<Object> &);
 
-    void SendMessage(const nlohmann::json &);
+    bool SendMessage(const nlohmann::json &);
 
     virtual void ReceiveMessage(const nlohmann::json &) = 0;
 
@@ -34,6 +44,10 @@ private:
     friend class NetworkInterface;
 
     uint32_t id = 0;
+
+    std::vector<nlohmann::json> to_send;
+
+    void ReceiveMessageInterface(const nlohmann::json &);
 };
 
 

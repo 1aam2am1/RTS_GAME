@@ -21,7 +21,6 @@ protected:
     TPtr<> deserialize_get_node_callback(GUIDFileIDPack pack) override;
 
 private:
-    uint64_t max_id = 0;
 };
 
 

@@ -55,6 +55,13 @@ MainWindow::MainWindow(const Argv_options &options) {
 
     }
 
+    {
+        sf::Image image;
+        if (image.loadFromFile(global.settings.window.icon)) {
+            window.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
+        }
+    }
+
     ImGui::SFML::Init(window);
 
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;

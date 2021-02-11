@@ -120,6 +120,7 @@ nlohmann::json JsonSerializer::TrueSerialize(const Object *object) {
 }
 
 void JsonSerializer::Update(TPtr<Object> result, const nlohmann::json &serialized) {
+    auto lock = register_check();
 
     /// Thing this through, do we want to clear data, that could not be serialized?
     if (serialized.is_object()) {

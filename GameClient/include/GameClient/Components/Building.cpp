@@ -6,9 +6,11 @@
 #include "PrefabFunc.h"
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
+#include <Core/Attributes.h>
 #include "Enemy.h"
 
 ADD_USER_COMPONENT(Building, type, building, parent, time)
+ADD_ATTRIBUTE(Building, DontNetworkSynchronize)
 
 Building::Building() = default;
 

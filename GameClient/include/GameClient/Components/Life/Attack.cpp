@@ -14,7 +14,7 @@ void Attack::OnCollisionEnter2D(const Collision2D &other) {
     if (other.gameObject->layer != gameObject()->layer) {
         auto life = other.gameObject->GetComponent<Life>();
         if (life)
-            life->attacked(attack);
+            life->attacked(attack, gameObject());
     }
 
     Destroy(gameObject());

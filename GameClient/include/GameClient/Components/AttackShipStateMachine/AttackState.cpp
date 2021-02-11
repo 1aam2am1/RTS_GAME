@@ -15,40 +15,45 @@ namespace AttackMachine {
 
     Maybe<TransitionTo<WaitState>> AttackState::handle(UpdateEvent &) {
         if (!ship->target && ship->parent->other_enemy) {
-            const std::vector<TPtr<Ship>> &s = ship->parent->other_enemy->ships;
-
-            auto search = [&](auto &ships, auto f) {
+            auto search = [&](auto &ships1, auto &ships2, auto f1, auto f2) {
                 float how_far = 0;
-                for (auto &&s : ships) {
-                    //Simple targeting
-                    if (!ship->target) {
-                        ship->target = s->transform();
-                        auto o1 = ship->transform()->localPosition() - ship->target->localPosition();
-                        how_far = std::sqrt(o1.x * o1.x + o1.y * o1.y);
-                        how_far -= f(ship->target);
-                    } else {
-                        auto o2 = ship->transform()->localPosition() - s->transform()->localPosition();
-                        auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y);
-
-                        if (l2 < how_far) {
+                auto p = [&](auto &ships, auto f) {
+                    for (auto &&s : ships) {
+                        //Simple targeting
+                        if (!ship->target) {
                             ship->target = s->transform();
-                            how_far = l2;
+                            auto o1 = ship->transform()->localPosition() - ship->target->localPosition();
+                            how_far = std::sqrt(o1.x * o1.x + o1.y * o1.y);
                             how_far -= f(ship->target);
+                        } else {
+                            auto o2 = ship->transform()->localPosition() - s->transform()->localPosition();
+                            auto l2 = std::sqrt(o2.x * o2.x + o2.y * o2.y);
+
+                            if (l2 < how_far) {
+                                ship->target = s->transform();
+                                how_far = l2;
+                                how_far -= f(ship->target);
+                            }
                         }
                     }
-                }
+                };
+                p(ships1, f1);
+                p(ships2, f2);
             };
 
-            search(s, [](auto &target) { return 10 * (target->template GetComponent<AttackShip>() ? 1 : 0); });
+            const std::vector<TPtr<Transform>> &sa = ship->parent->other_enemy->targets_AShip;
+            const std::vector<TPtr<Transform>> &sr = ship->parent->other_enemy->targets_RShip;
+
+            search(sa, sr, [](auto) { return 10; }, [](auto) { return 0; });
 
             if (!ship->target) {
-                const auto &buildings = ship->parent->other_enemy->buildings;
+                const auto &buildingsa = ship->parent->other_enemy->targets_ABuild;
+                const auto &buildingsr = ship->parent->other_enemy->targets_RBuild;
 
-                search(buildings, [](auto &target) {
-                    auto b = target->template GetComponent<Building>();
-                    if (!b) { return 0; }
-                    return 10 * (b->type == ShipType::Attack ? 1 : 0);
-                });
+                search(buildingsa, buildingsr, [](auto) { return 10; }, [](auto) { return 0; });
+            }
+            if (!ship->target) {
+                ship->target = ship->parent->other_enemy->transform();
             }
         }
         return Nothing{};

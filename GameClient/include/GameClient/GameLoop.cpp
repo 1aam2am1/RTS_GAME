@@ -88,13 +88,9 @@ void GameLoop::run() {
             //What to load?
             std::string to_load;
             if (EditorSceneManager::playModeStartScene) {
-                if (EditorSceneManager::playModeStartScene) {
+                to_load = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+                if (to_load == SceneManager::GetActiveScene()->path()) {
                     to_load = "Assets/_U.unity";
-                } else {
-                    to_load = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
-                    if (to_load == SceneManager::GetActiveScene()->path()) {
-                        to_load = "Assets/_U.unity";
-                    }
                 }
             } else {
                 to_load = "Assets/_U.unity";
@@ -128,6 +124,16 @@ void GameLoop::run() {
                 AssetDatabase::DeleteAsset("Assets/_U.unity");
                 //fs::remove("Assets/_U.unity"); //Clear after yourself
                 //fs::remove("Assets/_U.unity.meta");
+            } else {
+                //Loading broke
+                if (EditorSceneManager::playModeStartScene) {
+                    auto to_load = AssetDatabase::GetAssetPath(EditorSceneManager::playModeStartScene.get());
+                    if (!EditorSceneManager::OpenScene(to_load)) {
+                        EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
+                    }
+                } else {
+                    EditorSceneManager::NewScene(EditorSceneManager::NewSceneSetup::DefaultGameObjects);
+                }
             }
         }
 

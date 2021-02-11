@@ -30,7 +30,7 @@ public:
     void Awake() override {}
 
     void Update() override {
-        if (volume == 0) {
+        if (volume <= 0) {
             Destroy(gameObject());
         }
     }

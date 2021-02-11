@@ -28,6 +28,7 @@ Maybe<TransitionTo<WaitState>> TransportState::handle(UpdateEvent &) {
             auto get = ship->speed_of_gathering * Time::deltaTime();
             if (get >= res.second) {
                 get = res.second;
+                get = get < 0 ? 0 : get;
                 ++empty;
             }
 

@@ -16,7 +16,7 @@ void Placer::OnGUI() {
 
         for (auto &&b : box) {
             if ((!b->attachedRigidbody || b->attachedRigidbody->bodyType() != RigidbodyType2D::Dynamic) &&
-                b->gameObject() != gameObject()) {
+                b->gameObject() != gameObject() && !b->GetComponent<Placer>()) {
                 produce = false;
                 break;
             }

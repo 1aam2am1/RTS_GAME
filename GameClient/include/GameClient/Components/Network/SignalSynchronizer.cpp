@@ -9,33 +9,17 @@
 
 ADD_USER_COMPONENT(SignalSynchronizer)
 
-void SignalSynchronizer::Update() {
-
-}
-
-void SignalSynchronizer::ReceiveMessage(const nlohmann::json &json) {
-    if (!json.contains("__ID")) {
-        FullSynchronizer::ReceiveMessage(json);
-    } else {
-        auto id = json["__ID"].get<int>();
-        auto copy = json;
-        copy.erase("__ID");
-
-        OnMessage(id, copy);
+void SignalSynchronizer::IntUpdate() {
+    if (send) {
+        //Crete reflection
+        if (FullSynchronizer::SendStatus()) {
+            send = false;
+        }
     }
-}
-
-void SignalSynchronizer::SendMessage(int id, nlohmann::json json) {
-    json["__ID"] = id;
-    Synchronizer::SendMessage(json);
 }
 
 void SignalSynchronizer::Start() {
     Synchronizer::Start();
 
-    if (send) {
-        //Crete reflection
-        FullSynchronizer::Update();
-    }
-    send = false;
+    SignalSynchronizer::Update();
 }

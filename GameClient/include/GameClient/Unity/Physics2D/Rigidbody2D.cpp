@@ -12,7 +12,7 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
 
-ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia, drag, angularDrag)
+ADD_COMPONENT_MENU(Rigidbody2D, bodyType, mass, inertia, drag, angularDrag, velocity, angularVelocity)
 ADD_ATTRIBUTE(Rigidbody2D, ExecuteInEditMode, DisallowMultipleComponent)
 
 Rigidbody2D::Rigidbody2D() : bodyType(this, &Rigidbody2D::ChangeBody, RigidbodyType2D::Dynamic),
@@ -20,9 +20,24 @@ Rigidbody2D::Rigidbody2D() : bodyType(this, &Rigidbody2D::ChangeBody, RigidbodyT
                              inertia(this, &Rigidbody2D::ChangeBody, 0.1f),
                              angularDrag(this, &Rigidbody2D::ChangeBody, 0.5f),
                              drag(this, &Rigidbody2D::ChangeBody, 0.5f),
-                             velocity([this](sf::Vector2f v) { body->SetLinearVelocity({v.x, v.y}); }, [this]() {
-                                 return sf::Vector2f{body->GetLinearVelocity().x, body->GetLinearVelocity().y};
-                             }) {}
+                             velocity([this](sf::Vector2f v) { if (body) body->SetLinearVelocity({v.x, v.y}); },
+                                      [this]() {
+                                          if (body) {
+                                              return sf::Vector2f{body->GetLinearVelocity().x,
+                                                                  body->GetLinearVelocity().y};
+                                          } else { return sf::Vector2f{0, 0}; }
+                                      }),
+                             angularVelocity(
+                                     [this](float a) {
+                                         if (body) {
+                                             body->SetAngularVelocity(a * std::numbers::pi / 180.f);
+                                         }
+                                     },
+                                     [this]() {
+                                         if (body) {
+                                             return body->GetAngularVelocity() * 180.0f / std::numbers::pi;
+                                         } else { return .0; }
+                                     }) {}
 
 Rigidbody2D::~Rigidbody2D() {
     if (!body) { return; }

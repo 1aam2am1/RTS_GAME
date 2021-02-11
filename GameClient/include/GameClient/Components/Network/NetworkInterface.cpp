@@ -7,7 +7,7 @@
 #include <Macro.h>
 #include <GameClient/Unity/Editor/Menu.h>
 
-ADD_USER_COMPONENT(NetworkInterface, server, print)
+ADD_USER_COMPONENT(NetworkInterface, server)
 
 static TPtr<NetworkInterface> network_singleton;
 
@@ -24,10 +24,10 @@ void NetworkInterface::Start() {
     }
 }
 
-void NetworkInterface::SendMessage(uint32_t id, std::string_view type, const nlohmann::json &message) {
-    if (!isConnected()) { return; }
+bool NetworkInterface::SendMessage(uint32_t id, std::string_view type, const nlohmann::json &message) {
+    if (!isConnected()) { return false; }
 
-    sf::Socket::Status status;
+    sf::Socket::Status status = sf::Socket::Error;
     try {
         std::vector<std::uint8_t> v_msgpack = nlohmann::json::to_msgpack(message);
 
@@ -45,9 +45,7 @@ void NetworkInterface::SendMessage(uint32_t id, std::string_view type, const nlo
         }
     } EXCEPTION_PRINT
 
-    if (print) {
-        GameApi::log(INFO << message.dump(2, ' '));
-    }
+    return status == sf::Socket::Done;
 }
 
 void NetworkInterface::Update() {
@@ -72,26 +70,33 @@ void NetworkInterface::Update() {
                 if (start != stop)
                     json = nlohmann::json::from_msgpack(start, stop);
 
-                if (print) {
-                    GameApi::log(INFO << json.dump(2, ' '));
-                }
-
                 auto it = receivers.find(id);
                 if (it != receivers.end()) {
 
                     if (type == "__DELETE") {
-                        Destroy(it->second);
+                        if (it->second) {
+                            DestroyImmediate(it->second->gameObject());
+                        } else {
+                            GameApi::log(ERR << "Received message for second deletion");
+                        }
                     } else if (it->second) {
-                        it->second->ReceiveMessage(json);
+                        it->second->ReceiveMessageInterface(json);
                     } else {
                         GameApi::log(ERR << "Received message for deleted receiver.");
                     }
                 } else {
-                    auto go = newGameObject();
-                    auto o = dynamic_pointer_cast<Synchronizer>(
-                            go->AddComponent(MetaData::getReflection(type).type));
-                    o->id = id;
-                    o->ReceiveMessage(json);
+                    if (type == "__DELETE") {
+                        GameApi::log(ERR << "Deleted not created object");
+                    } else {
+                        auto go = newGameObject();
+                        auto o = dynamic_pointer_cast<Synchronizer>(
+                                go->AddComponent(MetaData::getReflection(type).type));
+                        o->id = id;
+
+                        RegisterReceiver(id, o);
+
+                        o->ReceiveMessageInterface(json);
+                    }
                 }
 
             } EXCEPTION_PRINT
@@ -155,9 +160,9 @@ bool NetworkInterface::IsOpenedPort() {
 
 void NetworkInterface::RegisterReceiver(uint32_t id, TPtr<Synchronizer> o) {
     if (!o) { return; }
-    auto[it, b] = receivers.emplace(id, std::move(o));
+    auto[it, b] = receivers.emplace(id, o);
 
-    if (!b) {
+    if (!b && it->second != o) {
         GameApi::log(ERR << "Receiver with " << id << " is registered");
     }
 }

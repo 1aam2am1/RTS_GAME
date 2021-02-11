@@ -86,12 +86,16 @@ public:
                 vec[1]->gameObject()->AddComponent<AiEnemy>();
 
             if (network) {
+                vec[0]->GetComponent<FullSynchronizer>()->send = true;
+
                 auto s = FindObjectsOfType<Ship>();
                 for (auto &ship : s) {
                     auto synch = ship->GetComponent<FullSynchronizer>();
                     if (synch) {
                         if (ship->parent == vec[0]) {
                             synch->send = true;
+                        } else {
+                            Destroy(ship);
                         }
                     }
                 }

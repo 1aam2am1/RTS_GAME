@@ -269,6 +269,10 @@ set(SRC
         include/GameClient/Components/TextCenter.h
         include/GameClient/GameObjectDatabase.cpp
         include/GameClient/GameObjectDatabase.h
+        include/GameClient/Components/WinLose.cpp
+        include/GameClient/Components/WinLose.h
+        include/GameClient/Components/ShipDummy.cpp
+        include/GameClient/Components/ShipDummy.h
         )
 
 add_executable(GameClient ${SRC})

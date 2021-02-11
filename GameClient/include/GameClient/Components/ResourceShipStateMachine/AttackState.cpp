@@ -17,15 +17,15 @@ Maybe<TransitionTo<WaitState>> AttackState::handle(UpdateEvent &) {
         auto coliders = Physics2D::OverlapCircleAll(
                 {ship->transform()->localPosition().x, ship->transform()->localPosition().y}, ship->visibility);
         for (auto &&c : coliders) {
-            auto s = c->GetComponent<Ship>();
-            if (s) {
+            auto s = c->GetComponent<ShipDummy>();
+            if (s && s->parent != ship->parent) {
                 shpis.emplace_back(s);
             }
         }
 
         float how_far = 0;
         for (auto &&s : shpis) {
-            if (s && s->parent != ship->parent) {
+            if (s) {
                 //Simple targeting
                 if (!ship->target) {
                     ship->target = s->transform();

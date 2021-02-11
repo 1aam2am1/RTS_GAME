@@ -4,6 +4,7 @@
 #include <GameClient/Unity/Editor/Menu.h>
 #include "MainWindow.h"
 #include "FontLoader.h"
+#include "GlobalStaticVariables.h"
 #include <filesystem>
 #include <GameClient/Windows/AssetWindow.h>
 #include <GameClient/Unity/Editor/AssetDatabase.h>
@@ -23,6 +24,8 @@ int main(int argc, char **argv) {
                                   Version::DATE.data(),
                                   static_cast<int>(sizeof(void *) * 8)));
         }
+
+        global.settings.Load();
 
         MainWindow window(options);
         FontLoader{options};

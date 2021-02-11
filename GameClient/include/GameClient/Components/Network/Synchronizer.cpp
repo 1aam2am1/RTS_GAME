@@ -41,12 +41,45 @@ TPtr<Object> Synchronizer::GetObject(GUIDFileIDPack s_id) {
     return GameObjectDatabase::TRYGetObjectFROMGUIDAndLocalFileIdentifier(s_id.guid, s_id.id);
 }
 
-void Synchronizer::SendMessage(const nlohmann::json &j) {
-    if (!NetworkInterface::network()) { return; }
+bool Synchronizer::SendMessage(const nlohmann::json &j) {
+    if (!NetworkInterface::network()) { return false; }
 
-    NetworkInterface::network()->SendMessage(id, GameApi::demangle(typeid(*this).name()), j);
+    return NetworkInterface::network()->SendMessage(id, GameApi::demangle(typeid(*this).name()), j);
 }
 
 bool Synchronizer::RegisterID(uint32_t s_id, const TPtr<Object> &o) {
     return GameObjectDatabase::Register(o, s_id);
+}
+
+void Synchronizer::OnDestroy() {
+    if (!NetworkInterface::network()) { return; }
+
+    NetworkInterface::network()->SendMessage(id, "__DELETE", {});
+}
+
+void Synchronizer::SendMessage(int sid, nlohmann::json json) {
+    json["__ID"] = sid;
+    auto result = Synchronizer::SendMessage(json);
+
+    if (!result) {
+        to_send.emplace_back(std::move(json));
+    }
+}
+
+void Synchronizer::Update() {
+    std::erase_if(to_send, [&](auto &j) { return SendMessage(j); });
+
+    IntUpdate();
+}
+
+void Synchronizer::ReceiveMessageInterface(const nlohmann::json &json) {
+    if (json.contains("__ID")) {
+        auto sid = json.at("__ID").get<int>();
+        auto copy = json;
+        copy.erase("__ID");
+
+        OnMessage(sid, copy);
+    } else {
+        ReceiveMessage(json);
+    }
 }

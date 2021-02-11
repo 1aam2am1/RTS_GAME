@@ -44,7 +44,7 @@ public:
 private:
     friend class Synchronizer;
 
-    void SendMessage(uint32_t id, std::string_view type, const nlohmann::json &message);
+    bool SendMessage(uint32_t id, std::string_view type, const nlohmann::json &message);
 
     void RegisterReceiver(uint32_t id, TPtr<Synchronizer>);
 
@@ -58,8 +58,6 @@ private:
     sf::TcpSocket socked;
 
     std::unordered_map<uint32_t, TPtr<Synchronizer>> receivers;
-
-    bool print = false;
 };
 
 

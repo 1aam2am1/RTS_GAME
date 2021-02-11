@@ -26,13 +26,11 @@ WaitState::handle(UpdateEvent &) {
             auto coliders = Physics2D::OverlapCircleAll(
                     {ship->transform()->localPosition().x, ship->transform()->localPosition().y}, ship->visibility);
             for (auto &&c : coliders) {
-                auto s = c->GetComponent<Ship>();
-                if (s) {
+                auto s = c->GetComponent<ShipDummy>();
+                if (s && s->parent != ship->parent) {
                     allships.emplace_back(s);
                 }
             }
-
-            std::erase_if(allships, [this](auto &&s) { return s->parent == ship->parent; });
 
             if (!allships.empty()) {
                 return TransitionTo<AttackState>{};
