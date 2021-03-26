@@ -1,0 +1,282 @@
+{
+  "objects": [
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 6,
+              "guid": "0"
+            }
+          },
+          {
+            "Camera": {
+              "backgroundColor": {
+                "alpha": 255,
+                "blue": 0,
+                "green": 0,
+                "red": 0
+              },
+              "depth": 0.0,
+              "m_Name": "",
+              "m_enabled": true,
+              "orthographicSize": 3.5999999046325684,
+              "pixelRect": {
+                "height": 1.0,
+                "width": 1.0,
+                "x": 0.0,
+                "y": 0.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 7,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "MainCamera",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 1,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 2.799999952316284,
+                "y": -3.049999952316284,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 8,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 5.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 9,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "GameObject1",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 2,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": -2.799999952316284,
+                "y": -6.5,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 10,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 4.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 11,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "GameObject2",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 3,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": -10.75,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 12,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 20.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 13,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "GameObject3",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 4,
+        "guid": "0"
+      }
+    },
+    {
+      "GameObject": {
+        "components": [
+          {
+            "Transform": {
+              "children": [],
+              "m_Name": "",
+              "m_localPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "m_localRotation": 0.0,
+              "m_localScale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+              },
+              "m_parent": null
+            },
+            "__Node_id": {
+              "fileID": 14,
+              "guid": "0"
+            }
+          },
+          {
+            "Rigidbody2D": {
+              "bodyType": "Dynamic",
+              "inertia": 0.10000000149011612,
+              "m_Name": "",
+              "mass": 1.0
+            },
+            "__Node_id": {
+              "fileID": 15,
+              "guid": "0"
+            }
+          },
+          {
+            "BoxCollider2D": {
+              "m_Name": "",
+              "m_enabled": true,
+              "offset": {
+                "x": 0.0,
+                "y": 0.0
+              },
+              "size": {
+                "x": 1.0,
+                "y": 1.0
+              }
+            },
+            "__Node_id": {
+              "fileID": 16,
+              "guid": "0"
+            }
+          }
+        ],
+        "m_Name": "GameObject",
+        "m_active": true
+      },
+      "__Node_id": {
+        "fileID": 5,
+        "guid": "0"
+      }
+    }
+  ]
+}
